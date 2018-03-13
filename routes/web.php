@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/upload', 'ExcelController@upload');
+Route::post('/getInfo', 'ExcelController@getInfo');
+Route::post('/ImportClients', 'ExcelController@ImportClients');

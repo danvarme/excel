@@ -41146,32 +41146,43 @@ var Example = function (_Component) {
     }
 
     _createClass(Example, [{
+        key: 'uploadFile',
+        value: function uploadFile(e) {
+            var fd = new FormData();
+            fd.append('file', $('input[type=file]')[0].files[0]);
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            console.log(fd);
+
+            $.ajax({
+                url: '/getInfo',
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function success(data) {
+                    console.log(data);
+                }
+            });
+            e.preventDefault();
+        }
+    }, {
         key: 'render',
         value: function render() {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
-                { className: 'container' },
+                null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'row' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'col-md-8 col-md-offset-2' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'div',
-                            { className: 'panel panel-default' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'panel-heading' },
-                                'Example Component'
-                            ),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'panel-body' },
-                                'I\'m an example component!'
-                            )
-                        )
-                    )
+                    'form',
+                    { ref: 'uploadForm', className: 'uploader', encType: 'multipart/form-data' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'file', type: 'file', name: 'file', className: 'upload-file' }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
                 )
             );
         }
