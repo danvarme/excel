@@ -43500,29 +43500,30 @@ var Example = function (_Component) {
     function Example(props) {
         _classCallCheck(this, Example);
 
+        //Variables
         var _this = _possibleConstructorReturn(this, (Example.__proto__ || Object.getPrototypeOf(Example)).call(this, props));
 
-        _this.handleSubmit = _this.handleSubmit.bind(_this);
-        _this.callCreateAddressTo = _this.callCreateAddressTo.bind(_this);
-        _this.callObtainFiscalAddress = _this.callObtainFiscalAddress.bind(_this);
+        _this.state = { addressIdFrom: 0, showForm: 1, showData: 0 };
+
+        //Methods
+        _this.uploadFile = _this.uploadFile.bind(_this);
+        _this.getAddressTo = _this.getAddressTo.bind(_this);
+        _this.fetchData = _this.fetchData.bind(_this);
+        _this.getRate = _this.getRate.bind(_this);
+        _this.checkRates = _this.checkRates.bind(_this);
         _this.callCreateShipment = _this.callCreateShipment.bind(_this);
+        _this.getFiscalAddressFrom = _this.getFiscalAddressFrom.bind(_this);
 
         return _this;
     }
 
     _createClass(Example, [{
-        key: 'handleSubmit',
-        value: function handleSubmit(event) {
-            event.preventDefault();
-            var files = this.fileInput.files[0].name;
-            var shipments = [{ "name": "Jose Perez", "street": "Av 5 de Febrero No. 2125", "street2": "Colonia Jurica", "reference": "Edificio verde", "city": "Queretaro", "state": "Queretaro", "zipcode": 76100, "phone": 4422185000, "service": "estandar", "provider": "dhl", "package": { "weight": 1, "length": 12, "height": 12, "width": 12 }, "description": null, "email": "fervargas@gmail.com" }];
-            this.fetchData(shipments);
-            //TODO check if shipment is not empty ,then process it
-        }
-    }, {
-        key: 'callObtainFiscalAddress',
-        value: function callObtainFiscalAddress() {
-            var settings = {
+        key: 'getFiscalAddressFrom',
+        value: function getFiscalAddressFrom(shipments) {
+
+            self = this;
+
+            var xmlRequest = $.ajax({
                 "async": true,
                 "crossDomain": true,
                 "url": "https://sandbox.mienvio.mx/api/profile",
@@ -43530,18 +43531,27 @@ var Example = function (_Component) {
                 "headers": {
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 }
-            };
+            });
 
-            $.ajax(settings).done(function (response) {
+            xmlRequest.done(function (response) {
+                self.state.addressIdFrom = response.user.fiscal_address.object_id;
+                console.log(self.state.addressIdFrom);
+                self.fetchData(shipments);
+            });
+
+            //Handle errors
+            xmlRequest.fail(function (response, textStatus) {
                 console.log(response);
+                console.log(textStatus);
             });
         }
     }, {
-        key: 'callCreateAddressTo',
-        value: function callCreateAddressTo(item) {
-
+        key: 'getAddressTo',
+        value: function getAddressTo(item) {
             //Set all params for API call
-            var direction = {
+            self = this;
+
+            var address = {
                 "object_type": "PURCHASE",
                 "name": item.name,
                 "street": item.street,
@@ -43562,12 +43572,13 @@ var Example = function (_Component) {
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 },
                 "processData": false,
-                "data": JSON.stringify(direction)
+                "data": JSON.stringify(address)
             });
 
             //Handle success
             xmlRequest.done(function (response) {
-                var directionID = response.address.object_id;
+                var addressToId = response.address.object_id;
+                self.callCreateShipment(item, addressToId);
             });
 
             //Handle errors
@@ -43582,21 +43593,21 @@ var Example = function (_Component) {
         }
     }, {
         key: 'callCreateShipment',
-        value: function callCreateShipment(item) {
-            console.log(item);
+        value: function callCreateShipment(item, addressToId) {
+            self = this;
+
             var data = {
-                "object_purpose": "PURCHASE",
-                "address_from": 5,
-                "address_to": 10,
+                "object_purpose": "QUOTE",
+                "address_from": this.state.addressIdFrom,
+                "address_to": addressToId,
                 "weight": item.package.weight,
                 "length": item.package.length,
                 "height": item.package.height,
                 "width": item.package.width,
-                "description": item.description,
-                "rate": 0
+                "description": item.description
             };
 
-            /*var xmlRequest = $.ajax({
+            var xmlRequest = $.ajax({
                 "async": true,
                 "crossDomain": true,
                 "url": "https://sandbox.mienvio.mx/api/shipments",
@@ -43607,55 +43618,152 @@ var Example = function (_Component) {
                 },
                 "data": JSON.stringify(data)
             });
-             //Handle success
+
+            //Handle success
+            xmlRequest.done(function (response) {
+                var shipmentId = response.shipment.object_id;
+                self.getRate(item, shipmentId);
+            });
+
+            //Handle errors
+            xmlRequest.fail(function (response, textStatus) {
+
+                var params = response.responseJSON.error.params;
+
+                for (var errorMessage in params) {
+                    console.log(errorMessage + ': ' + params[errorMessage]);
+                }
+            });
+        }
+    }, {
+        key: 'getRate',
+        value: function getRate(item, shipmentId) {
+            self = this;
+
+            var xmlRequest = $.ajax({
+                "async": true,
+                "crossDomain": true,
+                "url": "https://sandbox.mienvio.mx/api/shipments/" + shipmentId + "/rates",
+                "method": "GET",
+                "headers": {
+                    "content-type": "application/json",
+                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                }
+            });
+
+            //Handle success
+            xmlRequest.done(function (response) {
+                self.checkRates(item, shipmentId, response.results);
+            });
+
+            //Handle errors
+            xmlRequest.fail(function (response, textStatus) {
+
+                var params = response.responseJSON.error.params;
+
+                for (var errorMessage in params) {
+                    console.log(errorMessage + ': ' + params[errorMessage]);
+                }
+            });
+        }
+    }, {
+        key: 'checkRates',
+        value: function checkRates(item, shipmentId, rates) {
+            self = this;
+            var bool = 0;
+            rates.forEach(function (price) {
+                if (item.provider.trim().toLowerCase() == price.provider.trim().toLowerCase() && item.service.trim().toLowerCase() == price.servicelevel.trim().toLowerCase()) {
+                    self.updateShipment(item, shipmentId, price.object_id);
+                    bool = 1;
+                }
+            });
+            if (bool == 0) console.log("Service not found");
+        }
+    }, {
+        key: 'updateShipment',
+        value: function updateShipment(item, shipmentId, rateId) {
+
+            var data = {
+                "object_purpose": "PURCHASE",
+                "rate": rateId
+            };
+
+            var xmlRequest = $.ajax({
+                "async": true,
+                "crossDomain": true,
+                "url": "https://sandbox.mienvio.mx/api/shipments/" + shipmentId,
+                "method": "PUT",
+                "headers": {
+                    "content-type": "application/json",
+                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                },
+                "processData": false,
+                "data": JSON.stringify(data)
+            });
+
+            //Handle success
             xmlRequest.done(function (response) {
                 console.log(response);
             });
-             //Handle errors
-            xmlRequest.fail(function( response, textStatus ) {
-                 var params = response.responseJSON.error.params;
-                 for(var errorMessage in params){
+
+            //Handle errors
+            xmlRequest.fail(function (response, textStatus) {
+
+                var params = response.responseJSON.error.params;
+
+                for (var errorMessage in params) {
                     console.log(errorMessage + ': ' + params[errorMessage]);
                 }
-             });*/
+            });
         }
     }, {
         key: 'fetchData',
         value: function fetchData(shipments) {
             var self = this;
 
-            /*var addressFromId = */
             shipments.forEach(function (item) {
-                self.callObtainFiscalAddress(item);
+                self.getAddressTo(item);
             });
+        }
+    }, {
+        key: 'uploadFile',
+        value: function uploadFile(event) {
+            var self = this;
+            var fd = new FormData();
+            fd.append('file', $('input[type=file]')[0].files[0]);
+
+            $.ajax({
+                url: '/getInfo',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: fd,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function success(data) {
+                    self.getFiscalAddressFrom(data);
+                    self.state.showForm = 0;
+                }
+            });
+            event.preventDefault();
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
-
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'form',
-                { onSubmit: this.handleSubmit },
+                { ref: 'uploadForm', className: 'uploader', encType: 'multipart/form-data' },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'file', type: 'file', name: 'file', className: 'upload-file' }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'file', ref: function ref(input) {
-                        _this2.fileInput = input;
-                    } }),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'button',
-                    { type: 'submit' },
-                    'Submit'
-                )
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
             );
         }
     }]);
 
     return Example;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["default"] = (Example);
-
 
 if (document.getElementById('example')) {
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Example, null), document.getElementById('example'));
