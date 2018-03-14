@@ -56,6 +56,8 @@ class ExcelController extends Controller
 			        		}
 			        	}
 			        }
+			        $path = 'files/'.$file_name;
+			        unlink($path); 
 			        return json_encode($envios_arr);
 			    }
 			    return response(['result' => 'Wrong extension'], 200);
