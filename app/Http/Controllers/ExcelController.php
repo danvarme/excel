@@ -60,11 +60,12 @@ class ExcelController extends Controller
 			        unlink($path); 
 			        return json_encode($envios_arr);
 			    }
-			    return response(['result' => 'Wrong extension'], 200);
+			    return json_encode(['error' => "Extensión inválida."]);
 		    }
 		}
 
-		return response(['result' => 'No File'], 200);
+	    return json_encode(['error' => "Archivo requerido. Favor de adjunta archivo."]);
+
 	}
 
 	

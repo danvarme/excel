@@ -8,7 +8,8 @@ class Example extends Component {
         super(props);
 
         //Variables
-        this.state = {addressIdFrom: 0, showForm: 1, showData: 0};
+        this.state = {addressIdFrom: 0, errors: [], success: [], information: []};
+
 
         //Methods
         this.uploadFile = this.uploadFile.bind(this);
@@ -184,6 +185,8 @@ class Example extends Component {
 
     updateShipment(item, shipmentId, rateId){
 
+        self = this;
+
         var data = {
             "object_purpose" : "PURCHASE",
             "rate": rateId
@@ -204,7 +207,11 @@ class Example extends Component {
 
         //Handle success
         xmlRequest.done(function (response) {
-            console.log(response);
+            self.state.success.push(shipmentId);
+            self.setState(self.state);
+            
+            console.log(self.state.success);
+            console.log(self.state.errors);
         });
 
         //Handle errors
@@ -243,24 +250,55 @@ class Example extends Component {
             contentType: false,
             type: 'POST',
             success: function(data){
-                self.getFiscalAddressFrom(data);
-                self.state.showForm = 0;
+                if(data.error){
+                    self.state.errors.push(data.error);
+                    self.setState(self.state);
+                }else{
+                    //Set as global Fiscal Address From id.
+                    self.getFiscalAddressFrom(data);
+                }
             } 
         });
         event.preventDefault()
     }
-
+    
     render() {
+        const errorFound = this.state.errors.map((error, i) =>
+            <li key={i}>{error}</li>
+        );
+        const successShipment = this.state.success.map((success, i) =>
+            <li key={i}>{success}</li>
+        );
         return (
-            <form ref="uploadForm" className="uploader" encType="multipart/form-data" >
-               <input ref="file" type="file" name="file" className="upload-file"/>
-               <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
-               <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
-           </form>  
+            <div>
+                <form ref="uploadForm" className="uploader" encType="multipart/form-data" >
+                   <input ref="file" type="file" name="file" className="upload-file"/>
+                   <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
+                   <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
+                </form> 
+
+                {this.state.errors.length > 0 &&
+                    <div className="container">
+                        <div className="alert alert-danger" role="alert" >
+                            <ul>{errorFound}</ul>
+                        </div>
+                    </div>
+                }
+                
+
+
+                {this.state.success.length > 0 &&<div className="container">
+                    <div className="alert alert-success" role="alert" >
+                        <ul>{successShipment}</ul>
+                    </div>
+                </div>
+                }
+            </div>
         );
     }
 }
 
 if (document.getElementById('example')) {
     ReactDOM.render(<Example />, document.getElementById('example'));
+
 }
