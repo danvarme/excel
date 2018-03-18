@@ -8,7 +8,7 @@ class Example extends Component {
         super(props);
 
         //Variables
-        this.state = {addressIdFrom: 0, errors: [], success: [], information: []};
+        this.state = {addressIdFrom: 0, errors: {}, success: [], information: []};
 
 
         //Methods
@@ -49,7 +49,7 @@ class Example extends Component {
         });
     }
 
-    getAddressTo(item){
+    getAddressTo(item, index){
         //Set all params for API call
         self = this;
 
@@ -80,7 +80,7 @@ class Example extends Component {
         //Handle success
         xmlRequest.done(function (response) {
             var addressToId = response.address.object_id;
-            self.callCreateShipment(item, addressToId);
+            self.callCreateShipment(item, addressToId, index);
         });
 
         //Handle errors
@@ -95,7 +95,7 @@ class Example extends Component {
         });
     }
 
-    callCreateShipment(item, addressToId){
+    callCreateShipment(item, addressToId, index){
         self = this;
 
         var data = {
@@ -124,7 +124,7 @@ class Example extends Component {
         //Handle success
         xmlRequest.done(function (response) {
             var shipmentId = response.shipment.object_id;
-            self.getRate(item, shipmentId);
+            self.getRate(item, shipmentId, index);
         });
 
         //Handle errors
@@ -139,7 +139,7 @@ class Example extends Component {
         });
     }
 
-    getRate(item, shipmentId){
+    getRate(item, shipmentId, index){
         self = this;
 
         var xmlRequest = $.ajax({
@@ -155,7 +155,7 @@ class Example extends Component {
 
         //Handle success
         xmlRequest.done(function (response) {
-            self.checkRates(item, shipmentId, response.results);
+            self.checkRates(item, shipmentId, response.results, index);
         });
 
         //Handle errors
@@ -170,20 +170,20 @@ class Example extends Component {
         });
     }
 
-    checkRates(item, shipmentId, rates){
+    checkRates(item, shipmentId, rates, index){
         self = this;
         var bool = 0;
         rates.forEach(function(price){
             if(((item.provider).trim()).toLowerCase() == ((price.provider).trim()).toLowerCase() 
                 && ((item.service).trim()).toLowerCase() == ((price.servicelevel).trim()).toLowerCase()){
-                self.updateShipment(item, shipmentId, price.object_id);
+                self.updateShipment(item, shipmentId, price.object_id, index);
                 bool = 1;
             }
         });
         if(bool == 0) console.log("Service not found");
     }
 
-    updateShipment(item, shipmentId, rateId){
+    updateShipment(item, shipmentId, rateId, index){
 
         self = this;
 
@@ -220,7 +220,7 @@ class Example extends Component {
             var params = response.responseJSON.error.params;
 
             for(var errorMessage in params){
-                console.log(errorMessage + ': ' + params[errorMessage]);
+                console.log(errorMessage + ': ' + index + ' ' + params[errorMessage]);
             }
 
         });
@@ -229,8 +229,8 @@ class Example extends Component {
     fetchData(shipments){
         var self = this;
 
-        shipments.forEach(function(item){
-            self.getAddressTo(item);
+        shipments.forEach(function(item, index){
+            self.getAddressTo(item, index);
         });
     }
 
@@ -251,7 +251,8 @@ class Example extends Component {
             type: 'POST',
             success: function(data){
                 if(data.error){
-                    self.state.errors.push(data.error);
+                    self.state.errors[4] = {error :"error"};
+                    //self.state.errors.push({message: "Error", er : ["Mal2", "MAL3", "mal6"]});
                     self.setState(self.state);
                 }else{
                     //Set as global Fiscal Address From id.
@@ -263,8 +264,8 @@ class Example extends Component {
     }
     
     render() {
-        const errorFound = this.state.errors.map((error, i) =>
-            <li key={i}>{error}</li>
+        const errorFound = Object.entries(this.state.errors).map( ([key, value]) => 
+            `Se encontraron los siguientes errores` 
         );
         const successShipment = this.state.success.map((success, i) =>
             <li key={i}>{success}</li>

@@ -41676,6 +41676,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(218);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41697,7 +41699,7 @@ var Example = function (_Component) {
         //Variables
         var _this = _possibleConstructorReturn(this, (Example.__proto__ || Object.getPrototypeOf(Example)).call(this, props));
 
-        _this.state = { addressIdFrom: 0, errors: [], success: [], information: [] };
+        _this.state = { addressIdFrom: 0, errors: {}, success: [], information: [] };
 
         //Methods
         _this.uploadFile = _this.uploadFile.bind(_this);
@@ -41741,7 +41743,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'getAddressTo',
-        value: function getAddressTo(item) {
+        value: function getAddressTo(item, index) {
             //Set all params for API call
             self = this;
 
@@ -41772,7 +41774,7 @@ var Example = function (_Component) {
             //Handle success
             xmlRequest.done(function (response) {
                 var addressToId = response.address.object_id;
-                self.callCreateShipment(item, addressToId);
+                self.callCreateShipment(item, addressToId, index);
             });
 
             //Handle errors
@@ -41787,7 +41789,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'callCreateShipment',
-        value: function callCreateShipment(item, addressToId) {
+        value: function callCreateShipment(item, addressToId, index) {
             self = this;
 
             var data = {
@@ -41816,7 +41818,7 @@ var Example = function (_Component) {
             //Handle success
             xmlRequest.done(function (response) {
                 var shipmentId = response.shipment.object_id;
-                self.getRate(item, shipmentId);
+                self.getRate(item, shipmentId, index);
             });
 
             //Handle errors
@@ -41831,7 +41833,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'getRate',
-        value: function getRate(item, shipmentId) {
+        value: function getRate(item, shipmentId, index) {
             self = this;
 
             var xmlRequest = $.ajax({
@@ -41847,7 +41849,7 @@ var Example = function (_Component) {
 
             //Handle success
             xmlRequest.done(function (response) {
-                self.checkRates(item, shipmentId, response.results);
+                self.checkRates(item, shipmentId, response.results, index);
             });
 
             //Handle errors
@@ -41862,12 +41864,12 @@ var Example = function (_Component) {
         }
     }, {
         key: 'checkRates',
-        value: function checkRates(item, shipmentId, rates) {
+        value: function checkRates(item, shipmentId, rates, index) {
             self = this;
             var bool = 0;
             rates.forEach(function (price) {
                 if (item.provider.trim().toLowerCase() == price.provider.trim().toLowerCase() && item.service.trim().toLowerCase() == price.servicelevel.trim().toLowerCase()) {
-                    self.updateShipment(item, shipmentId, price.object_id);
+                    self.updateShipment(item, shipmentId, price.object_id, index);
                     bool = 1;
                 }
             });
@@ -41875,7 +41877,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'updateShipment',
-        value: function updateShipment(item, shipmentId, rateId) {
+        value: function updateShipment(item, shipmentId, rateId, index) {
 
             self = this;
 
@@ -41912,7 +41914,7 @@ var Example = function (_Component) {
                 var params = response.responseJSON.error.params;
 
                 for (var errorMessage in params) {
-                    console.log(errorMessage + ': ' + params[errorMessage]);
+                    console.log(errorMessage + ': ' + index + ' ' + params[errorMessage]);
                 }
             });
         }
@@ -41921,8 +41923,8 @@ var Example = function (_Component) {
         value: function fetchData(shipments) {
             var self = this;
 
-            shipments.forEach(function (item) {
-                self.getAddressTo(item);
+            shipments.forEach(function (item, index) {
+                self.getAddressTo(item, index);
             });
         }
     }, {
@@ -41944,7 +41946,8 @@ var Example = function (_Component) {
                 type: 'POST',
                 success: function success(data) {
                     if (data.error) {
-                        self.state.errors.push(data.error);
+                        self.state.errors[4] = { error: "error" };
+                        //self.state.errors.push({message: "Error", er : ["Mal2", "MAL3", "mal6"]});
                         self.setState(self.state);
                     } else {
                         //Set as global Fiscal Address From id.
@@ -41957,12 +41960,12 @@ var Example = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var errorFound = this.state.errors.map(function (error, i) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'li',
-                    { key: i },
-                    error
-                );
+            var errorFound = Object.entries(this.state.errors).map(function (_ref) {
+                var _ref2 = _slicedToArray(_ref, 2),
+                    key = _ref2[0],
+                    value = _ref2[1];
+
+                return 'Se encontraron los siguientes errores';
             });
             var successShipment = this.state.success.map(function (success, i) {
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
