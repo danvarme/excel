@@ -67,42 +67,4 @@ class ExcelController extends Controller
 	    return json_encode(['error' => "Archivo requerido. Favor de adjunta archivo."]);
 
 	}
-
-	
-
-    public function ImportClients(Request $request)
-    {
-    	$file = request()->file('file');
-    	$file_name = $file->getClientOriginalName();
-    	$file->move('files', $file_name);
-
-    	$path = $file->getRealPath();
-
-    	// Get box properties
-    	$box = Excel::selectSheetsByIndex(1)->load($path, function($reader){
-    		$reader->all();
-    	})->get();
-
-    	$boxArr = [];
-    	if(!empty($box)){
-    		foreach($box as $key => $value){
-    			$boxArr[$value->nombre] = array($value->peso, $value->largo, $value->alto, $value->ancho);
-    		}
-    	}
-
-    	// Get shipment properties
-		$results = Excel::selectSheetsByIndex(0)->load('files/'.$file_name, function($reader)
-    	{
-    		$reader->all();
-    	})->get();
-
-		/*$shipments = [];
-    	if(!empty($results)){
-    		foreach($results as $key => $value){
-    			array_push($shipments, array($value->nombre, $value->direccion1, $value->direccion2, $value->referencia, $value->ciudad, $value ->estado, $value->cp,))
-    		}
-    	}*/
-    	
-    	return view('pedido', ['clients' => $results, 'box' => json_encode($boxArr)]);
-    }
 }

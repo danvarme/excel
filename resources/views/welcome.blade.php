@@ -22,6 +22,12 @@
                 height: 100vh;
                 margin: 0;
             }
+            .center{
+                width: 200px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
         </style>
     </head>
     <body>

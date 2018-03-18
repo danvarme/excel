@@ -41676,8 +41676,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(218);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41699,7 +41697,7 @@ var Example = function (_Component) {
         //Variables
         var _this = _possibleConstructorReturn(this, (Example.__proto__ || Object.getPrototypeOf(Example)).call(this, props));
 
-        _this.state = { addressIdFrom: 0, errors: {}, success: [], information: [] };
+        _this.state = { addressIdFrom: 0, errors: {}, success: [] };
 
         //Methods
         _this.uploadFile = _this.uploadFile.bind(_this);
@@ -41709,9 +41707,14 @@ var Example = function (_Component) {
         _this.checkRates = _this.checkRates.bind(_this);
         _this.callCreateShipment = _this.callCreateShipment.bind(_this);
         _this.getFiscalAddressFrom = _this.getFiscalAddressFrom.bind(_this);
-
+        //Validate data
+        _this.validAddress = _this.validAddress.bind(_this);
+        _this.validShipment = _this.validShipment.bind(_this);
         return _this;
     }
+
+    //First step
+
 
     _createClass(Example, [{
         key: 'getFiscalAddressFrom',
@@ -41730,106 +41733,177 @@ var Example = function (_Component) {
             });
 
             xmlRequest.done(function (response) {
+                //Set addressIdFrom as global
                 self.state.addressIdFrom = response.user.fiscal_address.object_id;
-                console.log(self.state.addressIdFrom);
+                //Call fetchData function and send shipment object
                 self.fetchData(shipments);
             });
 
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
-                console.log(response);
-                console.log(textStatus);
+                self.state.errors[0] = { errorMessage: ["No se encontro la dirección fiscal"] };
+                self.setState(self.state);
             });
+        }
+    }, {
+        key: 'validAddress',
+        value: function validAddress(item, index) {
+            var valid = true;
+            var errors = [];
+            if (!item.name || item.name.length > 80) {
+                valid = false;
+                errors.push("Nombre inválido. Debe tener 80 caracteres como máximo");
+            }
+            if (!item.street || item.street.length > 35) {
+                valid = false;
+                errors.push("Dirección inválida. Debe tener 35 caracteres como máximo");
+            }
+            if (!item.street2 || item.street2.length > 35) {
+                valid = false;
+                errors.push("Dirección 2 inválida. Debe tener 35 caracteres como máximo");
+            }
+            if (!item.zipcode || item.zipcode.length > 5) {
+                valid = false;
+                errors.push("Código postal inválido. Debe tener 5 caracteres como máximo");
+            }
+            if (item.reference && item.reference.length > 255) {
+                valid = false;
+                errors.push("Referencia inválida. Debe tener 255 caracteres como máximo");
+            }
+            var emailRegex = /^[\w._-]+[+]?[\w._-]+@[\w.-]+\.[a-zA-Z]{2,6}$/;
+            if (!item.email || item.email.length > 255 || !emailRegex.test(item.email)) {
+                valid = false;
+                errors.push("Email inválido. Debe tener 35 caracteres como máximo");
+            }
+            if (!item.phone || item.phone.length > 20) {
+                valid = false;
+                errors.push("Telefono inválido. Debe tener 35 caracteres como máximo");
+            }
+            return [valid, { row: index, errorMessage: errors }];
         }
     }, {
         key: 'getAddressTo',
         value: function getAddressTo(item, index) {
             //Set all params for API call
             self = this;
+            var valid = this.validAddress(item, index);
+            if (valid[0]) {
+                var address = {
+                    "object_type": "PURCHASE",
+                    "name": item.name,
+                    "street": item.street,
+                    "street2": item.street2,
+                    "reference": item.reference,
+                    "zipcode": item.zipcode,
+                    "email": item.email,
+                    "phone": item.phone
+                };
 
-            var address = {
-                "object_type": "PURCHASE",
-                "name": item.name,
-                "street": item.street,
-                "street2": item.street2,
-                "zipcode": item.zipcode,
-                "email": item.email,
-                "phone": item.phone
-            };
+                //API call
+                var xmlRequest = $.ajax({
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "https://sandbox.mienvio.mx/api/addresses",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json",
+                        "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                    },
+                    "processData": false,
+                    "data": JSON.stringify(address)
+                });
 
-            //API call
-            var xmlRequest = $.ajax({
-                "async": true,
-                "crossDomain": true,
-                "url": "https://sandbox.mienvio.mx/api/addresses",
-                "method": "POST",
-                "headers": {
-                    "content-type": "application/json",
-                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
-                },
-                "processData": false,
-                "data": JSON.stringify(address)
-            });
+                //Handle success
+                xmlRequest.done(function (response) {
+                    var addressToId = response.address.object_id;
+                    //Obtuvo la dirección a enviar
+                    self.callCreateShipment(item, addressToId, index);
+                });
 
-            //Handle success
-            xmlRequest.done(function (response) {
-                var addressToId = response.address.object_id;
-                self.callCreateShipment(item, addressToId, index);
-            });
+                //Handle errors
+                xmlRequest.fail(function (response, textStatus) {
 
-            //Handle errors
-            xmlRequest.fail(function (response, textStatus) {
+                    //var params = response.responseJSON.error.params;
 
-                var params = response.responseJSON.error.params;
-
-                for (var errorMessage in params) {
-                    console.log(errorMessage + ': ' + params[errorMessage]);
-                }
-            });
+                    self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                    self.setState(self.state);
+                });
+            } else {
+                self.state.errors[valid[1].row] = valid[1].errorMessage;
+                self.setState(self.state);
+            }
+        }
+    }, {
+        key: 'validShipment',
+        value: function validShipment(item, index) {
+            var valid = true;
+            var errors = [];
+            if (!/\D/.test(item.weight)) {
+                valid = false;
+                errors.push("El peso del paquete es inválido");
+            }
+            if (!/\D/.test(item.length)) {
+                valid = false;
+                errors.push("El largo del paquete es inválido");
+            }
+            if (!/\D/.test(item.height)) {
+                valid = false;
+                errors.push("El alto del paquete es inválido");
+            }
+            if (!/\D/.test(item.width)) {
+                valid = false;
+                errors.push("El ancho del paquete es inválido");
+            }
+            return [valid, { row: index, errorMessage: errors }];
         }
     }, {
         key: 'callCreateShipment',
         value: function callCreateShipment(item, addressToId, index) {
             self = this;
 
-            var data = {
-                "object_purpose": "QUOTE",
-                "address_from": this.state.addressIdFrom,
-                "address_to": addressToId,
-                "weight": item.package.weight,
-                "length": item.package.length,
-                "height": item.package.height,
-                "width": item.package.width,
-                "description": item.description
-            };
+            var valid = this.validShipment(item.package, index);
+            if (valid[0]) {
+                var data = {
+                    "object_purpose": "QUOTE",
+                    "address_from": this.state.addressIdFrom,
+                    "address_to": addressToId,
+                    "weight": item.package.weight,
+                    "length": item.package.length,
+                    "height": item.package.height,
+                    "width": item.package.width,
+                    "description": item.description
+                };
 
-            var xmlRequest = $.ajax({
-                "async": true,
-                "crossDomain": true,
-                "url": "https://sandbox.mienvio.mx/api/shipments",
-                "method": "POST",
-                "headers": {
-                    "content-type": "application/json",
-                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
-                },
-                "data": JSON.stringify(data)
-            });
+                var xmlRequest = $.ajax({
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "https://sandbox.mienvio.mx/api/shipments",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json",
+                        "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                    },
+                    "data": JSON.stringify(data)
+                });
 
-            //Handle success
-            xmlRequest.done(function (response) {
-                var shipmentId = response.shipment.object_id;
-                self.getRate(item, shipmentId, index);
-            });
+                //Handle success
+                xmlRequest.done(function (response) {
+                    var shipmentId = response.shipment.object_id;
+                    self.getRate(item, shipmentId, index);
+                });
 
-            //Handle errors
-            xmlRequest.fail(function (response, textStatus) {
+                //Handle errors
+                xmlRequest.fail(function (response, textStatus) {
 
-                var params = response.responseJSON.error.params;
+                    //var params = response.responseJSON.error.params;
 
-                for (var errorMessage in params) {
-                    console.log(errorMessage + ': ' + params[errorMessage]);
-                }
-            });
+                    self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                    self.setState(self.state);
+                });
+            } else {
+                self.state.errors[valid[1].row] = valid[1].errorMessage;
+                self.setState(self.state);
+            }
         }
     }, {
         key: 'getRate',
@@ -41855,11 +41929,10 @@ var Example = function (_Component) {
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
 
-                var params = response.responseJSON.error.params;
+                //var params = response.responseJSON.error.params;
 
-                for (var errorMessage in params) {
-                    console.log(errorMessage + ': ' + params[errorMessage]);
-                }
+                self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                self.setState(self.state);
             });
         }
     }, {
@@ -41873,12 +41946,15 @@ var Example = function (_Component) {
                     bool = 1;
                 }
             });
-            if (bool == 0) console.log("Service not found");
+            if (bool == 0) {
+                //¿¿¿¿BORRAR EL SHIPMENT???????
+                self.state.errors[index] = ["No se encontro una tarifa que cumpla con la paquetería y tipo de sevicio seleccioando."];
+                self.setState(self.state);
+            }
         }
     }, {
         key: 'updateShipment',
         value: function updateShipment(item, shipmentId, rateId, index) {
-
             self = this;
 
             var data = {
@@ -41901,35 +41977,37 @@ var Example = function (_Component) {
 
             //Handle success
             xmlRequest.done(function (response) {
-                self.state.success.push(shipmentId);
+                self.state.success.push("La fila no. " + index + " se registro exitosamente");
                 self.setState(self.state);
 
                 console.log(self.state.success);
                 console.log(self.state.errors);
+                console.log("Row " + index + " " + response);
             });
 
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
 
-                var params = response.responseJSON.error.params;
-
-                for (var errorMessage in params) {
-                    console.log(errorMessage + ': ' + index + ' ' + params[errorMessage]);
-                }
+                //var params = response.responseJSON.error.params;
+                self.state.errors[index] = response.responseJSON.error.params;
+                self.setState(self.state);
             });
         }
     }, {
         key: 'fetchData',
         value: function fetchData(shipments) {
             var self = this;
-
+            //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                self.getAddressTo(item, index);
+                self.getAddressTo(item, index + 1);
             });
         }
     }, {
         key: 'uploadFile',
         value: function uploadFile(event) {
+            this.state.errors = {};
+            this.state.success = [];
+            this.setState(this.state);
             var self = this;
             var fd = new FormData();
             fd.append('file', $('input[type=file]')[0].files[0]);
@@ -41946,8 +42024,7 @@ var Example = function (_Component) {
                 type: 'POST',
                 success: function success(data) {
                     if (data.error) {
-                        self.state.errors[4] = { error: "error" };
-                        //self.state.errors.push({message: "Error", er : ["Mal2", "MAL3", "mal6"]});
+                        self.state.errors[0] = [data.error];
                         self.setState(self.state);
                     } else {
                         //Set as global Fiscal Address From id.
@@ -41960,18 +42037,36 @@ var Example = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var errorFound = Object.entries(this.state.errors).map(function (_ref) {
-                var _ref2 = _slicedToArray(_ref, 2),
-                    key = _ref2[0],
-                    value = _ref2[1];
+            var _this2 = this;
 
-                return 'Se encontraron los siguientes errores';
-            });
-            var successShipment = this.state.success.map(function (success, i) {
+            var errorFound = Object.keys(this.state.errors).map(function (row, value) {
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'li',
+                    'dl',
+                    { key: row },
+                    row > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'dt',
+                        null,
+                        'Errores de la fila #',
+                        row
+                    ),
+                    _this2.state.errors[row].map(function (error, id) {
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'dd',
+                            { key: id + error },
+                            error
+                        );
+                    })
+                );
+            });
+            var successRecord = this.state.success.map(function (success, i) {
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'dl',
                     { key: i },
-                    success
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'dt',
+                        null,
+                        success
+                    )
                 );
             });
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -41979,22 +42074,22 @@ var Example = function (_Component) {
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'form',
-                    { ref: 'uploadForm', className: 'uploader', encType: 'multipart/form-data' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'file', type: 'file', name: 'file', className: 'upload-file' }),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
+                    { 'class': 'center', ref: 'uploadForm', className: 'uploader', encType: 'multipart/form-data' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'form-group' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'file', type: 'file', name: 'file', className: 'upload-file' }),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
+                    )
                 ),
-                this.state.errors.length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                Object.keys(this.state.errors).length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: 'container' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
                         { className: 'alert alert-danger', role: 'alert' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'ul',
-                            null,
-                            errorFound
-                        )
+                        errorFound
                     )
                 ),
                 this.state.success.length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -42003,11 +42098,7 @@ var Example = function (_Component) {
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
                         { className: 'alert alert-success', role: 'alert' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'ul',
-                            null,
-                            successShipment
-                        )
+                        successRecord
                     )
                 )
             );
