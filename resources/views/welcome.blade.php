@@ -22,9 +22,10 @@
                 height: 100vh;
                 margin: 0;
             }
-            .center{
+            #center{
                 width: 200px;
                 display: block;
+                margin-top: 2%;
                 margin-left: auto;
                 margin-right: auto;
             }

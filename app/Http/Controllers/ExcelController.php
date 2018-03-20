@@ -7,11 +7,6 @@ use Excel;
 
 class ExcelController extends Controller
 {
-    public function upload()
-    {
-    	return view('upload');
-    }
-
     public function getInfo(Request $request)
     {
     	if ($request->hasFile('file')) {
@@ -25,12 +20,13 @@ class ExcelController extends Controller
 		    	if(strcmp($path, 'xlsx') == 0 || strcmp($path, 'xls') == 0){
 
 			    	$file_name = $file->getClientOriginalName();
-	    			$file->move('files', $file_name);
-
-	    			
+			    	$only_file_name = pathinfo($file_name, PATHINFO_FILENAME);
+			    	$uniqueID = uniqid();
+			    	$fullname = $only_file_name.$uniqueID.'.'.$path;
+	    			$file->move('files', $fullname);
 
 	    			//Get package properties
-	    			$box = Excel::selectSheetsByIndex(1)->load('files/'.$file_name, function($reader){
+	    			$box = Excel::selectSheetsByIndex(1)->load('files/'.$fullname, function($reader){
 			    		$reader->all();
 			    	})->get();
 
@@ -42,7 +38,7 @@ class ExcelController extends Controller
 			        }
 
 			        //Get envios
-			        $envios = Excel::selectSheetsByIndex(0)->load('files/'.$file_name, function($reader){
+			        $envios = Excel::selectSheetsByIndex(0)->load('files/'.$fullname, function($reader){
 			    		$reader->all();
 			    	})->get();
 
@@ -56,7 +52,7 @@ class ExcelController extends Controller
 			        		}
 			        	}
 			        }
-			        $path = 'files/'.$file_name;
+			        $path = 'files/'.$fullname;
 			        unlink($path); 
 			        return json_encode($envios_arr);
 			    }
