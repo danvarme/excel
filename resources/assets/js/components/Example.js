@@ -327,6 +327,7 @@ class Example extends Component {
             success: function(data){
                 if(data.error){
                     self.state.errors[0] = [data.error];
+                    self.state.success.push("La fila #1 fue agregada correctamente");
                     self.setState(self.state);
                 }else{
                     //Set as global Fiscal Address From id.
@@ -339,14 +340,14 @@ class Example extends Component {
 
     render() {
         const errorFound = Object.keys(this.state.errors).map((row, value) => 
-            <dl key={row}>
+            <dt key={row}>
                 {row > 0 && 
                     <dt>Errores de la fila #{row}</dt>
                 }
                 {this.state.errors[row].map((error, id) => 
                     <dd key={id+error}>{error}</dd>
                 )}
-            </dl>
+            </dt>
         );
         const successRecord = this.state.success.map((success, i) => 
             <dl key={i}>

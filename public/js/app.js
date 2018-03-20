@@ -42025,6 +42025,7 @@ var Example = function (_Component) {
                 success: function success(data) {
                     if (data.error) {
                         self.state.errors[0] = [data.error];
+                        self.state.success.push("La fila #1 fue agregada correctamente");
                         self.setState(self.state);
                     } else {
                         //Set as global Fiscal Address From id.
@@ -42041,7 +42042,7 @@ var Example = function (_Component) {
 
             var errorFound = Object.keys(this.state.errors).map(function (row, value) {
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'dl',
+                    'dt',
                     { key: row },
                     row > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'dt',
