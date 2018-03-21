@@ -2,6 +2,27 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 
+function SuccessElement(props){
+    return(
+        <dl>
+            <dt>{props.success}</dt>
+        </dl>
+    );
+}
+
+function ErrorElement(props){
+    return(
+     <dl>
+        {props.index > 0 && 
+            <dt>Errores de la fila #{props.index}</dt>
+        }
+        {props.errors.map((error, id) => 
+            <dd key={id+error}>{error}</dd>
+        )}
+    </dl>
+  );
+}
+
 class Example extends Component {
 
     constructor(props) {
@@ -336,23 +357,9 @@ class Example extends Component {
         });
         event.preventDefault()
     }
+    
 
     render() {
-        const errorFound = Object.keys(this.state.errors).map((row, value) => 
-            <dl key={row}>
-                {row > 0 && 
-                    <dt>Errores de la fila #{row}</dt>
-                }
-                {this.state.errors[row].map((error, id) => 
-                    <dd key={id+error}>{error}</dd>
-                )}
-            </dl>
-        );
-        const successRecord = this.state.success.map((success, i) => 
-            <dl key={i}>
-                <dt>{success}</dt>
-            </dl>
-        );
         return (
             <div>
                 <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
@@ -365,14 +372,16 @@ class Example extends Component {
                 {Object.keys(this.state.errors).length > 0 &&
                     <div className="container">
                         <div className="alert alert-danger" role="alert" >
-                            {errorFound}
+                            {Object.keys(this.state.errors).map((row, value) => <ErrorElement 
+                                key = {row} index = {row} errors = {this.state.errors[row]}/>)}
                         </div>
                     </div>
                 }
                 {this.state.success.length > 0 &&
                     <div className="container">
                         <div className="alert alert-success" role="alert" >
-                            {successRecord}
+                            {this.state.success.map((success, i) => <SuccessElement key = {i} 
+                                message = {success} />)}
                         </div>
                     </div>
                 }

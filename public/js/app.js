@@ -41688,6 +41688,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
+function SuccessElement(props) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'dl',
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'dt',
+            null,
+            props.success
+        )
+    );
+}
+
+function ErrorElement(props) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'dl',
+        null,
+        props.index > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'dt',
+            null,
+            'Errores de la fila #',
+            props.index
+        ),
+        props.errors.map(function (error, id) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'dd',
+                { key: id + error },
+                error
+            );
+        })
+    );
+}
+
 var Example = function (_Component) {
     _inherits(Example, _Component);
 
@@ -42039,36 +42071,6 @@ var Example = function (_Component) {
         value: function render() {
             var _this2 = this;
 
-            var errorFound = Object.keys(this.state.errors).map(function (row, value) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'dl',
-                    { key: row },
-                    row > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'dt',
-                        null,
-                        'Errores de la fila #',
-                        row
-                    ),
-                    _this2.state.errors[row].map(function (error, id) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'dd',
-                            { key: id + error },
-                            error
-                        );
-                    })
-                );
-            });
-            var successRecord = this.state.success.map(function (success, i) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'dl',
-                    { key: i },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'dt',
-                        null,
-                        success
-                    )
-                );
-            });
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
@@ -42089,7 +42091,10 @@ var Example = function (_Component) {
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
                         { className: 'alert alert-danger', role: 'alert' },
-                        errorFound
+                        Object.keys(this.state.errors).map(function (row, value) {
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, {
+                                key: row, index: row, errors: _this2.state.errors[row] });
+                        })
                     )
                 ),
                 this.state.success.length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -42098,7 +42103,10 @@ var Example = function (_Component) {
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
                         { className: 'alert alert-success', role: 'alert' },
-                        successRecord
+                        this.state.success.map(function (success, i) {
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(SuccessElement, { key: i,
+                                message: success });
+                        })
                     )
                 )
             );
