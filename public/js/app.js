@@ -41688,6 +41688,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
+var emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+var phoneRegex = /^[0-9:]{10}/g;
+
 function SuccessElement(props) {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'dl',
@@ -41695,7 +41698,7 @@ function SuccessElement(props) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'dt',
             null,
-            props.success
+            props.message
         )
     );
 }
@@ -41738,7 +41741,7 @@ var Example = function (_Component) {
         _this.getRate = _this.getRate.bind(_this);
         _this.checkRates = _this.checkRates.bind(_this);
         _this.callCreateShipment = _this.callCreateShipment.bind(_this);
-        _this.getFiscalAddressFrom = _this.getFiscalAddressFrom.bind(_this);
+        _this.getPrimaryAddressFrom = _this.getPrimaryAddressFrom.bind(_this);
         //Validate data
         _this.validAddress = _this.validAddress.bind(_this);
         _this.validShipment = _this.validShipment.bind(_this);
@@ -41749,15 +41752,15 @@ var Example = function (_Component) {
 
 
     _createClass(Example, [{
-        key: 'getFiscalAddressFrom',
-        value: function getFiscalAddressFrom(shipments) {
+        key: 'getPrimaryAddressFrom',
+        value: function getPrimaryAddressFrom(shipments) {
 
             self = this;
 
             var xmlRequest = $.ajax({
                 "async": true,
                 "crossDomain": true,
-                "url": "https://sandbox.mienvio.mx/api/profile",
+                "url": "https://app.mienvio.mx/api/addresses",
                 "method": "GET",
                 "headers": {
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
@@ -41766,14 +41769,33 @@ var Example = function (_Component) {
 
             xmlRequest.done(function (response) {
                 //Set addressIdFrom as global
-                self.state.addressIdFrom = response.user.fiscal_address.object_id;
-                //Call fetchData function and send shipment object
-                self.fetchData(shipments);
+                var found = false;
+                if (response.results.length == 0) {
+                    self.state.errors[0] = ["No se encontro la dirección primaria"];
+                    self.setState(self.state);
+                } else {
+                    var addresses = response.results;
+                    addresses.forEach(function (address) {
+                        //Found primary address
+                        if (address.object_type == "PRIMARY") {
+                            found = true;
+                            self.state.addressIdFrom = address.object_id;
+                            //Call fetchData function and send shipment object
+                            self.fetchData(shipments);
+                        }
+                    });
+                }
+
+                //If primary address does not exist
+                if (!found) {
+                    self.state.errors[0] = ["No se encontro la dirección primaria"];
+                    self.setState(self.state);
+                }
             });
 
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
-                self.state.errors[0] = { errorMessage: ["No se encontro la dirección fiscal"] };
+                self.state.errors[0] = ["Ocurrió un error. Intentar nuevamente"];
                 self.setState(self.state);
             });
         }
@@ -41802,12 +41824,11 @@ var Example = function (_Component) {
                 valid = false;
                 errors.push("Referencia inválida. Debe tener 255 caracteres como máximo");
             }
-            var emailRegex = /^[\w._-]+[+]?[\w._-]+@[\w.-]+\.[a-zA-Z]{2,6}$/;
             if (!item.email || item.email.length > 255 || !emailRegex.test(item.email)) {
                 valid = false;
                 errors.push("Email inválido. Debe tener 35 caracteres como máximo");
             }
-            if (!item.phone || item.phone.length > 20) {
+            if (!item.phone || item.phone.length > 20 || !phoneRegex.test(item.phone)) {
                 valid = false;
                 errors.push("Telefono inválido. Debe tener 35 caracteres como máximo");
             }
@@ -41835,7 +41856,7 @@ var Example = function (_Component) {
                 var xmlRequest = $.ajax({
                     "async": true,
                     "crossDomain": true,
-                    "url": "https://sandbox.mienvio.mx/api/addresses",
+                    "url": "https://app.mienvio.mx/api/addresses",
                     "method": "POST",
                     "headers": {
                         "content-type": "application/json",
@@ -41854,10 +41875,12 @@ var Example = function (_Component) {
 
                 //Handle errors
                 xmlRequest.fail(function (response, textStatus) {
-
                     //var params = response.responseJSON.error.params;
-
-                    self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                    if (response.responseJSON) {
+                        self.state.errors[valid[1].row] = [response.responseJSON.error.message];
+                    } else {
+                        self.state.errors[valid[1].row] = ["Unauthorized access"];
+                    }
                     self.setState(self.state);
                 });
             } else {
@@ -41870,19 +41893,19 @@ var Example = function (_Component) {
         value: function validShipment(item, index) {
             var valid = true;
             var errors = [];
-            if (!/\D/.test(item.weight)) {
+            if (typeof item.weight != "number") {
                 valid = false;
                 errors.push("El peso del paquete es inválido");
             }
-            if (!/\D/.test(item.length)) {
+            if (typeof item.length != "number") {
                 valid = false;
                 errors.push("El largo del paquete es inválido");
             }
-            if (!/\D/.test(item.height)) {
+            if (typeof item.height != "number") {
                 valid = false;
                 errors.push("El alto del paquete es inválido");
             }
-            if (!/\D/.test(item.width)) {
+            if (typeof item.width != "number") {
                 valid = false;
                 errors.push("El ancho del paquete es inválido");
             }
@@ -41909,7 +41932,7 @@ var Example = function (_Component) {
                 var xmlRequest = $.ajax({
                     "async": true,
                     "crossDomain": true,
-                    "url": "https://sandbox.mienvio.mx/api/shipments",
+                    "url": "https://app.mienvio.mx/api/shipments",
                     "method": "POST",
                     "headers": {
                         "content-type": "application/json",
@@ -41926,10 +41949,11 @@ var Example = function (_Component) {
 
                 //Handle errors
                 xmlRequest.fail(function (response, textStatus) {
-
-                    //var params = response.responseJSON.error.params;
-
-                    self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                    if (response.responseJSON) {
+                        self.state.errors[valid[1].row] = [response.responseJSON.error.message];
+                    } else {
+                        self.state.errors[valid[1].row] = ["Unauthorized access"];
+                    }
                     self.setState(self.state);
                 });
             } else {
@@ -41945,7 +41969,7 @@ var Example = function (_Component) {
             var xmlRequest = $.ajax({
                 "async": true,
                 "crossDomain": true,
-                "url": "https://sandbox.mienvio.mx/api/shipments/" + shipmentId + "/rates",
+                "url": "https://app.mienvio.mx/api/shipments/" + shipmentId + "/rates",
                 "method": "GET",
                 "headers": {
                     "content-type": "application/json",
@@ -41960,10 +41984,11 @@ var Example = function (_Component) {
 
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
-
-                //var params = response.responseJSON.error.params;
-
-                self.state.errors[valid[1].row] = response.responseJSON.error.params;
+                if (response.responseJSON) {
+                    self.state.errors[index] = [response.responseJSON.error.message];
+                } else {
+                    self.state.errors[index] = ["Unauthorized access"];
+                }
                 self.setState(self.state);
             });
         }
@@ -41991,13 +42016,13 @@ var Example = function (_Component) {
 
             var data = {
                 "object_purpose": "PURCHASE",
-                "rate": rateId
+                "rate": 159
             };
 
             var xmlRequest = $.ajax({
                 "async": true,
                 "crossDomain": true,
-                "url": "https://sandbox.mienvio.mx/api/shipments/" + shipmentId,
+                "url": "https://app.mienvio.mx/api/shipments/" + shipmentId,
                 "method": "PUT",
                 "headers": {
                     "content-type": "application/json",
@@ -42020,8 +42045,11 @@ var Example = function (_Component) {
             //Handle errors
             xmlRequest.fail(function (response, textStatus) {
 
-                //var params = response.responseJSON.error.params;
-                self.state.errors[index] = response.responseJSON.error.params;
+                if (response.responseJSON) {
+                    self.state.errors[index] = [response.responseJSON.error.message];
+                } else {
+                    self.state.errors[index] = ["Unauthorized access"];
+                }
                 self.setState(self.state);
             });
         }
@@ -42060,7 +42088,7 @@ var Example = function (_Component) {
                         self.setState(self.state);
                     } else {
                         //Set as global Fiscal Address From id.
-                        self.getFiscalAddressFrom(data);
+                        self.getPrimaryAddressFrom(data);
                     }
                 }
             });
