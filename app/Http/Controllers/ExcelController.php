@@ -7,6 +7,7 @@ use Excel;
 
 class ExcelController extends Controller
 {
+
     public function getInfo(Request $request)
     {
     	if ($request->hasFile('file')) {
@@ -54,7 +55,8 @@ class ExcelController extends Controller
 			        }
 			        $path = 'files/'.$fullname;
 			        unlink($path); 
-			        return json_encode($envios_arr);
+			        //return json_encode($envios_arr);
+			        return view('table', ['envios' => $envios_arr]);
 			    }
 			    return json_encode(['error' => "Extensión inválida."]);
 		    }

@@ -14,6 +14,7 @@ function SuccessElement(props){
     );
 }
 
+
 function ErrorElement(props){
     return(
      <dl>
@@ -164,7 +165,7 @@ class Example extends Component {
             xmlRequest.done(function (response) {
                 var addressToId = response.address.object_id;
                 //Obtuvo la dirección a enviar
-                self.callCreateShipment(item, addressToId, index);
+                return self.callCreateShipment(item, addressToId, index);
             });
 
             //Handle errors
@@ -176,11 +177,13 @@ class Example extends Component {
                     self.state.errors[valid[1].row] = ["Unauthorized access"];
                 }
                 self.setState(self.state);
+                return false;
 
             });
         }else{
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
+            return false;
         }
     }
 
@@ -238,7 +241,7 @@ class Example extends Component {
             //Handle success
             xmlRequest.done(function (response) {
                 var shipmentId = response.shipment.object_id;
-                self.getRate(item, shipmentId, index);
+                return self.getRate(item, shipmentId, index);
             });
 
             //Handle errors
@@ -249,11 +252,13 @@ class Example extends Component {
                     self.state.errors[valid[1].row] = ["Unauthorized access"];
                 }
                 self.setState(self.state);
+                return false;
 
             });
         }else{
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
+            return false;
         }
     }
 
@@ -273,7 +278,7 @@ class Example extends Component {
 
         //Handle success
         xmlRequest.done(function (response) {
-            self.checkRates(item, shipmentId, response.results, index);
+            return self.checkRates(item, shipmentId, response.results, index);
         });
 
         //Handle errors
@@ -284,7 +289,7 @@ class Example extends Component {
                 self.state.errors[index] = ["Unauthorized access"];
             }
             self.setState(self.state);
-
+            return false;
         });
     }
 
@@ -294,14 +299,15 @@ class Example extends Component {
         rates.forEach(function(price){
             if(((item.provider).trim()).toLowerCase() == ((price.provider).trim()).toLowerCase() 
                 && ((item.service).trim()).toLowerCase() == ((price.servicelevel).trim()).toLowerCase()){
-                self.updateShipment(item, shipmentId, price.object_id, index);
                 bool = 1;
+                return self.updateShipment(item, shipmentId, price.object_id, index);
             }
         });
         if(bool == 0){
             //¿¿¿¿BORRAR EL SHIPMENT???????
             self.state.errors[index] = ["No se encontro una tarifa que cumpla con la paquetería y tipo de sevicio seleccioando."];
             self.setState(self.state);
+            return false;
         }
     }
 
@@ -330,7 +336,7 @@ class Example extends Component {
         xmlRequest.done(function (response) {
             self.state.success.push("La fila no. " + index + " se registro exitosamente");
             self.setState(self.state);
-            
+            return true;
             console.log(self.state.success);
             console.log(self.state.errors);
             console.log("Row " + index + " " + response);
@@ -345,6 +351,7 @@ class Example extends Component {
                 self.state.errors[index] = ["Unauthorized access"];
             }
             self.setState(self.state);
+            return false;
         });
     }
 
@@ -352,8 +359,11 @@ class Example extends Component {
         var self = this;
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
-            self.getAddressTo(item, index+1);
+            if(!self.getAddressTo(item, index+1)){
+                shipments.splice(index, 1);
+            }
         });
+        console.log(shipments);
     }
 
     uploadFile(event){
@@ -391,12 +401,11 @@ class Example extends Component {
     render() {
         return (
             <div>
-                <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
-                    <div className="form-group">
-                        <input ref="file" type="file" name="file" className="upload-file"/>
-                        <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
-                        <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
-                    </div>
+                <form action="getInfo" method="post" id="center" encType="multipart/form-data" >
+                    <label>Upload file: </label>
+                    <input type="file" name="file" />
+                    <input type="hidden" value="{{ csrf_token() }}" name="_token" />
+                    <input type="submit" value="Upload" /> 
                 </form> 
                 {Object.keys(this.state.errors).length > 0 &&
                     <div className="container">

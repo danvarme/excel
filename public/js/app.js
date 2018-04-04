@@ -10805,6 +10805,7 @@ __webpack_require__(116);
 /***/ (function(module, exports, __webpack_require__) {
 
 
+
 window._ = __webpack_require__(92);
 
 /**
@@ -41870,7 +41871,7 @@ var Example = function (_Component) {
                 xmlRequest.done(function (response) {
                     var addressToId = response.address.object_id;
                     //Obtuvo la dirección a enviar
-                    self.callCreateShipment(item, addressToId, index);
+                    return self.callCreateShipment(item, addressToId, index);
                 });
 
                 //Handle errors
@@ -41882,10 +41883,12 @@ var Example = function (_Component) {
                         self.state.errors[valid[1].row] = ["Unauthorized access"];
                     }
                     self.setState(self.state);
+                    return false;
                 });
             } else {
                 self.state.errors[valid[1].row] = valid[1].errorMessage;
                 self.setState(self.state);
+                return false;
             }
         }
     }, {
@@ -41944,7 +41947,7 @@ var Example = function (_Component) {
                 //Handle success
                 xmlRequest.done(function (response) {
                     var shipmentId = response.shipment.object_id;
-                    self.getRate(item, shipmentId, index);
+                    return self.getRate(item, shipmentId, index);
                 });
 
                 //Handle errors
@@ -41955,10 +41958,12 @@ var Example = function (_Component) {
                         self.state.errors[valid[1].row] = ["Unauthorized access"];
                     }
                     self.setState(self.state);
+                    return false;
                 });
             } else {
                 self.state.errors[valid[1].row] = valid[1].errorMessage;
                 self.setState(self.state);
+                return false;
             }
         }
     }, {
@@ -41979,7 +41984,7 @@ var Example = function (_Component) {
 
             //Handle success
             xmlRequest.done(function (response) {
-                self.checkRates(item, shipmentId, response.results, index);
+                return self.checkRates(item, shipmentId, response.results, index);
             });
 
             //Handle errors
@@ -41990,6 +41995,7 @@ var Example = function (_Component) {
                     self.state.errors[index] = ["Unauthorized access"];
                 }
                 self.setState(self.state);
+                return false;
             });
         }
     }, {
@@ -41999,14 +42005,15 @@ var Example = function (_Component) {
             var bool = 0;
             rates.forEach(function (price) {
                 if (item.provider.trim().toLowerCase() == price.provider.trim().toLowerCase() && item.service.trim().toLowerCase() == price.servicelevel.trim().toLowerCase()) {
-                    self.updateShipment(item, shipmentId, price.object_id, index);
                     bool = 1;
+                    return self.updateShipment(item, shipmentId, price.object_id, index);
                 }
             });
             if (bool == 0) {
                 //¿¿¿¿BORRAR EL SHIPMENT???????
                 self.state.errors[index] = ["No se encontro una tarifa que cumpla con la paquetería y tipo de sevicio seleccioando."];
                 self.setState(self.state);
+                return false;
             }
         }
     }, {
@@ -42036,7 +42043,7 @@ var Example = function (_Component) {
             xmlRequest.done(function (response) {
                 self.state.success.push("La fila no. " + index + " se registro exitosamente");
                 self.setState(self.state);
-
+                return true;
                 console.log(self.state.success);
                 console.log(self.state.errors);
                 console.log("Row " + index + " " + response);
@@ -42051,6 +42058,7 @@ var Example = function (_Component) {
                     self.state.errors[index] = ["Unauthorized access"];
                 }
                 self.setState(self.state);
+                return false;
             });
         }
     }, {
@@ -42059,8 +42067,11 @@ var Example = function (_Component) {
             var self = this;
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                self.getAddressTo(item, index + 1);
+                if (!self.getAddressTo(item, index + 1)) {
+                    shipments.splice(index, 1);
+                }
             });
+            console.log(shipments);
         }
     }, {
         key: 'uploadFile',
@@ -42104,14 +42115,15 @@ var Example = function (_Component) {
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'form',
-                    { id: 'center', ref: 'uploadForm', className: 'uploader', encType: 'multipart/form-data' },
+                    { action: 'getInfo', method: 'post', id: 'center', encType: 'multipart/form-data' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'form-group' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'file', type: 'file', name: 'file', className: 'upload-file' }),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
-                    )
+                        'label',
+                        null,
+                        'Upload file: '
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'file', name: 'file' }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'submit', value: 'Upload' })
                 ),
                 Object.keys(this.state.errors).length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
