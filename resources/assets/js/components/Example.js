@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
-
+import axios from 'axios';
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
-
-function SuccessElement(props){
-    return(
-        <dl>
-            <dt>{props.message}</dt>
-        </dl>
-    );
-}
-
 
 function ErrorElement(props){
     return(
@@ -49,52 +40,136 @@ class Example extends Component {
         this.validShipment = this.validShipment.bind(this);
     }
 
-    //First step
-    getPrimaryAddressFrom(shipments){
+    componentDidMount() {
+        console.log(this.props.data);
+    }
 
-        self = this;
 
-        var xmlRequest = $.ajax({
-            "async": true,
-            "crossDomain": true,
-            "url": "https://app.mienvio.mx/api/addresses",
-            "method": "GET",
-            "headers": {
-                "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+    uploadFile(event){
+
+        event.preventDefault();
+
+        //Set errors and success to empty. 
+        this.state.errors = {};
+        this.state.success = [];
+        this.setState(this.state);
+
+        var self = this;
+        
+        var fd = new FormData();    
+        fd.append('file', $('input[type=file]')[0].files[0]);
+
+        $.ajax({
+            url: '/getInfo',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: fd,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function(data){
+                if(data.error){
+                    self.state.errors[0] = [data.error];
+                    self.setState(self.state);
+                }else{
+                    //self.getPrimaryAddressFrom(data);
+                    self.fetchData(data);
+                }
+            },
+            error: function (xhr, status, error) 
+            {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
             }
         });
+        
+    }
 
-        xmlRequest.done(function (response) {
-            //Set addressIdFrom as global
-            var found = false;
-            if(response.results.length == 0){
-                self.state.errors[0] = ["No se encontro la dirección primaria"];
-                self.setState(self.state);
-            }else{
-                var addresses = response.results;
-                addresses.forEach(function(address){
-                    //Found primary address
-                    if(address.object_type == "PRIMARY"){
-                        found = true;
-                        self.state.addressIdFrom = address.object_id;
-                        //Call fetchData function and send shipment object
-                        self.fetchData(shipments);
-                    }
-                });
-            }
+    getPrimaryAddressFrom(shipments){
 
-            //If primary address does not exist
-            if(!found){
-                self.state.errors[0] = ["No se encontro la dirección primaria"];
-                self.setState(self.state);
-            }
-        });
+        var self = this;
 
-        //Handle errors
-        xmlRequest.fail(function( response, textStatus ) {
-            self.state.errors[0] = ["Ocurrió un error. Intentar nuevamente"];
-            self.setState(self.state);
-        });
+        $.ajax({
+            "async": true,
+            "crossDomain": true,
+            "method": 'GET',
+            "url": 'https://app.mienvio.mx/api/addresses',
+            "headers": {
+                "Authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+            },
+            //No es util ahorita, pero en otros lo será. 
+            // complete: function (data)
+            // {   
+            //     // console.log("COMPLETE");
+            //     // console.log(data);
+            // },
+            success: function (data) 
+            {
+                var found = false;
+                //If no results were found
+                if(data.results.length == 0){
+                    self.state.errors[0] = ["No se encontro la dirección primaria"];
+                    self.setState(self.state);
+                }else{
+                    var addresses = data.results;
+                    addresses.forEach(function(address){
+                        //Found primary address
+                        if(address.object_type == "PRIMARY"){
+                            found = true;
+                            self.state.addressIdFrom = address.object_id;
+                            self.setState(self.state);
+                            //Call fetchData function and send shipment object
+                            self.fetchData(shipments);
+                        }
+                    });
+                }
+                //If not primary address is found send error
+                if(!found){
+                    self.state.errors[0] = ["No se encontro la dirección primaria"];
+                    self.setState(self.state);
+                }
+
+            },
+            error: function (xhr, status, error) 
+            {
+                self.state.errors[0] = [error];
+                self.setState(self.state);
+                //Es todo el response 
+                console.log(xhr);
+                //Solo dice error
+                console.log(status);
+                //Da el error como tal
+                console.log(error);
+            }
+        });
+    }
+
+    fetchData(shipments){
+        var self = this;
+
+        //Iterate over each shipment 
+        /*shipments.forEach(function(item, index){
+            self.getAddressTo(item, index+1);
+        });*/
+        $.ajax({
+            url: '/showTable',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                success: shipments,//self.state.success,
+                errors: {1: ["No hubo cosa"], 2: ["Nada", "Tampoco"]}
+                //errors: self.state.errors
+            },
+            dataType: 'text',
+            type: 'POST',
+            success: function(data){
+                $('#tableShipment').html(data);
+            } 
+        });
     }
 
     validAddress(item, index){
@@ -132,11 +207,16 @@ class Example extends Component {
     }
 
     getAddressTo(item, index){
-        //Set all params for API call
+
         self = this;
+
+        //Validate if address is valid 
         var valid = this.validAddress(item, index);
-        if(valid[0]){
-            var address = {
+
+        if(valid[0])
+        {
+            var address = 
+            {
                 "object_type": "PURCHASE",
                 "name": item.name,
                 "street": item.street,
@@ -147,46 +227,36 @@ class Example extends Component {
                 "phone": item.phone
             };
 
-            //API call
-            var xmlRequest = $.ajax({
+            $.ajax({
                 "async": true,
                 "crossDomain": true,
-                "url": "https://app.mienvio.mx/api/addresses",
-                "method": "POST",
+                "method": 'POST',
+                "url": 'https://app.mienvio.mx/api/addresses',
                 "headers": {
                     "content-type": "application/json",
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 },
                 "processData": false,
-                "data": JSON.stringify(address)
-            });
-
-            //Handle success
-            xmlRequest.done(function (response) {
-                var addressToId = response.address.object_id;
-                //Obtuvo la dirección a enviar
-                return self.callCreateShipment(item, addressToId, index);
-            });
-
-            //Handle errors
-            xmlRequest.fail(function( response, textStatus ) {
-                //var params = response.responseJSON.error.params;
-                if(response.responseJSON){
-                    self.state.errors[valid[1].row] = [response.responseJSON.error.message];
-                }else{
-                    self.state.errors[valid[1].row] = ["Unauthorized access"];
+                "data": JSON.stringify(address),
+                success: function (data)
+                {
+                    var addressToId = data.address.object_id;
+                    //Crear dirección para enviar 
+                    self.callCreateShipment(item, addressToId, index);
+                },
+                error: function (xhr, status, error) 
+                {
+                    self.state.errors[0] = [error];
+                    self.setState(self.state);
                 }
-                self.setState(self.state);
-                return false;
-
             });
-        }else{
+        }
+        else
+        {
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
-            return false;
         }
     }
-
 
     validShipment(item, index){
         var valid = true;
@@ -211,11 +281,14 @@ class Example extends Component {
     }
 
     callCreateShipment(item, addressToId, index){
+
         self = this;
 
         var valid = this.validShipment(item.package, index);
-        if(valid[0]){
-            var data = {
+
+        if(valid[0])
+        {
+            var shipmentData = {
                 "object_purpose" : "QUOTE",
                 "address_from" : this.state.addressIdFrom,
                 "address_to" : addressToId,
@@ -226,200 +299,129 @@ class Example extends Component {
                 "description" : item.description
             };
 
-            var xmlRequest = $.ajax({
+            $.ajax({
                 "async": true,
                 "crossDomain": true,
-                "url": "https://app.mienvio.mx/api/shipments",
-                "method": "POST",
+                "method": 'POST',
+                "url": 'https://app.mienvio.mx/api/shipments',
                 "headers": {
                     "content-type": "application/json",
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 },
-                "data": JSON.stringify(data)
-            });
-
-            //Handle success
-            xmlRequest.done(function (response) {
-                var shipmentId = response.shipment.object_id;
-                return self.getRate(item, shipmentId, index);
-            });
-
-            //Handle errors
-            xmlRequest.fail(function( response, textStatus ) {
-                if(response.responseJSON){
-                    self.state.errors[valid[1].row] = [response.responseJSON.error.message];
-                }else{
-                    self.state.errors[valid[1].row] = ["Unauthorized access"];
+                "data": JSON.stringify(shipmentData),
+                success: function (data)
+                {
+                    var shipmentId = data.shipment.object_id;
+                    self.getRate(item, shipmentId, index);
+                },
+                error: function (xhr, status, error) 
+                {
+                    self.state.errors[0] = [error];
+                    self.setState(self.state);
                 }
-                self.setState(self.state);
-                return false;
-
             });
-        }else{
+        }
+        else
+        {
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
-            return false;
         }
     }
 
     getRate(item, shipmentId, index){
+
         self = this;
 
-        var xmlRequest = $.ajax({
+        $.ajax({
             "async": true,
             "crossDomain": true,
+            "method": 'GET',
             "url": "https://app.mienvio.mx/api/shipments/"+ shipmentId +"/rates",
-            "method": "GET",
             "headers": {
                 "content-type": "application/json",
                 "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+            },
+            success: function (data)
+            {
+                self.checkRates(item, shipmentId, data.results, index);
+            },
+            error: function (xhr, status, error) 
+            {
+                self.state.errors[0] = [error];
+                self.setState(self.state);
             }
-        });
-
-        //Handle success
-        xmlRequest.done(function (response) {
-            return self.checkRates(item, shipmentId, response.results, index);
-        });
-
-        //Handle errors
-        xmlRequest.fail(function( response, textStatus ) {
-            if(response.responseJSON){
-                self.state.errors[index] = [response.responseJSON.error.message];
-            }else{
-                self.state.errors[index] = ["Unauthorized access"];
-            }
-            self.setState(self.state);
-            return false;
         });
     }
 
     checkRates(item, shipmentId, rates, index){
+
         self = this;
-        var bool = 0;
+        var bool = false;
+        
         rates.forEach(function(price){
             if(((item.provider).trim()).toLowerCase() == ((price.provider).trim()).toLowerCase() 
                 && ((item.service).trim()).toLowerCase() == ((price.servicelevel).trim()).toLowerCase()){
-                bool = 1;
-                return self.updateShipment(item, shipmentId, price.object_id, index);
+                self.updateShipment(item, shipmentId, price.object_id, index);
+                bool = true;
             }
         });
-        if(bool == 0){
+        if(!bool){
             //¿¿¿¿BORRAR EL SHIPMENT???????
             self.state.errors[index] = ["No se encontro una tarifa que cumpla con la paquetería y tipo de sevicio seleccioando."];
             self.setState(self.state);
-            return false;
         }
     }
 
     updateShipment(item, shipmentId, rateId, index){
+
         self = this;
 
-        var data = {
+        var rateInformation = {
             "object_purpose" : "PURCHASE",
             "rate": 159
         };
 
-        var xmlRequest = $.ajax({
+        $.ajax({
             "async": true,
             "crossDomain": true,
+            "method": 'PUT',
             "url": "https://app.mienvio.mx/api/shipments/" + shipmentId,
-            "method": "PUT",
             "headers": {
                 "content-type": "application/json",
                 "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
             },
             "processData": false,
-            "data": JSON.stringify(data)
-        });
-
-        //Handle success
-        xmlRequest.done(function (response) {
-            self.state.success.push("La fila no. " + index + " se registro exitosamente");
-            self.setState(self.state);
-            return true;
-            console.log(self.state.success);
-            console.log(self.state.errors);
-            console.log("Row " + index + " " + response);
-        });
-
-        //Handle errors
-        xmlRequest.fail(function( response, textStatus ) {
-
-            if(response.responseJSON){
-                self.state.errors[index] = [response.responseJSON.error.message];
-            }else{
-                self.state.errors[index] = ["Unauthorized access"];
-            }
-            self.setState(self.state);
-            return false;
-        });
-    }
-
-    fetchData(shipments){
-        var self = this;
-        //Iterate over each shipment 
-        shipments.forEach(function(item, index){
-            if(!self.getAddressTo(item, index+1)){
-                shipments.splice(index, 1);
-            }
-        });
-        console.log(shipments);
-    }
-
-    uploadFile(event){
-        this.state.errors = {};
-        this.state.success = [];
-        this.setState(this.state);
-        var self = this;
-        var fd = new FormData();    
-        fd.append('file', $('input[type=file]')[0].files[0]);
-
-        $.ajax({
-            url: '/getInfo',
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            "data": JSON.stringify(rateInformation),
+            success: function (data)
+            {
+                self.state.success.push(data);
+                self.setState(self.state);
             },
-            data: fd,
-            dataType: 'json',
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function(data){
-                if(data.error){
-                    self.state.errors[0] = [data.error];
-                    self.setState(self.state);
-                }else{
-                    //Set as global Fiscal Address From id.
-                    self.getPrimaryAddressFrom(data);
-                }
-            } 
+            error: function (xhr, status, error) 
+            {
+                self.state.errors[0] = [error];
+                self.setState(self.state);
+            }
         });
-        event.preventDefault()
     }
     
-
     render() {
         return (
             <div>
-                <form action="getInfo" method="post" id="center" encType="multipart/form-data" >
-                    <label>Upload file: </label>
-                    <input type="file" name="file" />
-                    <input type="hidden" value="{{ csrf_token() }}" name="_token" />
-                    <input type="submit" value="Upload" /> 
+                <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
+                    <div className="form-group">
+                        <input ref="file" type="file" name="file" className="upload-file"/>
+                        <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
+                        <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
+                    </div>
                 </form> 
+                <div id="tableShipment">
+                </div>
                 {Object.keys(this.state.errors).length > 0 &&
                     <div className="container">
                         <div className="alert alert-danger" role="alert" >
                             {Object.keys(this.state.errors).map((row, value) => <ErrorElement 
                                 key = {row} index = {row} errors = {this.state.errors[row]}/>)}
-                        </div>
-                    </div>
-                }
-                {this.state.success.length > 0 &&
-                    <div className="container">
-                        <div className="alert alert-success" role="alert" >
-                            {this.state.success.map((success, i) => <SuccessElement key = {i} 
-                                message = {success} />)}
                         </div>
                     </div>
                 }

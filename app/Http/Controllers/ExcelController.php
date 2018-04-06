@@ -7,6 +7,7 @@ use Excel;
 
 class ExcelController extends Controller
 {
+	
 
     public function getInfo(Request $request)
     {
@@ -55,8 +56,7 @@ class ExcelController extends Controller
 			        }
 			        $path = 'files/'.$fullname;
 			        unlink($path); 
-			        //return json_encode($envios_arr);
-			        return view('table', ['envios' => $envios_arr]);
+			        return json_encode($envios_arr);
 			    }
 			    return json_encode(['error' => "Extensión inválida."]);
 		    }
@@ -65,4 +65,13 @@ class ExcelController extends Controller
 	    return json_encode(['error' => "Archivo requerido. Favor de adjunta archivo."]);
 
 	}
+
+	public function showTable(Request $request)
+    {
+    	$success = $request->get('success');
+    	$errors = $request->get('errors');
+    	$request->session()->put('key', 'value');
+    	return redirect('/shipments');
+    	//return view('table', ['envios' => $success, 'errors' => $errors])->render();
+    }
 }

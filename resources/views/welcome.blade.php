@@ -36,7 +36,7 @@
     <body>
         <div class="flex-center position-ref full-height">
             <div class="content">
-                <div id="example"></div>
+                <div id="example" data='DATA FROM HTML'></div>
             </div>
         </div>
         <script type="text/javascript" src="/js/app.js"></script>
