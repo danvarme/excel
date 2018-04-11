@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import axios from 'axios';
+import { Table, ButtonToolbar, DropdownButton, MenuItem, Button } from 'react-bootstrap'
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
@@ -25,7 +26,18 @@ class Example extends Component {
         super(props);
 
         //Variables
-        this.state = {addressIdFrom: 0, errors: {}, success: []};
+        this.state = {
+            addressIdFrom: 0, 
+            errors: {}, 
+            success: [],
+            selectedProvider: 'Seleccionar',
+            selectedRate: 0,
+            selectedServiceLevel: 'Seleccionar',
+            services: {'fedex': [['express', 125.60], ['estandar', 96.42]], 
+                       'redpack': [['estandar', 190.04]],
+                       'dhl': [['express', 99.45], ['estandar', 45.66]]},
+            serviceLevels: []
+        };
 
         //Methods
         this.uploadFile = this.uploadFile.bind(this);
@@ -33,15 +45,14 @@ class Example extends Component {
         this.fetchData = this.fetchData.bind(this);
         this.getRate = this.getRate.bind(this);
         this.checkRates = this.checkRates.bind(this);
+        this.joinRates = this.joinRates.bind(this);
         this.callCreateShipment = this.callCreateShipment.bind(this);
         this.getPrimaryAddressFrom = this.getPrimaryAddressFrom.bind(this);
         //Validate data
         this.validAddress = this.validAddress.bind(this);
         this.validShipment = this.validShipment.bind(this);
-    }
-
-    componentDidMount() {
-        console.log(this.props.data);
+        this.handleProvider = this.handleProvider.bind(this);
+        this.handleServiceLevel = this.handleServiceLevel.bind(this);
     }
 
 
@@ -150,11 +161,30 @@ class Example extends Component {
     fetchData(shipments){
         var self = this;
 
+        var testObject = {"object_purpose":"PURCHASE","status":"PURCHASE","created_at":"2018-04-04 09:53:45",
+                            "updated_at":"2018-04-04 09:53:48","object_id":174602,"owner_id":3879,"address_from":{"object_type":"PRIMARY","object_id":341869,
+                            "name":"Ramona Swaniawski","street":"64710 Leannon Cliff Apt. 140","street2":"Port Joshuahview","reference":"","zipcode":"07800",
+                            "city":"Gustavo A. Madero","state":"Ciudad de M\u00e9xico","email":"ramona02@swaniawski.com","phone":"0864219858661","bookmark":false,
+                            "alias":"","owner_id":3879},"address_to":{"object_type":"PURCHASE","object_id":347637,"name":"pedro","street":"Av 5 de Febrero No. 2125",
+                            "street2":"Colonia Jurica","reference":"Casa Blanca con amarillo dsjlfahasfjdsajkfhsjkdhfjksafhdjksfhskj","zipcode":"76100","city":"Quer?taro",
+                            "state":"Quer\u00e9taro","email":"dani@gmail.com","phone":"4422185000","bookmark":false,"alias":"","owner_id":3879},"weight":1,"height":12,
+                            "length":12,"width":12,"description":"MATERIALES","rate":{"object_id":159,"amount":1536.1500000000001,"servicelevel":"express",
+                            "duration_terms":"1 a 2 d\u00edas","days":2,"trackable":true,"collect_home":true,"provider":"FedEx","provider_img":"\/media\/providers\/fedex.png",
+                            "extended_zone":false},"label":null,"insurance":null,"order":null,"coupon_code":""};
+
+        var testRates = { "total_count": 3, "total_pages": 2, "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2", 
+                            "prev_page_url": null, "results": [ {"object_id": 4,"amount": 130,"servicelevel": "estandar", "duration_terms": "2 a 5 días", "days": 5, 
+                            "trackable": true,  "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png"},
+                            { "object_id": 99, "amount": 150, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
+                            "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" }]};
+        
+
         //Iterate over each shipment 
-        /*shipments.forEach(function(item, index){
-            self.getAddressTo(item, index+1);
-        });*/
-        $.ajax({
+        shipments.forEach(function(item, index){
+            //self.getAddressTo(item, index+1);
+            self.joinRates(item, testObject, 1, testRates.results, index);
+        });
+        /*$.ajax({
             url: '/showTable',
             headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -169,7 +199,7 @@ class Example extends Component {
             success: function(data){
                 $('#tableShipment').html(data);
             } 
-        });
+        });*/
     }
 
     validAddress(item, index){
@@ -312,7 +342,7 @@ class Example extends Component {
                 success: function (data)
                 {
                     var shipmentId = data.shipment.object_id;
-                    self.getRate(item, shipmentId, index);
+                    self.getRate(item, shipmentObject, shipmentId, index);
                 },
                 error: function (xhr, status, error) 
                 {
@@ -328,7 +358,7 @@ class Example extends Component {
         }
     }
 
-    getRate(item, shipmentId, index){
+    getRate(item, shipmentObject, shipmentId, index){
 
         self = this;
 
@@ -344,6 +374,7 @@ class Example extends Component {
             success: function (data)
             {
                 self.checkRates(item, shipmentId, data.results, index);
+                //self.joinRates(item, shipmentObject, shipmentId, data.results, index);
             },
             error: function (xhr, status, error) 
             {
@@ -351,6 +382,21 @@ class Example extends Component {
                 self.setState(self.state);
             }
         });
+    }
+
+    joinRates(item, shipmentObject, shipmentId, rates, index){
+        var serviceOptions = {};
+        rates.forEach(function(rate){
+            if(rate.provider in serviceOptions){
+              serviceOptions[rate.provider].push({serviceLevel: rate.servicelevel, amount: rate.amount});
+            }else{
+              serviceOptions[rate.provider] = [{serviceLevel: rate.servicelevel, amount: rate.amount}];
+            }
+        });
+        this.setState(prevState => ({
+            success: [...prevState.success, {object: shipmentObject, options: serviceOptions}]
+        }));
+        console.log(this.state.success);
     }
 
     checkRates(item, shipmentId, rates, index){
@@ -404,10 +450,77 @@ class Example extends Component {
             }
         });
     }
+
+    handleProvider(row, e) {
+        this.setState({
+          selectedProvider: row,
+          serviceLevels: this.state.services[row]
+        });
+        console.log(this.state.services[row]);
+    }
+
+    handleServiceLevel(row, e) {
+        this.setState({
+          selectedServiceLevel: row[0],
+          selectedRate: row[1]
+        });
+    }
     
     render() {
         return (
             <div>
+                <Table striped bordered condensed hover>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Street</th>
+                      <th>Street2</th>
+                      <th>Zipcode</th>
+                      <th>Provider</th>
+                      <th>Service Level</th>
+                      <th>Amount</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {(this.state.success).map((row) => 
+                        <tr key = { row['object'].object_id }>
+                            <td> { row['object'].object_id } </td>
+                            <td> { row['object'].address_from.name } </td>
+                            <td> { row['object'].address_from.street } </td>
+                            <td> { row['object'].address_from.street2 } </td>
+                            <td> { row['object'].address_from.zipcode } </td>
+                            <td>
+                                <ButtonToolbar>
+                                  <DropdownButton
+                                    bsStyle="default"
+                                    title="Seleccionar"
+                                    noCaret
+                                    id="dropdown-no-caret">
+                                    {Object.keys(row['options']).map((row, value) => <MenuItem key = {row}
+                                        eventKey = {row} onSelect={(e) => this.handleProvider(row, e)}> { row } </MenuItem>)}
+                                  </DropdownButton>
+                                </ButtonToolbar>
+                            </td>
+                            <td>
+                                <ButtonToolbar>
+                                  <DropdownButton
+                                    bsStyle="default"
+                                    title="Seleccionar"
+                                    noCaret
+                                    id="dropdown-no-caret">
+                                  </DropdownButton>
+                                </ButtonToolbar>
+                            </td>
+                            <td>
+                            </td>
+                            <td> <Button bsStyle="primary">Save</Button> </td>
+                        </tr>
+                   )}
+                  </tbody>
+                </Table>
+
                 <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
                     <div className="form-group">
                         <input ref="file" type="file" name="file" className="upload-file"/>
