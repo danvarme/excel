@@ -30,13 +30,9 @@ class Example extends Component {
             addressIdFrom: 0, 
             errors: {}, 
             success: [],
-            selectedProvider: 'Seleccionar',
-            selectedRate: 0,
-            selectedServiceLevel: 'Seleccionar',
-            services: {'fedex': [['express', 125.60], ['estandar', 96.42]], 
-                       'redpack': [['estandar', 190.04]],
-                       'dhl': [['express', 99.45], ['estandar', 45.66]]},
-            serviceLevels: []
+            selectedProvider: [],
+            selectedRate: [],
+            selectedServiceLevel: []
         };
 
         //Methods
@@ -176,7 +172,9 @@ class Example extends Component {
                             "prev_page_url": null, "results": [ {"object_id": 4,"amount": 130,"servicelevel": "estandar", "duration_terms": "2 a 5 días", "days": 5, 
                             "trackable": true,  "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png"},
                             { "object_id": 99, "amount": 150, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
-                            "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" }]};
+                            "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" },
+                            { "object_id": 100, "amount": 140, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
+                            "trackable": true, "collect_home": true, "provider": "Redpack", "provider_img": "media/providers/redpack.png" }]};
         
 
         //Iterate over each shipment 
@@ -451,27 +449,32 @@ class Example extends Component {
         });
     }
 
-    handleProvider(row, e) {
+    handleProvider(index, e) {
+        let selectedProvider = {...this.state.selectedProvider};
+        selectedProvider[index] = e;
         this.setState({
-          selectedProvider: row,
-          serviceLevels: this.state.services[row]
+            selectedProvider
         });
-        console.log(this.state.services[row]);
     }
 
-    handleServiceLevel(row, e) {
+    handleServiceLevel(values, e) {
+        let selectedServiceLevel = {...this.state.selectedServiceLevel};
+        let selectedRate = {...this.state.selectedRate};
+        selectedServiceLevel[values.index] = e;
+        selectedRate[values.index] = values.amount;
         this.setState({
-          selectedServiceLevel: row[0],
-          selectedRate: row[1]
+            selectedServiceLevel,
+            selectedRate
         });
     }
     
     render() {
         return (
             <div>
-                <Table striped bordered condensed hover>
+                <Table striped bordered>
                   <thead>
                     <tr>
+                      <th>Index</th>
                       <th>ID</th>
                       <th>Name</th>
                       <th>Street</th>
@@ -484,39 +487,49 @@ class Example extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {(this.state.success).map((row) => 
-                        <tr key = { row['object'].object_id }>
-                            <td> { row['object'].object_id } </td>
-                            <td> { row['object'].address_from.name } </td>
-                            <td> { row['object'].address_from.street } </td>
-                            <td> { row['object'].address_from.street2 } </td>
-                            <td> { row['object'].address_from.zipcode } </td>
-                            <td>
-                                <ButtonToolbar>
-                                  <DropdownButton
-                                    bsStyle="default"
-                                    title="Seleccionar"
-                                    noCaret
-                                    id="dropdown-no-caret">
-                                    {Object.keys(row['options']).map((row, value) => <MenuItem key = {row}
-                                        eventKey = {row} onSelect={(e) => this.handleProvider(row, e)}> { row } </MenuItem>)}
-                                  </DropdownButton>
-                                </ButtonToolbar>
-                            </td>
-                            <td>
-                                <ButtonToolbar>
-                                  <DropdownButton
-                                    bsStyle="default"
-                                    title="Seleccionar"
-                                    noCaret
-                                    id="dropdown-no-caret">
-                                  </DropdownButton>
-                                </ButtonToolbar>
-                            </td>
-                            <td>
-                            </td>
-                            <td> <Button bsStyle="primary">Save</Button> </td>
-                        </tr>
+                  {(this.state.success).map((row, index) => 
+                    <tr key = { row['object'].object_id }>
+                        <td> { index } </td>
+                        <td> { row['object'].object_id } </td>
+                        <td> { row['object'].address_from.name } </td>
+                        <td> { row['object'].address_from.street } </td>
+                        <td> { row['object'].address_from.street2 } </td>
+                        <td> { row['object'].address_from.zipcode } </td>
+                        <td>
+                            <ButtonToolbar>
+                                <DropdownButton
+                                bsStyle="default"
+                                title={this.state.selectedProvider[index] || "Seleccionar"}
+                                noCaret
+                                id="dropdown-no-caret">
+                                { Object.keys(row['options']).map((provider) => <MenuItem key = {provider}
+                                eventKey = {provider} onSelect={(e) => this.handleProvider(index, e)}> 
+                                { provider } </MenuItem>)}
+                                </DropdownButton>
+                            </ButtonToolbar>
+                        </td>
+                        <td>
+                            <ButtonToolbar>
+                                <DropdownButton
+                                bsStyle="default"
+                                title={this.state.selectedServiceLevel[index] || "Seleccionar"}
+                                noCaret
+                                id="dropdown-no-caret">
+                                { this.state.selectedProvider[index] && 
+                                    (row['options'][this.state.selectedProvider[index]]).map((value) =>
+                                    <MenuItem key = {value.serviceLevel} eventKey = {value.serviceLevel} 
+                                              onSelect={(e) => this.handleServiceLevel({index: index, amount: value.amount}, e)}> 
+                                        { value.serviceLevel } 
+                                    </MenuItem>
+                                )}
+                                </DropdownButton>
+                            </ButtonToolbar>
+                        </td>
+                        <td>
+                          {this.state.selectedRate[index] || "0.0"}
+                        </td>
+                        <td> <Button bsStyle="primary">Save</Button> </td>
+                    </tr>
                    )}
                   </tbody>
                 </Table>
