@@ -49744,6 +49744,137 @@ function ErrorElement(props) {
     );
 }
 
+function TableRow(props) {
+    var row = props.row;
+    var index = props.index;
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'tr',
+        { key: row },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* Checkbox */], { onChange: function onChange() {
+                    return alert('changed checkbox');
+                } })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_from.zipcode,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_to.street,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_to.zipcode,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].description.substr(0, 30),
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].weight,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].length,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].height,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].width,
+            ' '
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                null,
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* DropdownButton */],
+                    {
+                        bsStyle: 'default',
+                        title: props.selectedServiceLevel[index] || "Seleccionar",
+                        noCaret: true,
+                        id: 'dropdown-no-caret' },
+                    Object.keys(row['options']).map(function (service) {
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* MenuItem */],
+                            { key: service,
+                                eventKey: service, onSelect: function onSelect(e) {
+                                    return props.handleServiceLevel(index, e);
+                                } },
+                            service,
+                            ' '
+                        );
+                    })
+                )
+            )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                null,
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* DropdownButton */],
+                    {
+                        bsStyle: 'default',
+                        title: props.selectedProvider[index] || "Seleccionar",
+                        noCaret: true,
+                        id: 'dropdown-no-caret' },
+                    props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* MenuItem */],
+                            { key: value.provider, eventKey: value.provider,
+                                onSelect: function onSelect(e) {
+                                    return props.handleProvider({ index: index, amount: value.amount }, e);
+                                } },
+                            value.provider
+                        );
+                    })
+                )
+            )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            '$ ',
+            props.selectedRate[index] || "0.0"
+        )
+    );
+}
+
 var Example = function (_Component) {
     _inherits(Example, _Component);
 
@@ -49883,22 +50014,25 @@ var Example = function (_Component) {
         value: function fetchData(shipments) {
             var self = this;
 
-            var testObject = { "object_purpose": "PURCHASE", "status": "PURCHASE", "created_at": "2018-04-04 09:53:45",
-                "updated_at": "2018-04-04 09:53:48", "object_id": 174602, "owner_id": 3879, "address_from": { "object_type": "PRIMARY", "object_id": 341869,
-                    "name": "Ramona Swaniawski", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "reference": "", "zipcode": "07800",
-                    "city": "Gustavo A. Madero", "state": 'Ciudad de M\xE9xico', "email": "ramona02@swaniawski.com", "phone": "0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 3879 }, "address_to": { "object_type": "PURCHASE", "object_id": 347637, "name": "pedro", "street": "Av 5 de Febrero No. 2125",
-                    "street2": "Colonia Jurica", "reference": "Casa Blanca con amarillo dsjlfahasfjdsajkfhsjkdhfjksafhdjksfhskj", "zipcode": "76100", "city": "Quer?taro",
-                    "state": 'Quer\xE9taro', "email": "dani@gmail.com", "phone": "4422185000", "bookmark": false, "alias": "", "owner_id": 3879 }, "weight": 1, "height": 12,
-                "length": 12, "width": 12, "description": "MATERIALES", "rate": { "object_id": 159, "amount": 1536.1500000000001, "servicelevel": "express",
-                    "duration_terms": '1 a 2 d\xEDas', "days": 2, "trackable": true, "collect_home": true, "provider": "FedEx", "provider_img": "\/media\/providers\/fedex.png",
-                    "extended_zone": false }, "label": null, "insurance": null, "order": null, "coupon_code": "" };
+            var testObject = { "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null };
 
-            var testRates = { "total_count": 3, "total_pages": 2, "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar", "duration_terms": "2 a 5 días", "days": 5,
-                    "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
-                    "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, { "object_id": 100, "amount": 140, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
-                    "trackable": true, "collect_home": true, "provider": "Redpack", "provider_img": "media/providers/redpack.png" }] };
+            var testRates = { "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
+                    "provider_img": "media/providers/redpack.png" }] };
 
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
@@ -50059,7 +50193,7 @@ var Example = function (_Component) {
                     "data": JSON.stringify(shipmentData),
                     success: function success(data) {
                         var shipmentId = data.shipment.object_id;
-                        self.getRate(item, shipmentObject, shipmentId, index);
+                        self.getRate(item, data.shipment, shipmentId, index);
                     },
                     error: function error(xhr, status, _error4) {
                         self.state.errors[0] = [_error4];
@@ -50087,8 +50221,8 @@ var Example = function (_Component) {
                     "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 },
                 success: function success(data) {
-                    self.checkRates(item, shipmentId, data.results, index);
-                    //self.joinRates(item, shipmentObject, shipmentId, data.results, index);
+                    //self.checkRates(item, shipmentId, data.results, index);
+                    self.joinRates(item, shipmentObject, shipmentId, data.results, index);
                 },
                 error: function error(xhr, status, _error5) {
                     self.state.errors[0] = [_error5];
@@ -50101,15 +50235,15 @@ var Example = function (_Component) {
         value: function joinRates(item, shipmentObject, shipmentId, rates, index) {
             var serviceOptions = {};
             rates.forEach(function (rate) {
-                if (rate.provider in serviceOptions) {
-                    serviceOptions[rate.provider].push({ serviceLevel: rate.servicelevel, amount: rate.amount });
+                if (rate.servicelevel in serviceOptions) {
+                    serviceOptions[rate.servicelevel].push({ provider: rate.provider, amount: rate.amount });
                 } else {
-                    serviceOptions[rate.provider] = [{ serviceLevel: rate.servicelevel, amount: rate.amount }];
+                    serviceOptions[rate.servicelevel] = [{ provider: rate.provider, amount: rate.amount }];
                 }
             });
             this.setState(function (prevState) {
                 return {
-                    success: [].concat(_toConsumableArray(prevState.success), [{ object: shipmentObject, options: serviceOptions }])
+                    success: [].concat(_toConsumableArray(prevState.success), [{ object: shipmentObject, options: serviceOptions, service: item.service, provider: item.provider }])
                 };
             });
             console.log(this.state.success);
@@ -50166,23 +50300,29 @@ var Example = function (_Component) {
             });
         }
     }, {
-        key: 'handleProvider',
-        value: function handleProvider(index, e) {
+        key: 'handleServiceLevel',
+        value: function handleServiceLevel(index, e) {
+            var selectedServiceLevel = _extends({}, this.state.selectedServiceLevel);
             var selectedProvider = _extends({}, this.state.selectedProvider);
-            selectedProvider[index] = e;
+            var selectedRate = _extends({}, this.state.selectedRate);
+            selectedServiceLevel[index] = e;
+            selectedProvider[index] = null;
+            selectedRate[index] = null;
             this.setState({
-                selectedProvider: selectedProvider
+                selectedServiceLevel: selectedServiceLevel,
+                selectedProvider: selectedProvider,
+                selectedRate: selectedRate
             });
         }
     }, {
-        key: 'handleServiceLevel',
-        value: function handleServiceLevel(values, e) {
-            var selectedServiceLevel = _extends({}, this.state.selectedServiceLevel);
+        key: 'handleProvider',
+        value: function handleProvider(values, e) {
+            var selectedProvider = _extends({}, this.state.selectedProvider);
             var selectedRate = _extends({}, this.state.selectedRate);
-            selectedServiceLevel[values.index] = e;
+            selectedProvider[values.index] = e;
             selectedRate[values.index] = values.amount;
             this.setState({
-                selectedServiceLevel: selectedServiceLevel,
+                selectedProvider: selectedProvider,
                 selectedRate: selectedRate
             });
         }
@@ -50203,55 +50343,61 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'tr',
                             null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('th', null),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Index'
+                                'CP Origen'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'ID'
+                                'Destino'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Name'
+                                'CP'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Street'
+                                'Contenido'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Street2'
+                                'Peso (kg)'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Zipcode'
+                                'Largo (cm)'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Provider'
+                                'Alto (cm)'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Service Level'
+                                'Ancho (cm)'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Amount'
+                                'Servicio'
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'th',
                                 null,
-                                'Action'
+                                'Paqueter\xEDa'
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'th',
+                                null,
+                                'Subtotal'
                             )
                         )
                     ),
@@ -50259,121 +50405,10 @@ var Example = function (_Component) {
                         'tbody',
                         null,
                         this.state.success.map(function (row, index) {
-                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'tr',
-                                { key: row['object'].object_id },
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    index,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    row['object'].object_id,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    row['object'].address_from.name,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    row['object'].address_from.street,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    row['object'].address_from.street2,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    row['object'].address_from.zipcode,
-                                    ' '
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
-                                        null,
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* DropdownButton */],
-                                            {
-                                                bsStyle: 'default',
-                                                title: _this2.state.selectedProvider[index] || "Seleccionar",
-                                                noCaret: true,
-                                                id: 'dropdown-no-caret' },
-                                            Object.keys(row['options']).map(function (provider) {
-                                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* MenuItem */],
-                                                    { key: provider,
-                                                        eventKey: provider, onSelect: function onSelect(e) {
-                                                            return _this2.handleProvider(index, e);
-                                                        } },
-                                                    provider,
-                                                    ' '
-                                                );
-                                            })
-                                        )
-                                    )
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
-                                        null,
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* DropdownButton */],
-                                            {
-                                                bsStyle: 'default',
-                                                title: _this2.state.selectedServiceLevel[index] || "Seleccionar",
-                                                noCaret: true,
-                                                id: 'dropdown-no-caret' },
-                                            _this2.state.selectedProvider[index] && row['options'][_this2.state.selectedProvider[index]].map(function (value) {
-                                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* MenuItem */],
-                                                    { key: value.serviceLevel, eventKey: value.serviceLevel,
-                                                        onSelect: function onSelect(e) {
-                                                            return _this2.handleServiceLevel({ index: index, amount: value.amount }, e);
-                                                        } },
-                                                    value.serviceLevel
-                                                );
-                                            })
-                                        )
-                                    )
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    _this2.state.selectedRate[index] || "0.0"
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'td',
-                                    null,
-                                    ' ',
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
-                                        { bsStyle: 'primary' },
-                                        'Save'
-                                    ),
-                                    ' '
-                                )
-                            );
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TableRow, { key: index, index: index, row: row, selectedProvider: _this2.state.selectedProvider,
+                                selectedServiceLevel: _this2.state.selectedServiceLevel,
+                                selectedRate: _this2.state.selectedRate, handleProvider: _this2.handleProvider,
+                                handleServiceLevel: _this2.handleServiceLevel });
                         })
                     )
                 ),
@@ -62352,17 +62387,17 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__BreadcrumbItem__ = __webpack_require__(184);
 /* unused harmony reexport BreadcrumbItem */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Button__ = __webpack_require__(63);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_5__Button__["a"]; });
+/* unused harmony reexport Button */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ButtonGroup__ = __webpack_require__(120);
 /* unused harmony reexport ButtonGroup */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__ = __webpack_require__(385);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Carousel__ = __webpack_require__(386);
 /* unused harmony reexport Carousel */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CarouselItem__ = __webpack_require__(185);
 /* unused harmony reexport CarouselItem */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Checkbox__ = __webpack_require__(396);
-/* unused harmony reexport Checkbox */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_10__Checkbox__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__Clearfix__ = __webpack_require__(397);
 /* unused harmony reexport Clearfix */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__CloseButton__ = __webpack_require__(119);
@@ -65043,7 +65078,7 @@ var Checkbox = function (_React$Component) {
 Checkbox.propTypes = propTypes;
 Checkbox.defaultProps = defaultProps;
 
-/* unused harmony default export */ var _unused_webpack_default_export = (Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["a" /* bsClass */])('checkbox', Checkbox));
+/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["a" /* bsClass */])('checkbox', Checkbox));
 
 /***/ }),
 /* 397 */

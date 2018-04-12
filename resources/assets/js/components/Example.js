@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import axios from 'axios';
-import { Table, ButtonToolbar, DropdownButton, MenuItem, Button } from 'react-bootstrap'
+import { Table, Checkbox, ButtonToolbar, DropdownButton, MenuItem, Button } from 'react-bootstrap'
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
@@ -18,6 +18,58 @@ function ErrorElement(props){
         )}
     </dl>
   );
+}
+
+function TableRow(props){
+    const row = props.row;
+    const index = props.index;
+    return(
+    <tr key = { row }>
+        <td><Checkbox onChange={() => alert('changed checkbox')}></Checkbox></td>
+        <td> { row['object'].address_from.zipcode } </td>
+        <td> { row['object'].address_to.street } </td>
+        <td> { row['object'].address_to.zipcode } </td>
+        <td> { (row['object'].description).substr(0, 30) } </td>
+        <td> { row['object'].weight } </td>
+        <td> { row['object'].length } </td>
+        <td> { row['object'].height } </td>
+        <td> { row['object'].width } </td>
+        <td>
+            <ButtonToolbar>
+                <DropdownButton
+                bsStyle="default"
+                title={props.selectedServiceLevel[index] || "Seleccionar"}
+                noCaret
+                id="dropdown-no-caret">
+                { Object.keys(row['options']).map((service) => <MenuItem key = {service}
+                eventKey = {service} onSelect={(e) => props.handleServiceLevel(index, e)}> 
+                { service } </MenuItem>)}
+                </DropdownButton>
+            </ButtonToolbar>
+        </td>
+        <td>
+
+            <ButtonToolbar>
+                <DropdownButton
+                bsStyle="default"
+                title={props.selectedProvider[index] || "Seleccionar"}
+                noCaret
+                id="dropdown-no-caret">
+                { props.selectedServiceLevel[index] && 
+                    (row['options'][props.selectedServiceLevel[index]]).map((value) =>
+                    <MenuItem key = {value.provider} eventKey = {value.provider} 
+                              onSelect={(e) => props.handleProvider({index: index, amount: value.amount}, e)}> 
+                        { value.provider } 
+                    </MenuItem>
+                )}
+                </DropdownButton>
+            </ButtonToolbar>
+        </td>
+        <td>
+           $ {props.selectedRate[index] || "0.0"}
+        </td>
+    </tr>
+    );
 }
 
 class Example extends Component {
@@ -157,25 +209,25 @@ class Example extends Component {
     fetchData(shipments){
         var self = this;
 
-        var testObject = {"object_purpose":"PURCHASE","status":"PURCHASE","created_at":"2018-04-04 09:53:45",
-                            "updated_at":"2018-04-04 09:53:48","object_id":174602,"owner_id":3879,"address_from":{"object_type":"PRIMARY","object_id":341869,
-                            "name":"Ramona Swaniawski","street":"64710 Leannon Cliff Apt. 140","street2":"Port Joshuahview","reference":"","zipcode":"07800",
-                            "city":"Gustavo A. Madero","state":"Ciudad de M\u00e9xico","email":"ramona02@swaniawski.com","phone":"0864219858661","bookmark":false,
-                            "alias":"","owner_id":3879},"address_to":{"object_type":"PURCHASE","object_id":347637,"name":"pedro","street":"Av 5 de Febrero No. 2125",
-                            "street2":"Colonia Jurica","reference":"Casa Blanca con amarillo dsjlfahasfjdsajkfhsjkdhfjksafhdjksfhskj","zipcode":"76100","city":"Quer?taro",
-                            "state":"Quer\u00e9taro","email":"dani@gmail.com","phone":"4422185000","bookmark":false,"alias":"","owner_id":3879},"weight":1,"height":12,
-                            "length":12,"width":12,"description":"MATERIALES","rate":{"object_id":159,"amount":1536.1500000000001,"servicelevel":"express",
-                            "duration_terms":"1 a 2 d\u00edas","days":2,"trackable":true,"collect_home":true,"provider":"FedEx","provider_img":"\/media\/providers\/fedex.png",
-                            "extended_zone":false},"label":null,"insurance":null,"order":null,"coupon_code":""};
+        var testObject = { "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null };
 
-        var testRates = { "total_count": 3, "total_pages": 2, "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2", 
-                            "prev_page_url": null, "results": [ {"object_id": 4,"amount": 130,"servicelevel": "estandar", "duration_terms": "2 a 5 días", "days": 5, 
-                            "trackable": true,  "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png"},
-                            { "object_id": 99, "amount": 150, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
-                            "trackable": true, "collect_home": true, "provider": "Fedex", "provider_img": "media/providers/fedex.png" },
-                            { "object_id": 100, "amount": 140, "servicelevel": "express", "duration_terms": "1 a 2 días", "days": 2,
-                            "trackable": true, "collect_home": true, "provider": "Redpack", "provider_img": "media/providers/redpack.png" }]};
-        
+        var testRates = { "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
+          "provider_img": "media/providers/redpack.png" }]};
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
@@ -340,7 +392,7 @@ class Example extends Component {
                 success: function (data)
                 {
                     var shipmentId = data.shipment.object_id;
-                    self.getRate(item, shipmentObject, shipmentId, index);
+                    self.getRate(item, data.shipment, shipmentId, index);
                 },
                 error: function (xhr, status, error) 
                 {
@@ -371,8 +423,8 @@ class Example extends Component {
             },
             success: function (data)
             {
-                self.checkRates(item, shipmentId, data.results, index);
-                //self.joinRates(item, shipmentObject, shipmentId, data.results, index);
+                //self.checkRates(item, shipmentId, data.results, index);
+                self.joinRates(item, shipmentObject, shipmentId, data.results, index);
             },
             error: function (xhr, status, error) 
             {
@@ -385,14 +437,14 @@ class Example extends Component {
     joinRates(item, shipmentObject, shipmentId, rates, index){
         var serviceOptions = {};
         rates.forEach(function(rate){
-            if(rate.provider in serviceOptions){
-              serviceOptions[rate.provider].push({serviceLevel: rate.servicelevel, amount: rate.amount});
+            if(rate.servicelevel in serviceOptions){
+              serviceOptions[rate.servicelevel].push({provider: rate.provider, amount: rate.amount});
             }else{
-              serviceOptions[rate.provider] = [{serviceLevel: rate.servicelevel, amount: rate.amount}];
+              serviceOptions[rate.servicelevel] = [{provider: rate.provider, amount: rate.amount}];
             }
         });
         this.setState(prevState => ({
-            success: [...prevState.success, {object: shipmentObject, options: serviceOptions}]
+            success: [...prevState.success, {object: shipmentObject, options: serviceOptions, service: item.service, provider: item.provider}]
         }));
         console.log(this.state.success);
     }
@@ -449,21 +501,27 @@ class Example extends Component {
         });
     }
 
-    handleProvider(index, e) {
+    handleServiceLevel(index, e) {
+        let selectedServiceLevel = {...this.state.selectedServiceLevel};
         let selectedProvider = {...this.state.selectedProvider};
-        selectedProvider[index] = e;
+        let selectedRate = {...this.state.selectedRate};
+        selectedServiceLevel[index] = e;
+        selectedProvider[index] = null;
+        selectedRate[index] = null;
         this.setState({
-            selectedProvider
+            selectedServiceLevel,
+            selectedProvider,
+            selectedRate
         });
     }
 
-    handleServiceLevel(values, e) {
-        let selectedServiceLevel = {...this.state.selectedServiceLevel};
+    handleProvider(values, e) {
+        let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
-        selectedServiceLevel[values.index] = e;
+        selectedProvider[values.index] = e;
         selectedRate[values.index] = values.amount;
         this.setState({
-            selectedServiceLevel,
+            selectedProvider,
             selectedRate
         });
     }
@@ -474,62 +532,26 @@ class Example extends Component {
                 <Table striped bordered>
                   <thead>
                     <tr>
-                      <th>Index</th>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Street</th>
-                      <th>Street2</th>
-                      <th>Zipcode</th>
-                      <th>Provider</th>
-                      <th>Service Level</th>
-                      <th>Amount</th>
-                      <th>Action</th>
+                      <th></th>
+                      <th>CP Origen</th>
+                      <th>Destino</th>
+                      <th>CP</th>
+                      <th>Contenido</th>
+                      <th>Peso (kg)</th>
+                      <th>Largo (cm)</th>
+                      <th>Alto (cm)</th>
+                      <th>Ancho (cm)</th>
+                      <th>Servicio</th>
+                      <th>Paquetería</th>
+                      <th>Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>
                   {(this.state.success).map((row, index) => 
-                    <tr key = { row['object'].object_id }>
-                        <td> { index } </td>
-                        <td> { row['object'].object_id } </td>
-                        <td> { row['object'].address_from.name } </td>
-                        <td> { row['object'].address_from.street } </td>
-                        <td> { row['object'].address_from.street2 } </td>
-                        <td> { row['object'].address_from.zipcode } </td>
-                        <td>
-                            <ButtonToolbar>
-                                <DropdownButton
-                                bsStyle="default"
-                                title={this.state.selectedProvider[index] || "Seleccionar"}
-                                noCaret
-                                id="dropdown-no-caret">
-                                { Object.keys(row['options']).map((provider) => <MenuItem key = {provider}
-                                eventKey = {provider} onSelect={(e) => this.handleProvider(index, e)}> 
-                                { provider } </MenuItem>)}
-                                </DropdownButton>
-                            </ButtonToolbar>
-                        </td>
-                        <td>
-                            <ButtonToolbar>
-                                <DropdownButton
-                                bsStyle="default"
-                                title={this.state.selectedServiceLevel[index] || "Seleccionar"}
-                                noCaret
-                                id="dropdown-no-caret">
-                                { this.state.selectedProvider[index] && 
-                                    (row['options'][this.state.selectedProvider[index]]).map((value) =>
-                                    <MenuItem key = {value.serviceLevel} eventKey = {value.serviceLevel} 
-                                              onSelect={(e) => this.handleServiceLevel({index: index, amount: value.amount}, e)}> 
-                                        { value.serviceLevel } 
-                                    </MenuItem>
-                                )}
-                                </DropdownButton>
-                            </ButtonToolbar>
-                        </td>
-                        <td>
-                          {this.state.selectedRate[index] || "0.0"}
-                        </td>
-                        <td> <Button bsStyle="primary">Save</Button> </td>
-                    </tr>
+                    <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
+                       selectedServiceLevel = { this.state.selectedServiceLevel } 
+                       selectedRate = { this.state.selectedRate } handleProvider = { this.handleProvider }
+                       handleServiceLevel = { this.handleServiceLevel }/>
                    )}
                   </tbody>
                 </Table>
@@ -558,5 +580,4 @@ class Example extends Component {
 
 if (document.getElementById('example')) {
     ReactDOM.render(<Example />, document.getElementById('example'));
-
 }
