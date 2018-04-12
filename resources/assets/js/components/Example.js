@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import axios from 'axios';
-import { Table, Checkbox, ButtonToolbar, DropdownButton, MenuItem, Button } from 'react-bootstrap'
+import { Table, 
+         Checkbox, Button, Row, Col,
+         ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
@@ -25,11 +27,11 @@ function TableRow(props){
     const index = props.index;
     return(
     <tr key = { row }>
-        <td><Checkbox onChange={() => alert('changed checkbox')}></Checkbox></td>
+        <td><Checkbox onChange={() => props.handleMultipleSelect({index: index, object: row['object']}, e)}></Checkbox></td>
         <td> { row['object'].address_from.zipcode } </td>
         <td> { row['object'].address_to.street } </td>
         <td> { row['object'].address_to.zipcode } </td>
-        <td> { (row['object'].description).substr(0, 30) } </td>
+        <td> { row['object'].description } </td>
         <td> { row['object'].weight } </td>
         <td> { row['object'].length } </td>
         <td> { row['object'].height } </td>
@@ -38,7 +40,15 @@ function TableRow(props){
             <ButtonToolbar>
                 <DropdownButton
                 bsStyle="default"
-                title={props.selectedServiceLevel[index] || "Seleccionar"}
+                title={props.defaultValues[index] ? (
+                        props.defaultValues[index].servicelevel
+                      ) : (
+                        props.selectedServiceLevel[index] ? (
+                            props.selectedServiceLevel[index]
+                            ): (
+                                "Seleccionar"
+                            )
+                      )}
                 noCaret
                 id="dropdown-no-caret">
                 { Object.keys(row['options']).map((service) => <MenuItem key = {service}
@@ -48,11 +58,18 @@ function TableRow(props){
             </ButtonToolbar>
         </td>
         <td>
-
             <ButtonToolbar>
                 <DropdownButton
                 bsStyle="default"
-                title={props.selectedProvider[index] || "Seleccionar"}
+                title={props.defaultValues[index] ? (
+                        props.defaultValues[index].provider
+                      ) : (
+                        props.selectedProvider[index] ? (
+                            props.selectedProvider[index]
+                            ): (
+                                "Seleccionar"
+                            )
+                      )}
                 noCaret
                 id="dropdown-no-caret">
                 { props.selectedServiceLevel[index] && 
@@ -66,7 +83,10 @@ function TableRow(props){
             </ButtonToolbar>
         </td>
         <td>
-           $ {props.selectedRate[index] || "0.0"}
+           $ {props.defaultValues[index] ? ( props.defaultValues[index].amount ) : 
+                ( props.selectedRate[index] ? ( props.selectedRate[index] ): 
+                        ("0.0")
+                )}
         </td>
     </tr>
     );
@@ -84,7 +104,8 @@ class Example extends Component {
             success: [],
             selectedProvider: [],
             selectedRate: [],
-            selectedServiceLevel: []
+            selectedServiceLevel: [],
+            defaultValues: []
         };
 
         //Methods
@@ -133,8 +154,8 @@ class Example extends Component {
                     self.state.errors[0] = [data.error];
                     self.setState(self.state);
                 }else{
-                    //self.getPrimaryAddressFrom(data);
-                    self.fetchData(data);
+                    self.getPrimaryAddressFrom(data);
+                    //self.fetchData(data);
                 }
             },
             error: function (xhr, status, error) 
@@ -209,7 +230,7 @@ class Example extends Component {
     fetchData(shipments){
         var self = this;
 
-        var testObject = { "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+        /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
           "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
           "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
           "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
@@ -217,9 +238,18 @@ class Example extends Component {
           "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
           "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
           "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null };
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
+          { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
 
-        var testRates = { "total_count": 3, "total_pages": 2,
+        var testRates = [{ "total_count": 3, "total_pages": 2,
           "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
           "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
           "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
@@ -227,29 +257,22 @@ class Example extends Component {
           "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
           "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
           "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-          "provider_img": "media/providers/redpack.png" }]};
+          "provider_img": "media/providers/redpack.png" }]},
+          { "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
+          "provider_img": "media/providers/redpack.png" }]}];*/
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
-            //self.getAddressTo(item, index+1);
-            self.joinRates(item, testObject, 1, testRates.results, index);
+            self.getAddressTo(item, index + 1);
+            //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
         });
-        /*$.ajax({
-            url: '/showTable',
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                success: shipments,//self.state.success,
-                errors: {1: ["No hubo cosa"], 2: ["Nada", "Tampoco"]}
-                //errors: self.state.errors
-            },
-            dataType: 'text',
-            type: 'POST',
-            success: function(data){
-                $('#tableShipment').html(data);
-            } 
-        });*/
     }
 
     validAddress(item, index){
@@ -281,7 +304,7 @@ class Example extends Component {
         }
         if(!item.phone || item.phone.length > 20 || !phoneRegex.test(item.phone)){
             valid = false;
-            errors.push("Telefono inválido. Debe tener 35 caracteres como máximo");
+            errors.push("Telefono inválido. Debe tener 20 caracteres como máximo");
         }
         return [valid, {row: index, errorMessage: errors}];
     }
@@ -436,7 +459,11 @@ class Example extends Component {
 
     joinRates(item, shipmentObject, shipmentId, rates, index){
         var serviceOptions = {};
+        var selectedRate = null;
         rates.forEach(function(rate){
+            if((rate.servicelevel).toLowerCase() == (item.service).toLowerCase() && (rate.provider).toLowerCase() == (item.provider).toLowerCase()){
+                selectedRate = rate;
+            } 
             if(rate.servicelevel in serviceOptions){
               serviceOptions[rate.servicelevel].push({provider: rate.provider, amount: rate.amount});
             }else{
@@ -444,7 +471,8 @@ class Example extends Component {
             }
         });
         this.setState(prevState => ({
-            success: [...prevState.success, {object: shipmentObject, options: serviceOptions, service: item.service, provider: item.provider}]
+            success: [...prevState.success, {object: shipmentObject, options: serviceOptions, selectedRate: selectedRate}],
+            defaultValues: [...prevState.defaultValues, selectedRate]
         }));
         console.log(this.state.success);
     }
@@ -505,13 +533,16 @@ class Example extends Component {
         let selectedServiceLevel = {...this.state.selectedServiceLevel};
         let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
+        let defaultValues = {...this.state.defaultValues};
         selectedServiceLevel[index] = e;
         selectedProvider[index] = null;
         selectedRate[index] = null;
+        defaultValues[index] = null;
         this.setState({
             selectedServiceLevel,
             selectedProvider,
-            selectedRate
+            selectedRate,
+            defaultValues
         });
     }
 
@@ -525,10 +556,29 @@ class Example extends Component {
             selectedRate
         });
     }
+
+    handleMultipleSelect(values, e){
+        let selectedElements = {...this.state.selectedElements};
+        if (selectedElements[values.index]) selectedElements[values.index] = null;
+        else selectedElements[values.index] = values.object;
+        this.setState({
+            selectedElements
+        });
+    }
     
     render() {
         return (
-            <div>
+            <div className = "container" style={{marginTop: 20}}>
+                <div className="row">
+                    <Col xs={12} md={8}>
+                      <h3>Subir CSV</h3>
+                    </Col>
+                    <Col xs={6} md={4}>
+                        <button className="btn btn-primary pull-right">Siguiente</button>      
+                    </Col>
+                </div>
+                
+                <Row>
                 <Table striped bordered>
                   <thead>
                     <tr>
@@ -549,12 +599,13 @@ class Example extends Component {
                   <tbody>
                   {(this.state.success).map((row, index) => 
                     <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
-                       selectedServiceLevel = { this.state.selectedServiceLevel } 
+                       selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }
                        selectedRate = { this.state.selectedRate } handleProvider = { this.handleProvider }
-                       handleServiceLevel = { this.handleServiceLevel }/>
+                       handleServiceLevel = { this.handleServiceLevel } handleMultipleSelect = { this.handleMultipleSelect }/>
                    )}
                   </tbody>
                 </Table>
+                </Row>
 
                 <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
                     <div className="form-group">
