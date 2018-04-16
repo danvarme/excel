@@ -49753,8 +49753,8 @@ function TableRow(props) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'td',
             null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* Checkbox */], { onChange: function onChange() {
-                    return props.handleMultipleSelect({ index: index, object: row['object'] }, e);
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* Checkbox */], { onClick: function onClick(e) {
+                    return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
                 } })
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -49891,7 +49891,12 @@ var Example = function (_Component) {
             selectedProvider: [],
             selectedRate: [],
             selectedServiceLevel: [],
-            defaultValues: []
+            defaultValues: [],
+            allServices: {},
+            selectedElements: {},
+            availableService: {},
+            generalServiceLevel: '',
+            generalProvider: ''
         };
 
         //Methods
@@ -49903,11 +49908,15 @@ var Example = function (_Component) {
         _this.joinRates = _this.joinRates.bind(_this);
         _this.callCreateShipment = _this.callCreateShipment.bind(_this);
         _this.getPrimaryAddressFrom = _this.getPrimaryAddressFrom.bind(_this);
+        _this.handleProvider = _this.handleProvider.bind(_this);
+        _this.handleServiceLevel = _this.handleServiceLevel.bind(_this);
+        _this.handleMultipleSelect = _this.handleMultipleSelect.bind(_this);
+        _this.handleGeneralServiceLevel = _this.handleGeneralServiceLevel.bind(_this);
+        _this.handleGeneralProvider = _this.handleGeneralProvider.bind(_this);
         //Validate data
         _this.validAddress = _this.validAddress.bind(_this);
         _this.validShipment = _this.validShipment.bind(_this);
-        _this.handleProvider = _this.handleProvider.bind(_this);
-        _this.handleServiceLevel = _this.handleServiceLevel.bind(_this);
+
         return _this;
     }
 
@@ -49942,8 +49951,8 @@ var Example = function (_Component) {
                         self.state.errors[0] = [data.error];
                         self.setState(self.state);
                     } else {
-                        self.getPrimaryAddressFrom(data);
-                        //self.fetchData(data);
+                        //self.getPrimaryAddressFrom(data);
+                        self.fetchData(data);
                     }
                 },
                 error: function error(xhr, status, _error) {
@@ -50015,47 +50024,46 @@ var Example = function (_Component) {
         value: function fetchData(shipments) {
             var self = this;
 
-            /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
-              { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
-              var testRates = [{ "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-              "provider_img": "media/providers/redpack.png" }]},
-              { "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-              "provider_img": "media/providers/redpack.png" }]}];*/
+            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
+
+            var testRates = [{ "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
+                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/redpack.png" }] }];
 
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                self.getAddressTo(item, index + 1);
-                //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+                //self.getAddressTo(item, index + 1);
+                self.joinRates(item, testObject[index], 1, testRates[index].results, index);
             });
         }
     }, {
@@ -50064,31 +50072,38 @@ var Example = function (_Component) {
             var valid = true;
             var errors = [];
             if (!item.name || item.name.length > 80) {
-                valid = false;
+                //valid = false;
+                console.log(item.name);
                 errors.push("Nombre inválido. Debe tener 80 caracteres como máximo");
             }
             if (!item.street || item.street.length > 35) {
-                valid = false;
+                //valid = false;
+                console.log(item.street);
                 errors.push("Dirección inválida. Debe tener 35 caracteres como máximo");
             }
             if (!item.street2 || item.street2.length > 35) {
-                valid = false;
+                //valid = false;
+                console.log(item.street2);
                 errors.push("Dirección 2 inválida. Debe tener 35 caracteres como máximo");
             }
             if (!item.zipcode || item.zipcode.length > 5) {
-                valid = false;
+                //valid = false;
+                console.log(item.zipcode);
                 errors.push("Código postal inválido. Debe tener 5 caracteres como máximo");
             }
             if (item.reference && item.reference.length > 255) {
-                valid = false;
+                //valid = false;
+                console.log(item.reference);
                 errors.push("Referencia inválida. Debe tener 255 caracteres como máximo");
             }
             if (!item.email || item.email.length > 255 || !emailRegex.test(item.email)) {
-                valid = false;
+                //valid = false;
+                console.log(item.email);
                 errors.push("Email inválido. Debe tener 35 caracteres como máximo");
             }
             if (!item.phone || item.phone.length > 20 || !phoneRegex.test(item.phone)) {
-                valid = false;
+                //valid = false;
+                console.log(item.phone);
                 errors.push("Telefono inválido. Debe tener 20 caracteres como máximo");
             }
             return [valid, { row: index, errorMessage: errors }];
@@ -50237,9 +50252,17 @@ var Example = function (_Component) {
         value: function joinRates(item, shipmentObject, shipmentId, rates, index) {
             var serviceOptions = {};
             var selectedRate = null;
+            var allServices = _extends({}, this.state.allServices);
             rates.forEach(function (rate) {
                 if (rate.servicelevel.toLowerCase() == item.service.toLowerCase() && rate.provider.toLowerCase() == item.provider.toLowerCase()) {
                     selectedRate = rate;
+                }
+                if (rate.servicelevel in allServices) {
+                    if (allServices[rate.servicelevel].indexOf(rate.provider) == -1) {
+                        allServices[rate.servicelevel].push(rate.provider);
+                    }
+                } else {
+                    allServices[rate.servicelevel] = [rate.provider];
                 }
                 if (rate.servicelevel in serviceOptions) {
                     serviceOptions[rate.servicelevel].push({ provider: rate.provider, amount: rate.amount });
@@ -50253,7 +50276,9 @@ var Example = function (_Component) {
                     defaultValues: [].concat(_toConsumableArray(prevState.defaultValues), [selectedRate])
                 };
             });
-            console.log(this.state.success);
+            this.setState({
+                allServices: allServices
+            });
         }
     }, {
         key: 'checkRates',
@@ -50325,6 +50350,38 @@ var Example = function (_Component) {
             });
         }
     }, {
+        key: 'handleGeneralServiceLevel',
+        value: function handleGeneralServiceLevel(service, e) {
+            this.setState({
+                generalServiceLevel: service,
+                generalProvider: null
+            });
+        }
+    }, {
+        key: 'handleGeneralProvider',
+        value: function handleGeneralProvider(provider, e) {
+            var erros = this.state.errors;
+            var defaultValues = this.state.defaultValues;
+            var generalServiceLevel = this.state.generalServiceLevel;
+            var selectedElements = this.state.selectedElements;
+            for (var key in selectedElements) {
+                var options = selectedElements[key].rates;
+                if (this.state.generalServiceLevel in options) {
+                    options[this.state.generalServiceLevel].map(function (item) {
+                        if (item.provider === provider) {
+                            defaultValues[key] = { servicelevel: generalServiceLevel, provider: provider, amount: item.amount };
+                        } else {
+                            self.state.errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                        }
+                    });
+                }
+            }
+            this.setState({
+                generalProvider: provider,
+                defaultValues: defaultValues
+            });
+        }
+    }, {
         key: 'handleProvider',
         value: function handleProvider(values, e) {
             var selectedProvider = _extends({}, this.state.selectedProvider);
@@ -50339,8 +50396,15 @@ var Example = function (_Component) {
     }, {
         key: 'handleMultipleSelect',
         value: function handleMultipleSelect(values, e) {
-            var selectedElements = _extends({}, this.state.selectedElements);
-            if (selectedElements[values.index]) selectedElements[values.index] = null;else selectedElements[values.index] = values.object;
+            self = this;
+            var selectedElements = _extends({}, self.state.selectedElements);
+            if (e) {
+                selectedElements[values.index] = { object: values.object, rates: values.options };
+            } else {
+                if (values.index in selectedElements) {
+                    delete selectedElements[values.index];
+                }
+            }
             this.setState({
                 selectedElements: selectedElements
             });
@@ -50353,6 +50417,19 @@ var Example = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 { className: 'container', style: { marginTop: 20 } },
+                Object.keys(this.state.errors).length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'alert alert-danger alert-dismissible', role: 'alert' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'button',
+                        { className: 'close', 'data-dismiss': 'alert', 'aria-hidden': 'true' },
+                        '\xD7'
+                    ),
+                    Object.keys(this.state.errors).map(function (row, value) {
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, {
+                            key: row, index: row, errors: _this2.state.errors[row] });
+                    })
+                ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: 'row' },
@@ -50372,6 +50449,58 @@ var Example = function (_Component) {
                             'button',
                             { className: 'btn btn-primary pull-right' },
                             'Siguiente'
+                        )
+                    )
+                ),
+                Object.keys(this.state.selectedElements).length > 1 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'row' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                        { style: { margin: 5 } },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                            {
+                                bsStyle: 'default',
+                                title: this.state.generalServiceLevel ? this.state.generalServiceLevel : "Seleccionar",
+                                noCaret: true,
+                                id: 'dropdown-no-caret' },
+                            Object.keys(this.state.allServices).map(function (service) {
+                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                                    { key: service, eventKey: service,
+                                        onSelect: function onSelect(e) {
+                                            return _this2.handleGeneralServiceLevel(service, e);
+                                        } },
+                                    ' ',
+                                    service,
+                                    ' '
+                                );
+                            })
+                        )
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                        { style: { margin: 5 } },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                            {
+                                bsStyle: 'default',
+                                title: this.state.generalProvider ? this.state.generalProvider : "Seleccionar",
+                                noCaret: true,
+                                id: 'dropdown-no-caret' },
+                            this.state.allServices[this.state.generalServiceLevel] && this.state.allServices[this.state.generalServiceLevel].map(function (provider) {
+                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                                    { key: provider, eventKey: provider,
+                                        onSelect: function onSelect(e) {
+                                            return _this2.handleGeneralProvider(provider, e);
+                                        } },
+                                    ' ',
+                                    provider,
+                                    ' '
+                                );
+                            })
                         )
                     )
                 ),
@@ -50451,6 +50580,7 @@ var Example = function (_Component) {
                             this.state.success.map(function (row, index) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TableRow, { key: index, index: index, row: row, selectedProvider: _this2.state.selectedProvider,
                                     selectedServiceLevel: _this2.state.selectedServiceLevel, defaultValues: _this2.state.defaultValues,
+                                    selectedElements: _this2.state.selectedElements,
                                     selectedRate: _this2.state.selectedRate, handleProvider: _this2.handleProvider,
                                     handleServiceLevel: _this2.handleServiceLevel, handleMultipleSelect: _this2.handleMultipleSelect });
                             })
@@ -50468,19 +50598,7 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
                     )
                 ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { id: 'tableShipment' }),
-                Object.keys(this.state.errors).length > 0 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'container' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'alert alert-danger', role: 'alert' },
-                        Object.keys(this.state.errors).map(function (row, value) {
-                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, {
-                                key: row, index: row, errors: _this2.state.errors[row] });
-                        })
-                    )
-                )
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { id: 'tableShipment' })
             );
         }
     }]);

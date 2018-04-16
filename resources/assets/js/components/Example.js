@@ -27,7 +27,7 @@ function TableRow(props){
     const index = props.index;
     return(
     <tr key = { row }>
-        <td><Checkbox onChange={() => props.handleMultipleSelect({index: index, object: row['object']}, e)}></Checkbox></td>
+        <td><Checkbox onClick={e => props.handleMultipleSelect({index: index, object: row['object'], options: row['options']}, e.target.checked)} /></td>
         <td> { row['object'].address_from.zipcode } </td>
         <td> { row['object'].address_to.street } </td>
         <td> { row['object'].address_to.zipcode } </td>
@@ -105,8 +105,14 @@ class Example extends Component {
             selectedProvider: [],
             selectedRate: [],
             selectedServiceLevel: [],
-            defaultValues: []
+            defaultValues: [],
+            allServices: {},
+            selectedElements: {},
+            availableService: {},
+            generalServiceLevel: '',
+            generalProvider: ''
         };
+
 
         //Methods
         this.uploadFile = this.uploadFile.bind(this);
@@ -117,11 +123,15 @@ class Example extends Component {
         this.joinRates = this.joinRates.bind(this);
         this.callCreateShipment = this.callCreateShipment.bind(this);
         this.getPrimaryAddressFrom = this.getPrimaryAddressFrom.bind(this);
+        this.handleProvider = this.handleProvider.bind(this);
+        this.handleServiceLevel = this.handleServiceLevel.bind(this);
+        this.handleMultipleSelect = this.handleMultipleSelect.bind(this);
+        this.handleGeneralServiceLevel = this.handleGeneralServiceLevel.bind(this);
+        this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
         //Validate data
         this.validAddress = this.validAddress.bind(this);
         this.validShipment = this.validShipment.bind(this);
-        this.handleProvider = this.handleProvider.bind(this);
-        this.handleServiceLevel = this.handleServiceLevel.bind(this);
+        
     }
 
 
@@ -154,8 +164,8 @@ class Example extends Component {
                     self.state.errors[0] = [data.error];
                     self.setState(self.state);
                 }else{
-                    self.getPrimaryAddressFrom(data);
-                    //self.fetchData(data);
+                    //self.getPrimaryAddressFrom(data);
+                    self.fetchData(data);
                 }
             },
             error: function (xhr, status, error) 
@@ -230,13 +240,13 @@ class Example extends Component {
     fetchData(shipments){
         var self = this;
 
-        /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+        var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
           "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
           "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
           "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
           "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
           "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
           "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
           "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
           { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
@@ -245,7 +255,7 @@ class Example extends Component {
           "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
           "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
           "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsfasdfsdfsasjdfkajdklfajsdkfadsjk", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
           "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
           "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
 
@@ -262,48 +272,56 @@ class Example extends Component {
           "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
           "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
           "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
           "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
           "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
           "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-          "provider_img": "media/providers/redpack.png" }]}];*/
+          "provider_img": "media/providers/redpack.png" }]}];
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
-            self.getAddressTo(item, index + 1);
-            //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+            //self.getAddressTo(item, index + 1);
+            self.joinRates(item, testObject[index], 1, testRates[index].results, index);
         });
     }
+
 
     validAddress(item, index){
         var valid = true;
         var errors = [];
         if(!item.name || item.name.length > 80){
-            valid = false;
+            //valid = false;
+            console.log(item.name);
             errors.push("Nombre inválido. Debe tener 80 caracteres como máximo");
         }
         if(!item.street || item.street.length > 35){
-            valid = false;
+            //valid = false;
+            console.log(item.street);
             errors.push("Dirección inválida. Debe tener 35 caracteres como máximo");
         }
         if(!item.street2 || item.street2.length > 35){
-            valid = false;
+            //valid = false;
+            console.log(item.street2);
             errors.push("Dirección 2 inválida. Debe tener 35 caracteres como máximo");
         }
         if(!item.zipcode || item.zipcode.length > 5){
-            valid = false;
+            //valid = false;
+            console.log(item.zipcode);
             errors.push("Código postal inválido. Debe tener 5 caracteres como máximo");
         }
         if(item.reference && item.reference.length > 255){
-            valid = false;
+            //valid = false;
+            console.log(item.reference);
             errors.push("Referencia inválida. Debe tener 255 caracteres como máximo");
         }
         if(!item.email || item.email.length > 255 || !emailRegex.test(item.email)){
-            valid = false;
+            //valid = false;
+            console.log(item.email);
             errors.push("Email inválido. Debe tener 35 caracteres como máximo");
         }
         if(!item.phone || item.phone.length > 20 || !phoneRegex.test(item.phone)){
-            valid = false;
+            //valid = false;
+            console.log(item.phone);
             errors.push("Telefono inválido. Debe tener 20 caracteres como máximo");
         }
         return [valid, {row: index, errorMessage: errors}];
@@ -316,8 +334,7 @@ class Example extends Component {
         //Validate if address is valid 
         var valid = this.validAddress(item, index);
 
-        if(valid[0])
-        {
+        if(valid[0]){
             var address = 
             {
                 "object_type": "PURCHASE",
@@ -460,10 +477,18 @@ class Example extends Component {
     joinRates(item, shipmentObject, shipmentId, rates, index){
         var serviceOptions = {};
         var selectedRate = null;
+        let allServices = {...this.state.allServices};
         rates.forEach(function(rate){
             if((rate.servicelevel).toLowerCase() == (item.service).toLowerCase() && (rate.provider).toLowerCase() == (item.provider).toLowerCase()){
                 selectedRate = rate;
             } 
+            if(rate.servicelevel in allServices){
+                if(allServices[rate.servicelevel].indexOf(rate.provider) == -1){
+                    allServices[rate.servicelevel].push(rate.provider);
+              }
+            }else{
+                allServices[rate.servicelevel] = [rate.provider];
+            }
             if(rate.servicelevel in serviceOptions){
               serviceOptions[rate.servicelevel].push({provider: rate.provider, amount: rate.amount});
             }else{
@@ -472,9 +497,11 @@ class Example extends Component {
         });
         this.setState(prevState => ({
             success: [...prevState.success, {object: shipmentObject, options: serviceOptions, selectedRate: selectedRate}],
-            defaultValues: [...prevState.defaultValues, selectedRate]
+            defaultValues: [...prevState.defaultValues, selectedRate],
         }));
-        console.log(this.state.success);
+        this.setState({
+            allServices
+        });
     }
 
     checkRates(item, shipmentId, rates, index){
@@ -546,6 +573,36 @@ class Example extends Component {
         });
     }
 
+    handleGeneralServiceLevel(service, e){
+        this.setState({ 
+            generalServiceLevel: service,
+            generalProvider: null
+        });
+    }
+
+    handleGeneralProvider(provider, e){
+        let erros = this.state.errors;
+        let defaultValues = this.state.defaultValues;
+        let generalServiceLevel = this.state.generalServiceLevel;
+        let selectedElements = this.state.selectedElements;
+        for(var key in selectedElements){
+            var options = selectedElements[key].rates;
+            if(this.state.generalServiceLevel in options){
+                (options[this.state.generalServiceLevel]).map( function(item) {
+                    if(item.provider === provider){
+                        defaultValues[key] = {servicelevel: generalServiceLevel, provider: provider, amount: item.amount};      
+                    }else{
+                        self.state.errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                    }
+                })
+            }
+        }
+        this.setState({
+            generalProvider: provider,
+            defaultValues
+        });
+    }
+
     handleProvider(values, e) {
         let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
@@ -558,9 +615,15 @@ class Example extends Component {
     }
 
     handleMultipleSelect(values, e){
-        let selectedElements = {...this.state.selectedElements};
-        if (selectedElements[values.index]) selectedElements[values.index] = null;
-        else selectedElements[values.index] = values.object;
+        self = this;
+        let selectedElements = {...self.state.selectedElements};
+        if(e){
+            selectedElements[values.index] = {object: values.object, rates: values.options};
+        }else{
+            if(values.index in selectedElements){
+                delete selectedElements[values.index];
+            }
+        }
         this.setState({
             selectedElements
         });
@@ -569,6 +632,14 @@ class Example extends Component {
     render() {
         return (
             <div className = "container" style={{marginTop: 20}}>
+                {Object.keys(this.state.errors).length > 0 &&
+                    <div className="alert alert-danger alert-dismissible" role="alert" >
+                        <button className = "close" data-dismiss = "alert" aria-hidden = "true">&times;</button>
+                        {Object.keys(this.state.errors).map((row, value) => <ErrorElement 
+                            key = {row} index = {row} errors = {this.state.errors[row]}/>)}
+                    </div>
+                }
+                
                 <div className="row">
                     <Col xs={12} md={8}>
                       <h3>Subir CSV</h3>
@@ -577,7 +648,33 @@ class Example extends Component {
                         <button className="btn btn-primary pull-right">Siguiente</button>      
                     </Col>
                 </div>
-                
+                {Object.keys(this.state.selectedElements).length > 1 &&
+                    <div className="row" >
+                        <ButtonToolbar style={{margin:5}}>
+                            <DropdownButton
+                            bsStyle="default"
+                            title={this.state.generalServiceLevel ? ( this.state.generalServiceLevel)  : ("Seleccionar")}
+                            noCaret
+                            id="dropdown-no-caret">
+                            { Object.keys(this.state.allServices).map((service) => <MenuItem key = {service} eventKey = {service} 
+                                onSelect={(e) => this.handleGeneralServiceLevel(service, e)}> { service } </MenuItem>)}
+                            </DropdownButton>
+                        </ButtonToolbar>
+                        <ButtonToolbar style={{margin:5}}>
+                            <DropdownButton
+                            bsStyle="default"
+                            title={this.state.generalProvider ? ( this.state.generalProvider ) : ("Seleccionar")}
+                            noCaret
+                            id="dropdown-no-caret">
+                            { this.state.allServices[this.state.generalServiceLevel] && 
+                                (this.state.allServices[this.state.generalServiceLevel]).map((provider) =>
+                                <MenuItem key = { provider } eventKey = { provider } 
+                                onSelect = {(e) => this.handleGeneralProvider(provider, e)}> { provider } </MenuItem>
+                            )}
+                            </DropdownButton>
+                        </ButtonToolbar>
+                    </div>
+                }
                 <Row>
                 <Table striped bordered>
                   <thead>
@@ -600,6 +697,7 @@ class Example extends Component {
                   {(this.state.success).map((row, index) => 
                     <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
                        selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }
+                       selectedElements = { this.state.selectedElements }
                        selectedRate = { this.state.selectedRate } handleProvider = { this.handleProvider }
                        handleServiceLevel = { this.handleServiceLevel } handleMultipleSelect = { this.handleMultipleSelect }/>
                    )}
@@ -616,14 +714,6 @@ class Example extends Component {
                 </form> 
                 <div id="tableShipment">
                 </div>
-                {Object.keys(this.state.errors).length > 0 &&
-                    <div className="container">
-                        <div className="alert alert-danger" role="alert" >
-                            {Object.keys(this.state.errors).map((row, value) => <ErrorElement 
-                                key = {row} index = {row} errors = {this.state.errors[row]}/>)}
-                        </div>
-                    </div>
-                }
             </div>
         );
     }
