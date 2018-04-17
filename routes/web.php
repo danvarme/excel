@@ -21,3 +21,6 @@ Route::post('/showTable', 'ExcelController@showTable');
 
 Route::get('/shipments', 'TableController@table');
 
+Route::get('/generarPedido', function () {
+    return view('generarPedido');
+});
