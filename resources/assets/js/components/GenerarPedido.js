@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types'
 import axios from 'axios';
-import styledProps from 'styled-props';
-import styled, {css} from 'styled-components';
 import {Form, FormControl, FormGroup, ControlLabel, Col, Button} from 'react-bootstrap';
 import UploadModal from './UploadModal';
 
