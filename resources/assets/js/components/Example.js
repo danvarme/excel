@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Table, 
          Checkbox, Button, Row, Col,
          ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
+import OptionModal from './OptionModal'
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
@@ -110,7 +111,8 @@ class Example extends Component {
             selectedElements: {},
             availableService: {},
             generalServiceLevel: '',
-            generalProvider: ''
+            generalProvider: '',
+            modalOpen: false
         };
 
 
@@ -128,6 +130,7 @@ class Example extends Component {
         this.handleMultipleSelect = this.handleMultipleSelect.bind(this);
         this.handleGeneralServiceLevel = this.handleGeneralServiceLevel.bind(this);
         this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
         //Validate data
         this.validAddress = this.validAddress.bind(this);
         this.validShipment = this.validShipment.bind(this);
@@ -581,25 +584,30 @@ class Example extends Component {
     }
 
     handleGeneralProvider(provider, e){
-        let erros = this.state.errors;
+        let errors = this.state.errors;
         let defaultValues = this.state.defaultValues;
         let generalServiceLevel = this.state.generalServiceLevel;
         let selectedElements = this.state.selectedElements;
+        var found = false;
         for(var key in selectedElements){
+            found = false;
             var options = selectedElements[key].rates;
             if(this.state.generalServiceLevel in options){
                 (options[this.state.generalServiceLevel]).map( function(item) {
                     if(item.provider === provider){
                         defaultValues[key] = {servicelevel: generalServiceLevel, provider: provider, amount: item.amount};      
-                    }else{
-                        self.state.errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                        found = true;
                     }
                 })
+                if(!found){
+                    errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                }
             }
         }
         this.setState({
             generalProvider: provider,
-            defaultValues
+            defaultValues,
+            errors
         });
     }
 
@@ -628,6 +636,12 @@ class Example extends Component {
             selectedElements
         });
     }
+
+    toggleModal(){
+        this.setState({
+            modalOpen: !this.state.modalOpen
+        });
+    }
     
     render() {
         return (
@@ -645,11 +659,12 @@ class Example extends Component {
                       <h3>Subir CSV</h3>
                     </Col>
                     <Col xs={6} md={4}>
-                        <button className="btn btn-primary pull-right">Siguiente</button>      
+                        <Button bsStyle="primary" onClick={(e) => this.toggleModal(e)} className="pull-right">Siguiente</Button>                            
                     </Col>
                 </div>
                 {Object.keys(this.state.selectedElements).length > 1 &&
                     <div className="row" >
+                        <h5><strong>Servicio</strong></h5>
                         <ButtonToolbar style={{margin:5}}>
                             <DropdownButton
                             bsStyle="default"
@@ -660,6 +675,7 @@ class Example extends Component {
                                 onSelect={(e) => this.handleGeneralServiceLevel(service, e)}> { service } </MenuItem>)}
                             </DropdownButton>
                         </ButtonToolbar>
+                        <h5><strong>Paquetería</strong></h5>
                         <ButtonToolbar style={{margin:5}}>
                             <DropdownButton
                             bsStyle="default"
@@ -712,8 +728,7 @@ class Example extends Component {
                         <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
                     </div>
                 </form> 
-                <div id="tableShipment">
-                </div>
+                <OptionModal modalOpen = { this.state.modalOpen} toggleModal = { this.toggleModal }/>
             </div>
         );
     }

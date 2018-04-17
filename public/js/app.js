@@ -49703,6 +49703,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_axios__ = __webpack_require__(130);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__ = __webpack_require__(340);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__OptionModal__ = __webpack_require__(498);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49714,6 +49715,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -49753,7 +49755,7 @@ function TableRow(props) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'td',
             null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* Checkbox */], { onClick: function onClick(e) {
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
                     return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
                 } })
         ),
@@ -49817,10 +49819,10 @@ function TableRow(props) {
             'td',
             null,
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* DropdownButton */],
                     {
                         bsStyle: 'default',
                         title: props.defaultValues[index] ? props.defaultValues[index].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
@@ -49828,7 +49830,7 @@ function TableRow(props) {
                         id: 'dropdown-no-caret' },
                     Object.keys(row['options']).map(function (service) {
                         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* MenuItem */],
                             { key: service,
                                 eventKey: service, onSelect: function onSelect(e) {
                                     return props.handleServiceLevel(index, e);
@@ -49844,10 +49846,10 @@ function TableRow(props) {
             'td',
             null,
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* DropdownButton */],
                     {
                         bsStyle: 'default',
                         title: props.defaultValues[index] ? props.defaultValues[index].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
@@ -49855,7 +49857,7 @@ function TableRow(props) {
                         id: 'dropdown-no-caret' },
                     props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
                         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* MenuItem */],
                             { key: value.provider, eventKey: value.provider,
                                 onSelect: function onSelect(e) {
                                     return props.handleProvider({ index: index, amount: value.amount }, e);
@@ -49896,7 +49898,8 @@ var Example = function (_Component) {
             selectedElements: {},
             availableService: {},
             generalServiceLevel: '',
-            generalProvider: ''
+            generalProvider: '',
+            modalOpen: false
         };
 
         //Methods
@@ -49913,6 +49916,7 @@ var Example = function (_Component) {
         _this.handleMultipleSelect = _this.handleMultipleSelect.bind(_this);
         _this.handleGeneralServiceLevel = _this.handleGeneralServiceLevel.bind(_this);
         _this.handleGeneralProvider = _this.handleGeneralProvider.bind(_this);
+        _this.toggleModal = _this.toggleModal.bind(_this);
         //Validate data
         _this.validAddress = _this.validAddress.bind(_this);
         _this.validShipment = _this.validShipment.bind(_this);
@@ -50360,25 +50364,30 @@ var Example = function (_Component) {
     }, {
         key: 'handleGeneralProvider',
         value: function handleGeneralProvider(provider, e) {
-            var erros = this.state.errors;
+            var errors = this.state.errors;
             var defaultValues = this.state.defaultValues;
             var generalServiceLevel = this.state.generalServiceLevel;
             var selectedElements = this.state.selectedElements;
+            var found = false;
             for (var key in selectedElements) {
+                found = false;
                 var options = selectedElements[key].rates;
                 if (this.state.generalServiceLevel in options) {
                     options[this.state.generalServiceLevel].map(function (item) {
                         if (item.provider === provider) {
                             defaultValues[key] = { servicelevel: generalServiceLevel, provider: provider, amount: item.amount };
-                        } else {
-                            self.state.errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                            found = true;
                         }
                     });
+                    if (!found) {
+                        errors[0] = ["No todos los elementos seleccionados cuentan con la paquetería"];
+                    }
                 }
             }
             this.setState({
                 generalProvider: provider,
-                defaultValues: defaultValues
+                defaultValues: defaultValues,
+                errors: errors
             });
         }
     }, {
@@ -50410,6 +50419,13 @@ var Example = function (_Component) {
             });
         }
     }, {
+        key: 'toggleModal',
+        value: function toggleModal() {
+            this.setState({
+                modalOpen: !this.state.modalOpen
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
@@ -50434,7 +50450,7 @@ var Example = function (_Component) {
                     'div',
                     { className: 'row' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* Col */],
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* Col */],
                         { xs: 12, md: 8 },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'h3',
@@ -50443,11 +50459,13 @@ var Example = function (_Component) {
                         )
                     ),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["c" /* Col */],
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* Col */],
                         { xs: 6, md: 4 },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'button',
-                            { className: 'btn btn-primary pull-right' },
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
+                            { bsStyle: 'primary', onClick: function onClick(e) {
+                                    return _this2.toggleModal(e);
+                                }, className: 'pull-right' },
                             'Siguiente'
                         )
                     )
@@ -50456,10 +50474,19 @@ var Example = function (_Component) {
                     'div',
                     { className: 'row' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                        'h5',
+                        null,
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'strong',
+                            null,
+                            'Servicio'
+                        )
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
                         { style: { margin: 5 } },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* DropdownButton */],
                             {
                                 bsStyle: 'default',
                                 title: this.state.generalServiceLevel ? this.state.generalServiceLevel : "Seleccionar",
@@ -50467,7 +50494,7 @@ var Example = function (_Component) {
                                 id: 'dropdown-no-caret' },
                             Object.keys(this.state.allServices).map(function (service) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* MenuItem */],
                                     { key: service, eventKey: service,
                                         onSelect: function onSelect(e) {
                                             return _this2.handleGeneralServiceLevel(service, e);
@@ -50480,10 +50507,19 @@ var Example = function (_Component) {
                         )
                     ),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* ButtonToolbar */],
+                        'h5',
+                        null,
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'strong',
+                            null,
+                            'Paqueter\xEDa'
+                        )
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
                         { style: { margin: 5 } },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* DropdownButton */],
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* DropdownButton */],
                             {
                                 bsStyle: 'default',
                                 title: this.state.generalProvider ? this.state.generalProvider : "Seleccionar",
@@ -50491,7 +50527,7 @@ var Example = function (_Component) {
                                 id: 'dropdown-no-caret' },
                             this.state.allServices[this.state.generalServiceLevel] && this.state.allServices[this.state.generalServiceLevel].map(function (provider) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["e" /* MenuItem */],
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* MenuItem */],
                                     { key: provider, eventKey: provider,
                                         onSelect: function onSelect(e) {
                                             return _this2.handleGeneralProvider(provider, e);
@@ -50505,10 +50541,10 @@ var Example = function (_Component) {
                     )
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* Row */],
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["h" /* Row */],
                     null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["g" /* Table */],
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["i" /* Table */],
                         { striped: true, bordered: true },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'thead',
@@ -50598,7 +50634,7 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile.bind(this) })
                     )
                 ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { id: 'tableShipment' })
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal })
             );
         }
     }]);
@@ -62550,17 +62586,17 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__BreadcrumbItem__ = __webpack_require__(184);
 /* unused harmony reexport BreadcrumbItem */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Button__ = __webpack_require__(63);
-/* unused harmony reexport Button */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_5__Button__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ButtonGroup__ = __webpack_require__(120);
 /* unused harmony reexport ButtonGroup */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__ = __webpack_require__(385);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_7__ButtonToolbar__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Carousel__ = __webpack_require__(386);
 /* unused harmony reexport Carousel */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CarouselItem__ = __webpack_require__(185);
 /* unused harmony reexport CarouselItem */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Checkbox__ = __webpack_require__(396);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_10__Checkbox__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_10__Checkbox__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__Clearfix__ = __webpack_require__(397);
 /* unused harmony reexport Clearfix */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__CloseButton__ = __webpack_require__(119);
@@ -62568,13 +62604,13 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__ControlLabel__ = __webpack_require__(398);
 /* unused harmony reexport ControlLabel */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__Col__ = __webpack_require__(399);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_14__Col__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_14__Col__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__Collapse__ = __webpack_require__(123);
 /* unused harmony reexport Collapse */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__Dropdown__ = __webpack_require__(77);
 /* unused harmony reexport Dropdown */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__DropdownButton__ = __webpack_require__(411);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_17__DropdownButton__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_17__DropdownButton__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__Fade__ = __webpack_require__(80);
 /* unused harmony reexport Fade */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__Form__ = __webpack_require__(412);
@@ -62604,9 +62640,9 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__Media__ = __webpack_require__(81);
 /* unused harmony reexport Media */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__MenuItem__ = __webpack_require__(431);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_32__MenuItem__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_32__MenuItem__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__Modal__ = __webpack_require__(432);
-/* unused harmony reexport Modal */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_33__Modal__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__ModalBody__ = __webpack_require__(199);
 /* unused harmony reexport ModalBody */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__ModalFooter__ = __webpack_require__(200);
@@ -62650,7 +62686,7 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__ResponsiveEmbed__ = __webpack_require__(475);
 /* unused harmony reexport ResponsiveEmbed */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__Row__ = __webpack_require__(476);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__SafeAnchor__ = __webpack_require__(25);
 /* unused harmony reexport SafeAnchor */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_57__SplitButton__ = __webpack_require__(477);
@@ -62662,7 +62698,7 @@ module.exports = ReactDOMInvalidARIAHook;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_60__TabContent__ = __webpack_require__(129);
 /* unused harmony reexport TabContent */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_61__Table__ = __webpack_require__(480);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_62__TabPane__ = __webpack_require__(212);
 /* unused harmony reexport TabPane */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_63__Tabs__ = __webpack_require__(481);
@@ -68324,7 +68360,7 @@ Modal.Dialog = __WEBPACK_IMPORTED_MODULE_18__ModalDialog__["a" /* default */];
 Modal.TRANSITION_DURATION = 300;
 Modal.BACKDROP_TRANSITION_DURATION = 150;
 
-/* unused harmony default export */ var _unused_webpack_default_export = (Object(__WEBPACK_IMPORTED_MODULE_22__utils_bootstrapUtils__["a" /* bsClass */])('modal', Object(__WEBPACK_IMPORTED_MODULE_22__utils_bootstrapUtils__["b" /* bsSizes */])([__WEBPACK_IMPORTED_MODULE_25__utils_StyleConfig__["c" /* Size */].LARGE, __WEBPACK_IMPORTED_MODULE_25__utils_StyleConfig__["c" /* Size */].SMALL], Modal)));
+/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_22__utils_bootstrapUtils__["a" /* bsClass */])('modal', Object(__WEBPACK_IMPORTED_MODULE_22__utils_bootstrapUtils__["b" /* bsSizes */])([__WEBPACK_IMPORTED_MODULE_25__utils_StyleConfig__["c" /* Size */].LARGE, __WEBPACK_IMPORTED_MODULE_25__utils_StyleConfig__["c" /* Size */].SMALL], Modal)));
 
 /***/ }),
 /* 433 */
@@ -74275,6 +74311,109 @@ var Well = function (_React$Component) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 488 */,
+/* 489 */,
+/* 490 */,
+/* 491 */,
+/* 492 */,
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_bootstrap__ = __webpack_require__(340);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+var OptionMondal = function (_Component) {
+	_inherits(OptionMondal, _Component);
+
+	function OptionMondal(props) {
+		_classCallCheck(this, OptionMondal);
+
+		return _possibleConstructorReturn(this, (OptionMondal.__proto__ || Object.getPrototypeOf(OptionMondal)).call(this, props));
+	}
+
+	_createClass(OptionMondal, [{
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			if (this.props.modalOpen) {
+				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+					'div',
+					{ className: 'static-modal' },
+					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+						__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["g" /* Modal */].Dialog,
+						null,
+						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["g" /* Modal */].Header,
+							null,
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["g" /* Modal */].Title,
+								null,
+								'Elige la opci\xF3n deseada'
+							)
+						),
+						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["g" /* Modal */].Body,
+							null,
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["b" /* ButtonToolbar */],
+								null,
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
+									{ bsStyle: 'primary' },
+									'Generar gu\xEDas'
+								),
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
+									{ bsStyle: 'primary' },
+									'Enviar al dashboard del cliente'
+								)
+							)
+						),
+						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["g" /* Modal */].Footer,
+							null,
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
+								{ onClick: function onClick(e) {
+										return _this2.props.toggleModal(e);
+									} },
+								'Close'
+							)
+						)
+					)
+				);
+			}
+			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
+		}
+	}]);
+
+	return OptionMondal;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = (OptionMondal);
 
 /***/ })
 /******/ ]);
