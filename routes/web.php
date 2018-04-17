@@ -16,3 +16,7 @@ Route::get('/', function () {
 });
 
 Route::post('/getInfo', 'ExcelController@getInfo');
+
+Route::get('/generarPedido', function () {
+    return view('generarPedido');
+});
