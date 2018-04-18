@@ -4,14 +4,20 @@ import PropTypes from 'prop-types'
 import axios from 'axios';
 import {Form, FormControl, FormGroup, ControlLabel, Col, Button} from 'react-bootstrap';
 import UploadModal from './UploadModal';
+import { Route, Router } from 'react-router-dom'
+import { Redirect } from 'react-router'
+import Example from './Example'
 
-class GenerarPedido extends Component {
+
+export default class GenerarPedido extends Component {
 
     constructor(props) {
         super(props);
 
         //Variables
         this.state = {
+            redirect: false,
+            excelData: null,
             email: '',
             name: '',
             street: '',
@@ -190,7 +196,11 @@ class GenerarPedido extends Component {
                 if(data.error){
                     console.log(data.error);
                 }else{
-                    console.log(data);
+                    self.setState({ 
+                        redirect: true,
+                        excelData: data
+                    });
+                    //console.log(data);
                 }
             } 
         });
@@ -201,6 +211,9 @@ class GenerarPedido extends Component {
 
 
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData}}}/>;
+        }
         return (
             <div className="container">
 

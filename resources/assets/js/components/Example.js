@@ -6,6 +6,9 @@ import { Table,
          Checkbox, Button, Row, Col,
          ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
 import OptionModal from './OptionModal'
+import { Route, Router } from 'react-router-dom'
+
+
 
 const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 const phoneRegex = /^[0-9:]{10}/g;
@@ -93,7 +96,7 @@ function TableRow(props){
     );
 }
 
-class Example extends Component {
+export default class Example extends Component {
 
     constructor(props) {
         super(props);
@@ -137,6 +140,10 @@ class Example extends Component {
         
     }
 
+    componentDidMount() {
+        console.log(this.props.location.state.data);
+        this.fetchData(this.props.location.state.data);
+    }
 
     uploadFile(event){
 
