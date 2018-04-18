@@ -6,12 +6,9 @@ import { Table,
          Checkbox, Button, Row, Col,
          ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
 import OptionModal from './OptionModal'
+import TableRow from './TableRow'
 import { Route, Router } from 'react-router-dom'
-
-
-
-const emailRegex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-const phoneRegex = /^[0-9:]{10}/g;
+import { validAddress, validShipment} from '../validators.js'
 
 function ErrorElement(props){
     return(
@@ -24,76 +21,6 @@ function ErrorElement(props){
         )}
     </dl>
   );
-}
-
-function TableRow(props){
-    const row = props.row;
-    const index = props.index;
-    return(
-    <tr key = { row }>
-        <td><Checkbox onClick={e => props.handleMultipleSelect({index: index, object: row['object'], options: row['options']}, e.target.checked)} /></td>
-        <td> { row['object'].address_from.zipcode } </td>
-        <td> { row['object'].address_to.street } </td>
-        <td> { row['object'].address_to.zipcode } </td>
-        <td> { row['object'].description } </td>
-        <td> { row['object'].weight } </td>
-        <td> { row['object'].length } </td>
-        <td> { row['object'].height } </td>
-        <td> { row['object'].width } </td>
-        <td>
-            <ButtonToolbar>
-                <DropdownButton
-                bsStyle="default"
-                title={props.defaultValues[index] ? (
-                        props.defaultValues[index].servicelevel
-                      ) : (
-                        props.selectedServiceLevel[index] ? (
-                            props.selectedServiceLevel[index]
-                            ): (
-                                "Seleccionar"
-                            )
-                      )}
-                noCaret
-                id="dropdown-no-caret">
-                { Object.keys(row['options']).map((service) => <MenuItem key = {service}
-                eventKey = {service} onSelect={(e) => props.handleServiceLevel(index, e)}> 
-                { service } </MenuItem>)}
-                </DropdownButton>
-            </ButtonToolbar>
-        </td>
-        <td>
-            <ButtonToolbar>
-                <DropdownButton
-                bsStyle="default"
-                title={props.defaultValues[index] ? (
-                        props.defaultValues[index].provider
-                      ) : (
-                        props.selectedProvider[index] ? (
-                            props.selectedProvider[index]
-                            ): (
-                                "Seleccionar"
-                            )
-                      )}
-                noCaret
-                id="dropdown-no-caret">
-                { props.selectedServiceLevel[index] && 
-                    (row['options'][props.selectedServiceLevel[index]]).map((value) =>
-                    <MenuItem key = {value.provider} eventKey = {value.provider} 
-                              onSelect={(e) => props.handleProvider({index: index, amount: value.amount}, e)}> 
-                        { value.provider } 
-                    </MenuItem>
-                )}
-                </DropdownButton>
-            </ButtonToolbar>
-        </td>
-        <td>
-           $ {props.defaultValues[index] ? ( props.defaultValues[index].amount ) : 
-                ( props.selectedRate[index] ? ( props.selectedRate[index] ): 
-                        ("0.0")
-                )}
-        </td>
-    </tr>
-    );
 }
 
 export default class Example extends Component {
@@ -112,7 +39,6 @@ export default class Example extends Component {
             defaultValues: [],
             allServices: {},
             selectedElements: {},
-            availableService: {},
             generalServiceLevel: '',
             generalProvider: '',
             modalOpen: false
@@ -120,11 +46,9 @@ export default class Example extends Component {
 
 
         //Methods
-        this.uploadFile = this.uploadFile.bind(this);
         this.getAddressTo = this.getAddressTo.bind(this);
         this.fetchData = this.fetchData.bind(this);
         this.getRate = this.getRate.bind(this);
-        this.checkRates = this.checkRates.bind(this);
         this.joinRates = this.joinRates.bind(this);
         this.callCreateShipment = this.callCreateShipment.bind(this);
         this.getPrimaryAddressFrom = this.getPrimaryAddressFrom.bind(this);
@@ -134,58 +58,12 @@ export default class Example extends Component {
         this.handleGeneralServiceLevel = this.handleGeneralServiceLevel.bind(this);
         this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
-        //Validate data
-        this.validAddress = this.validAddress.bind(this);
-        this.validShipment = this.validShipment.bind(this);
         
     }
 
     componentDidMount() {
         console.log(this.props.location.state.data);
         this.fetchData(this.props.location.state.data);
-    }
-
-    uploadFile(event){
-
-        event.preventDefault();
-
-        //Set errors and success to empty. 
-        this.state.errors = {};
-        this.state.success = [];
-        this.setState(this.state);
-
-        var self = this;
-        
-        var fd = new FormData();    
-        fd.append('file', $('input[type=file]')[0].files[0]);
-
-        $.ajax({
-            url: '/getInfo',
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: fd,
-            dataType: "json",
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function(data){
-                if(data.error){
-                    self.state.errors[0] = [data.error];
-                    self.setState(self.state);
-                }else{
-                    //self.getPrimaryAddressFrom(data);
-                    self.fetchData(data);
-                }
-            },
-            error: function (xhr, status, error) 
-            {
-                console.log(xhr);
-                console.log(status);
-                console.log(error);
-            }
-        });
-        
     }
 
     getPrimaryAddressFrom(shipments){
@@ -294,58 +172,16 @@ export default class Example extends Component {
             self.joinRates(item, testObject[index], 1, testRates[index].results, index);
         });
     }
-
-
-    validAddress(item, index){
-        var valid = true;
-        var errors = [];
-        if(!item.name || item.name.length > 80){
-            //valid = false;
-            console.log(item.name);
-            errors.push("Nombre inválido. Debe tener 80 caracteres como máximo");
-        }
-        if(!item.street || item.street.length > 35){
-            //valid = false;
-            console.log(item.street);
-            errors.push("Dirección inválida. Debe tener 35 caracteres como máximo");
-        }
-        if(!item.street2 || item.street2.length > 35){
-            //valid = false;
-            console.log(item.street2);
-            errors.push("Dirección 2 inválida. Debe tener 35 caracteres como máximo");
-        }
-        if(!item.zipcode || item.zipcode.length > 5){
-            //valid = false;
-            console.log(item.zipcode);
-            errors.push("Código postal inválido. Debe tener 5 caracteres como máximo");
-        }
-        if(item.reference && item.reference.length > 255){
-            //valid = false;
-            console.log(item.reference);
-            errors.push("Referencia inválida. Debe tener 255 caracteres como máximo");
-        }
-        if(!item.email || item.email.length > 255 || !emailRegex.test(item.email)){
-            //valid = false;
-            console.log(item.email);
-            errors.push("Email inválido. Debe tener 35 caracteres como máximo");
-        }
-        if(!item.phone || item.phone.length > 20 || !phoneRegex.test(item.phone)){
-            //valid = false;
-            console.log(item.phone);
-            errors.push("Telefono inválido. Debe tener 20 caracteres como máximo");
-        }
-        return [valid, {row: index, errorMessage: errors}];
-    }
-
+    
     getAddressTo(item, index){
 
         self = this;
 
         //Validate if address is valid 
-        var valid = this.validAddress(item, index);
+        var valid = validAddress(item, index);
 
         if(valid[0]){
-            var address = 
+            /*var address = 
             {
                 "object_type": "PURCHASE",
                 "name": item.name,
@@ -379,7 +215,8 @@ export default class Example extends Component {
                     self.state.errors[0] = [error];
                     self.setState(self.state);
                 }
-            });
+            });*/
+            console.log("BIEN DIRECCION", item);
         }
         else
         {
@@ -388,33 +225,12 @@ export default class Example extends Component {
         }
     }
 
-    validShipment(item, index){
-        var valid = true;
-        var errors = [];
-        if(typeof(item.weight) != "number"){
-            valid = false;
-            errors.push("El peso del paquete es inválido");
-        }
-        if(typeof(item.length) != "number"){
-            valid = false;
-            errors.push("El largo del paquete es inválido");
-        }
-        if(typeof(item.height) != "number"){
-            valid = false;
-            errors.push("El alto del paquete es inválido");
-        }
-        if(typeof(item.width) != "number"){ 
-            valid = false;
-            errors.push("El ancho del paquete es inválido");
-        }
-        return [valid, {row: index, errorMessage: errors}];
-    }
-
+    
     callCreateShipment(item, addressToId, index){
 
         self = this;
 
-        var valid = this.validShipment(item.package, index);
+        var valid = validShipment(item.package, index);
 
         if(valid[0])
         {
@@ -514,25 +330,6 @@ export default class Example extends Component {
         });
     }
 
-    checkRates(item, shipmentId, rates, index){
-
-        self = this;
-        var bool = false;
-        
-        rates.forEach(function(price){
-            if(((item.provider).trim()).toLowerCase() == ((price.provider).trim()).toLowerCase() 
-                && ((item.service).trim()).toLowerCase() == ((price.servicelevel).trim()).toLowerCase()){
-                self.updateShipment(item, shipmentId, price.object_id, index);
-                bool = true;
-            }
-        });
-        if(!bool){
-            //¿¿¿¿BORRAR EL SHIPMENT???????
-            self.state.errors[index] = ["No se encontro una tarifa que cumpla con la paquetería y tipo de sevicio seleccioando."];
-            self.setState(self.state);
-        }
-    }
-
     updateShipment(item, shipmentId, rateId, index){
 
         self = this;
@@ -571,6 +368,7 @@ export default class Example extends Component {
         let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
         let defaultValues = {...this.state.defaultValues};
+        
         selectedServiceLevel[index] = e;
         selectedProvider[index] = null;
         selectedRate[index] = null;
@@ -645,9 +443,10 @@ export default class Example extends Component {
     }
 
     toggleModal(){
-        this.setState({
+
+        /*this.setState({
             modalOpen: !this.state.modalOpen
-        });
+        });*/
     }
     
     render() {
@@ -727,14 +526,6 @@ export default class Example extends Component {
                   </tbody>
                 </Table>
                 </Row>
-
-                <form id="center" ref="uploadForm" className="uploader" encType="multipart/form-data" >
-                    <div className="form-group">
-                        <input ref="file" type="file" name="file" className="upload-file"/>
-                        <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
-                        <input type="button" ref="button" value="Upload" onClick={this.uploadFile.bind(this)} />
-                    </div>
-                </form> 
                 <OptionModal modalOpen = { this.state.modalOpen} toggleModal = { this.toggleModal }/>
             </div>
         );
