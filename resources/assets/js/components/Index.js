@@ -6,13 +6,11 @@ import Example from './Example'
 import Guias from './Guias'
 
 render((
-  <BrowserRouter>
-    <div>
-    	<Switch>
-	     	<Route exact path='/' component={GenerarPedido}/>
+ 	<BrowserRouter>
+		<Switch>
+     		<Route exact path='/' component={GenerarPedido}/>
 	      	<Route path='/showTable' component={Example}/>
 	      	<Route path='/guias' component={Guias}/>
 	    </Switch>
-  	</div>
-  </BrowserRouter>
+  	</BrowserRouter>
 ), document.getElementById('root'));

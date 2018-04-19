@@ -58,7 +58,7 @@ class ExcelController extends Controller
 			        unlink($path); 
 			        return json_encode($envios_arr);
 			    }
-			    return json_encode(['error' => "Extensión inválida."]);
+			    return json_encode(['error' => "Archivo inválido."]);
 		    }
 		}
 
