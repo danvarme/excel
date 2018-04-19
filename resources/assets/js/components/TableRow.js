@@ -7,6 +7,7 @@ const TableRow = (props) => {
 
   const row = props.row;
   const index = props.index;
+  //console.log(row);
   return(
     <tr key = { row }>
         <td><Checkbox onClick={e => props.handleMultipleSelect({index: index, object: row['object'], options: row['options']}, e.target.checked)} /></td>
@@ -22,8 +23,8 @@ const TableRow = (props) => {
             <ButtonToolbar>
                 <DropdownButton
                 bsStyle="default"
-                title={props.defaultValues[index] ? (
-                        props.defaultValues[index].servicelevel
+                title={row['selectedRate'] ? (
+                        row['selectedRate'].servicelevel
                       ) : (
                         props.selectedServiceLevel[index] ? (
                             props.selectedServiceLevel[index]
@@ -43,8 +44,8 @@ const TableRow = (props) => {
             <ButtonToolbar>
               <DropdownButton
               bsStyle="default"
-              title={props.defaultValues[index] ? (
-                      props.defaultValues[index].provider
+              title={ row['selectedRate'] ? (
+                      row['selectedRate'].provider
                     ) : (
                       props.selectedProvider[index] ? (
                           props.selectedProvider[index]
@@ -65,7 +66,7 @@ const TableRow = (props) => {
             </ButtonToolbar>
         </td>
         <td>
-           $ {props.defaultValues[index] ? ( props.defaultValues[index].amount ) : 
+           $ { row['selectedRate'] ? ( row['selectedRate'].amount ) : 
                 ( props.selectedRate[index] ? ( props.selectedRate[index] ): 
                         ("0.0")
                 )}

@@ -8,6 +8,7 @@ import { Table,
 import OptionModal from './OptionModal'
 import TableRow from './TableRow'
 import { Route, Router } from 'react-router-dom'
+import { Redirect } from 'react-router'
 import { validAddress, validShipment} from '../validators.js'
 
 function ErrorElement(props){
@@ -41,7 +42,9 @@ export default class Example extends Component {
             selectedElements: {},
             generalServiceLevel: '',
             generalProvider: '',
-            modalOpen: false
+            modalOpen: false,
+            redirect: false,
+            subTotal: {}
         };
 
 
@@ -62,8 +65,9 @@ export default class Example extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.location.state.data);
+        //console.log(this.props.location.state.data);
         this.fetchData(this.props.location.state.data);
+        //this.getPrimaryAddressFrom(this.props.location.state.data);
     }
 
     getPrimaryAddressFrom(shipments){
@@ -126,7 +130,7 @@ export default class Example extends Component {
     }
 
     fetchData(shipments){
-        var self = this;
+        let self = this;
 
         var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
           "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
@@ -175,13 +179,13 @@ export default class Example extends Component {
     
     getAddressTo(item, index){
 
-        self = this;
+        let self = this;
 
         //Validate if address is valid 
         var valid = validAddress(item, index);
 
         if(valid[0]){
-            /*var address = 
+            var address = 
             {
                 "object_type": "PURCHASE",
                 "name": item.name,
@@ -215,8 +219,7 @@ export default class Example extends Component {
                     self.state.errors[0] = [error];
                     self.setState(self.state);
                 }
-            });*/
-            console.log("BIEN DIRECCION", item);
+            });
         }
         else
         {
@@ -228,7 +231,7 @@ export default class Example extends Component {
     
     callCreateShipment(item, addressToId, index){
 
-        self = this;
+        let self = this;
 
         var valid = validShipment(item.package, index);
 
@@ -276,7 +279,7 @@ export default class Example extends Component {
 
     getRate(item, shipmentObject, shipmentId, index){
 
-        self = this;
+        let self = this;
 
         $.ajax({
             "async": true,
@@ -316,9 +319,9 @@ export default class Example extends Component {
                 allServices[rate.servicelevel] = [rate.provider];
             }
             if(rate.servicelevel in serviceOptions){
-              serviceOptions[rate.servicelevel].push({provider: rate.provider, amount: rate.amount});
+              serviceOptions[rate.servicelevel].push(rate);
             }else{
-              serviceOptions[rate.servicelevel] = [{provider: rate.provider, amount: rate.amount}];
+              serviceOptions[rate.servicelevel] = [rate];
             }
         });
         this.setState(prevState => ({
@@ -330,13 +333,13 @@ export default class Example extends Component {
         });
     }
 
-    updateShipment(item, shipmentId, rateId, index){
+    updateShipment(shipmentId, rateId){
 
-        self = this;
+        let self = this;
 
         var rateInformation = {
             "object_purpose" : "PURCHASE",
-            "rate": 159
+            "rate": rateId
         };
 
         $.ajax({
@@ -352,8 +355,7 @@ export default class Example extends Component {
             "data": JSON.stringify(rateInformation),
             success: function (data)
             {
-                self.state.success.push(data);
-                self.setState(self.state);
+                console.log(data);
             },
             error: function (xhr, status, error) 
             {
@@ -368,16 +370,18 @@ export default class Example extends Component {
         let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
         let defaultValues = {...this.state.defaultValues};
-        
+        let success = this.state.success;
         selectedServiceLevel[index] = e;
         selectedProvider[index] = null;
         selectedRate[index] = null;
         defaultValues[index] = null;
+        success[index].selectedRate = null;
         this.setState({
             selectedServiceLevel,
             selectedProvider,
             selectedRate,
-            defaultValues
+            defaultValues,
+            success
         });
     }
 
@@ -391,6 +395,7 @@ export default class Example extends Component {
     handleGeneralProvider(provider, e){
         let errors = this.state.errors;
         let defaultValues = this.state.defaultValues;
+        let success = this.state.success;
         let generalServiceLevel = this.state.generalServiceLevel;
         let selectedElements = this.state.selectedElements;
         var found = false;
@@ -400,7 +405,8 @@ export default class Example extends Component {
             if(this.state.generalServiceLevel in options){
                 (options[this.state.generalServiceLevel]).map( function(item) {
                     if(item.provider === provider){
-                        defaultValues[key] = {servicelevel: generalServiceLevel, provider: provider, amount: item.amount};      
+                        success[key].selectedRate = item;
+                        defaultValues[key] = item;      
                         found = true;
                     }
                 })
@@ -412,6 +418,7 @@ export default class Example extends Component {
         this.setState({
             generalProvider: provider,
             defaultValues,
+            success,
             errors
         });
     }
@@ -428,7 +435,7 @@ export default class Example extends Component {
     }
 
     handleMultipleSelect(values, e){
-        self = this;
+        let self = this;
         let selectedElements = {...self.state.selectedElements};
         if(e){
             selectedElements[values.index] = {object: values.object, rates: values.options};
@@ -443,13 +450,31 @@ export default class Example extends Component {
     }
 
     toggleModal(){
-
+        let self = this;
+        let success = this.state.success;
+        let subTotal = this.state.subTotal;
+        var total = 0.0;
+        success.forEach(function(item, index){
+            total += item['selectedRate'].amount;
+            //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+        });
+        console.log(total);
+        subTotal['subTotal'] = total;
+        subTotal['count'] = success.length;
+        this.setState({
+            redirect: true,
+            subTotal
+        });
+        //console.log("toggle", this.state.success);
         /*this.setState({
             modalOpen: !this.state.modalOpen
         });*/
     }
     
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={{ pathname: '/guias', state: {success: this.state.success, subTotal: this.state.subTotal}}}/>;
+        }
         return (
             <div className = "container" style={{marginTop: 20}}>
                 {Object.keys(this.state.errors).length > 0 &&
@@ -516,7 +541,8 @@ export default class Example extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {(this.state.success).map((row, index) => 
+                  {this.state.success.length > 1 &&
+                    (this.state.success).map((row, index) => 
                     <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
                        selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }
                        selectedElements = { this.state.selectedElements }
