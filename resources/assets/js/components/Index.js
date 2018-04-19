@@ -6,12 +6,10 @@ import Example from './Example'
 
 
 render((
-  <BrowserRouter>
-    <div>
-    	<Switch>
-	     	<Route exact path='/' component={GenerarPedido}/>
+ 	<BrowserRouter>
+		<Switch>
+     		<Route exact path='/' component={GenerarPedido}/>
 	      	<Route path='/showTable' component={Example}/>
 	    </Switch>
-  	</div>
-  </BrowserRouter>
+  	</BrowserRouter>
 ), document.getElementById('root'));
