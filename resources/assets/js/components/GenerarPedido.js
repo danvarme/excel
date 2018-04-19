@@ -147,7 +147,7 @@ export default class GenerarPedido extends Component {
             "url": "https://app.mienvio.mx/api/users/"+ email +"/api_token",
             "headers": {
                 "content-type": "application/json",
-                "authorization": "Bearer 3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr"
+                "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
             },
             success: function (data)
             {

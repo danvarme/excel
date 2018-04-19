@@ -55,18 +55,18 @@ export default class Guias extends Component{
 			  	<div className="pull-right">
 				  	<div className="row ">
 				  		<Col md={4} mdPush={4} className="text-right">
-					      $ { subTotal.subTotal }
+					      <strong> $ { subTotal.subTotal } </strong>
 					    </Col>
 					    <Col md={8} mdPull={8}>
-					      Total
+					      <strong> Total </strong>
 					    </Col>
 				  	</div>
 				  	<div className="row ">
 				  		<Col md={4} mdPush={4} className="text-right">
-					      { subTotal.count}
+					      <strong> { subTotal.count} </strong>
 					    </Col>
 					    <Col md={8} mdPull={8} >
-					      No. guías
+					      <strong> No. guías </strong>
 					    </Col>
 				  	</div>
 			  	</div>

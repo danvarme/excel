@@ -8267,7 +8267,6 @@ var Example = function (_Component) {
         var _this = _possibleConstructorReturn(this, (Example.__proto__ || Object.getPrototypeOf(Example)).call(this, props));
 
         _this.state = {
-            addressIdFrom: 0,
             errors: {},
             success: [],
             selectedProvider: [],
@@ -8289,7 +8288,6 @@ var Example = function (_Component) {
         _this.getRate = _this.getRate.bind(_this);
         _this.joinRates = _this.joinRates.bind(_this);
         _this.callCreateShipment = _this.callCreateShipment.bind(_this);
-        _this.getPrimaryAddressFrom = _this.getPrimaryAddressFrom.bind(_this);
         _this.handleProvider = _this.handleProvider.bind(_this);
         _this.handleServiceLevel = _this.handleServiceLevel.bind(_this);
         _this.handleMultipleSelect = _this.handleMultipleSelect.bind(_this);
@@ -8303,113 +8301,57 @@ var Example = function (_Component) {
     _createClass(Example, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            console.log(this.props.location.state.newAddressId);
-            console.log(this.props.location.state.token);
-            //this.fetchData(this.props.location.state.data);
+            //console.log(this.props.location.state.newAddressId);
+            //console.log(this.props.location.state.token);
+            this.fetchData(this.props.location.state.data);
             //this.getPrimaryAddressFrom(this.props.location.state.data);
-        }
-    }, {
-        key: 'getPrimaryAddressFrom',
-        value: function getPrimaryAddressFrom(shipments) {
-
-            var self = this;
-
-            $.ajax({
-                "async": true,
-                "crossDomain": true,
-                "method": 'GET',
-                "url": 'https://app.mienvio.mx/api/addresses',
-                "headers": {
-                    "Authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
-                },
-                //No es util ahorita, pero en otros lo será. 
-                // complete: function (data)
-                // {   
-                //     // console.log("COMPLETE");
-                //     // console.log(data);
-                // },
-                success: function success(data) {
-                    var found = false;
-                    //If no results were found
-                    if (data.results.length == 0) {
-                        self.state.errors[0] = ["No se encontro la dirección primaria"];
-                        self.setState(self.state);
-                    } else {
-                        var addresses = data.results;
-                        addresses.forEach(function (address) {
-                            //Found primary address
-                            if (address.object_type == "PRIMARY") {
-                                found = true;
-                                self.state.addressIdFrom = address.object_id;
-                                self.setState(self.state);
-                                //Call fetchData function and send shipment object
-                                self.fetchData(shipments);
-                            }
-                        });
-                    }
-                    //If not primary address is found send error
-                    if (!found) {
-                        self.state.errors[0] = ["No se encontro la dirección primaria"];
-                        self.setState(self.state);
-                    }
-                },
-                error: function error(xhr, status, _error) {
-                    self.state.errors[0] = [_error];
-                    self.setState(self.state);
-                    //Es todo el response 
-                    console.log(xhr);
-                    //Solo dice error
-                    console.log(status);
-                    //Da el error como tal
-                    console.log(_error);
-                }
-            });
         }
     }, {
         key: 'fetchData',
         value: function fetchData(shipments) {
             var self = this;
 
-            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
-
-            var testRates = [{ "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
-                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/redpack.png" }] }];
+            /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+              "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+              "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+              "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
+              { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+              "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+              "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+              "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
+              var testRates = [{ "total_count": 3, "total_pages": 2,
+              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
+              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
+              "provider_img": "media/providers/redpack.png" }]},
+              { "total_count": 3, "total_pages": 2,
+              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
+              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
+              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
+              "provider_img": "media/providers/redpack.png" }]}];*/
 
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                //self.getAddressTo(item, index + 1);
-                self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+                self.getAddressTo(item, index + 1);
+                //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
             });
         }
     }, {
@@ -8440,7 +8382,7 @@ var Example = function (_Component) {
                     "url": 'https://app.mienvio.mx/api/addresses',
                     "headers": {
                         "content-type": "application/json",
-                        "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                        "authorization": "Bearer " + this.props.location.state.token
                     },
                     "processData": false,
                     "data": JSON.stringify(address),
@@ -8449,8 +8391,8 @@ var Example = function (_Component) {
                         //Crear dirección para enviar 
                         self.callCreateShipment(item, addressToId, index);
                     },
-                    error: function error(xhr, status, _error2) {
-                        self.state.errors[0] = [_error2];
+                    error: function error(xhr, status, _error) {
+                        self.state.errors[0] = [_error];
                         self.setState(self.state);
                     }
                 });
@@ -8470,7 +8412,7 @@ var Example = function (_Component) {
             if (valid[0]) {
                 var shipmentData = {
                     "object_purpose": "QUOTE",
-                    "address_from": this.state.addressIdFrom,
+                    "address_from": this.props.location.state.newAddressId,
                     "address_to": addressToId,
                     "weight": item.package.weight,
                     "length": item.package.length,
@@ -8486,15 +8428,15 @@ var Example = function (_Component) {
                     "url": 'https://app.mienvio.mx/api/shipments',
                     "headers": {
                         "content-type": "application/json",
-                        "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                        "authorization": "Bearer " + this.props.location.state.token
                     },
                     "data": JSON.stringify(shipmentData),
                     success: function success(data) {
                         var shipmentId = data.shipment.object_id;
                         self.getRate(item, data.shipment, shipmentId, index);
                     },
-                    error: function error(xhr, status, _error3) {
-                        self.state.errors[0] = [_error3];
+                    error: function error(xhr, status, _error2) {
+                        self.state.errors[0] = [_error2];
                         self.setState(self.state);
                     }
                 });
@@ -8516,14 +8458,14 @@ var Example = function (_Component) {
                 "url": "https://app.mienvio.mx/api/shipments/" + shipmentId + "/rates",
                 "headers": {
                     "content-type": "application/json",
-                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                    "authorization": "Bearer " + this.props.location.state.token
                 },
                 success: function success(data) {
                     //self.checkRates(item, shipmentId, data.results, index);
                     self.joinRates(item, shipmentObject, shipmentId, data.results, index);
                 },
-                error: function error(xhr, status, _error4) {
-                    self.state.errors[0] = [_error4];
+                error: function error(xhr, status, _error3) {
+                    self.state.errors[0] = [_error3];
                     self.setState(self.state);
                 }
             });
@@ -8579,15 +8521,15 @@ var Example = function (_Component) {
                 "url": "https://app.mienvio.mx/api/shipments/" + shipmentId,
                 "headers": {
                     "content-type": "application/json",
-                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
+                    "authorization": "Bearer " + this.props.location.state.token
                 },
                 "processData": false,
                 "data": JSON.stringify(rateInformation),
                 success: function success(data) {
                     console.log(data);
                 },
-                error: function error(xhr, status, _error5) {
-                    self.state.errors[0] = [_error5];
+                error: function error(xhr, status, _error4) {
+                    self.state.errors[0] = [_error4];
                     self.setState(self.state);
                 }
             });
@@ -8690,7 +8632,7 @@ var Example = function (_Component) {
             var total = 0.0;
             success.forEach(function (item, index) {
                 total += item['selectedRate'].amount;
-                //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
             });
             console.log(total);
             subTotal['subTotal'] = total;
@@ -21897,7 +21839,7 @@ var GenerarPedido = function (_Component) {
                 "url": "https://app.mienvio.mx/api/users/" + email + "/api_token",
                 "headers": {
                     "content-type": "application/json",
-                    "authorization": "Bearer 3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr"
+                    "authorization": "Bearer epN1HWx0FVqCyN7wPEDofVLKg7X0WZ7FRqqAFidTvJdKfJIE4jmQ9JfuDr46"
                 },
                 success: function success(data) {
                     self.setState({
@@ -79599,13 +79541,22 @@ var Guias = function (_Component) {
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
 							{ md: 4, mdPush: 4, className: 'text-right' },
-							'$ ',
-							subTotal.subTotal
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								'strong',
+								null,
+								' $ ',
+								subTotal.subTotal,
+								' '
+							)
 						),
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
 							{ md: 8, mdPull: 8 },
-							'Total'
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								'strong',
+								null,
+								' Total '
+							)
 						)
 					),
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79614,12 +79565,22 @@ var Guias = function (_Component) {
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
 							{ md: 4, mdPush: 4, className: 'text-right' },
-							subTotal.count
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								'strong',
+								null,
+								' ',
+								subTotal.count,
+								' '
+							)
 						),
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
 							{ md: 8, mdPull: 8 },
-							'No. gu\xEDas'
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								'strong',
+								null,
+								' No. gu\xEDas '
+							)
 						)
 					)
 				)
