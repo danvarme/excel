@@ -65,8 +65,9 @@ export default class Example extends Component {
     }
 
     componentDidMount() {
-        //console.log(this.props.location.state.data);
-        this.fetchData(this.props.location.state.data);
+        console.log(this.props.location.state.newAddressId);
+        console.log(this.props.location.state.token);
+        //this.fetchData(this.props.location.state.data);
         //this.getPrimaryAddressFrom(this.props.location.state.data);
     }
 

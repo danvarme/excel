@@ -8303,8 +8303,9 @@ var Example = function (_Component) {
     _createClass(Example, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            //console.log(this.props.location.state.data);
-            this.fetchData(this.props.location.state.data);
+            console.log(this.props.location.state.newAddressId);
+            console.log(this.props.location.state.token);
+            //this.fetchData(this.props.location.state.data);
             //this.getPrimaryAddressFrom(this.props.location.state.data);
         }
     }, {
@@ -21781,6 +21782,7 @@ var GenerarPedido = function (_Component) {
             modal: false,
             tokenError: '',
             uploadError: '',
+            newAddressId: null,
             errors: { 'email': null, 'name': null, 'street': null, 'street2': null, 'zipcode': null,
                 'phone': null, 'city': null }
         };
@@ -21928,12 +21930,11 @@ var GenerarPedido = function (_Component) {
                 "phone": this.state.phone,
                 "reference": this.state.reference
             };
-
             $.ajax({
                 "async": true,
                 "crossDomain": true,
                 "method": 'POST',
-                "url": "https://sandbox.mienvio.mx/api/addresses",
+                "url": 'https://app.mienvio.mx/api/addresses',
                 "headers": {
                     "content-type": "application/json",
                     "authorization": "Bearer " + self.state.api_token
@@ -21941,7 +21942,11 @@ var GenerarPedido = function (_Component) {
                 "processData": false,
                 "data": JSON.stringify(address),
                 success: function success(data) {
-                    console.log(data);
+                    self.setState({
+                        newAddressId: data.address.object_id
+                    });
+
+                    self.toggleModal();
                 },
                 error: function error(xhr, status, _error2) {
                     self.setState({
@@ -21991,7 +21996,7 @@ var GenerarPedido = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData, token: this.state.api_token, newAddressId: this.state.newAddressId } } });
             }
             var helpStyle = { top: 0, margin: 0 };
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(

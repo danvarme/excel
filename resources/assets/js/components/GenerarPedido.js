@@ -38,6 +38,7 @@ export default class GenerarPedido extends Component {
             modal: false,
             tokenError: '',
             uploadError: '',
+            newAddressId: null,
             errors: {'email': null, 'name':  null, 'street': null, 'street2': null, 'zipcode': null, 
             'phone': null, 'city':null}
         };
@@ -180,12 +181,11 @@ export default class GenerarPedido extends Component {
             "phone": this.state.phone,
             "reference": this.state.reference
         };
-
         $.ajax({
             "async": true,
             "crossDomain": true,
             "method": 'POST',
-            "url": "https://sandbox.mienvio.mx/api/addresses",
+            "url": 'https://app.mienvio.mx/api/addresses',
             "headers": {
                 "content-type": "application/json",
                 "authorization": "Bearer " + self.state.api_token
@@ -194,7 +194,11 @@ export default class GenerarPedido extends Component {
             "data": JSON.stringify(address),
             success: function (data)
             {
-               console.log(data);
+                self.setState({
+                    newAddressId: data.address.object_id
+                });
+
+                self.toggleModal();
             },
             error: function (xhr, status, error) 
             {
@@ -243,7 +247,7 @@ export default class GenerarPedido extends Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData}}}/>;
+            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData, token: this.state.api_token, newAddressId: this.state.newAddressId}}}/>;
         }
         let helpStyle = {top:0, margin: 0}
         return (
