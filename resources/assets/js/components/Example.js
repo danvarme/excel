@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import axios from 'axios';
 import { Table, 
          Checkbox, Button, Row, Col,
-         ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
+         ButtonToolbar, DropdownButton, MenuItem, ProgressBar, Modal } from 'react-bootstrap'
 import OptionModal from './OptionModal'
 import TableRow from './TableRow'
 import { Route, Router } from 'react-router-dom'
@@ -43,7 +43,9 @@ export default class Example extends Component {
             generalProvider: '',
             modalOpen: false,
             redirect: false,
-            subTotal: {}
+            subTotal: {},
+            isCharging: false,
+            progressBar: 0
         };
 
 
@@ -63,26 +65,75 @@ export default class Example extends Component {
     }
 
     componentDidMount() {
-        //console.log(this.props.location.state.newAddressId);
-        //console.log(this.props.location.state.token);
+        this.setState({
+            isCharging: true
+        });
         this.fetchData(this.props.location.state.data);
-        //this.getPrimaryAddressFrom(this.props.location.state.data);
     }
 
 
     fetchData(shipments){
-        let self = this;
+        self = this;
+
+        var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
+          { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
+
+        var testRates = [{ "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
+          "provider_img": "media/providers/redpack.png" }]},
+          { "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
+          "provider_img": "media/providers/redpack.png" }]}];
+
+        var total = 0;
+        var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
-            self.getAddressTo(item, index + 1);
-            //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+            total = ((index+1)/totalRecords)*100;
+            self.setState({
+                progressBar: total
+            });
+            
+            //self.getAddressTo(item, index + 1);
+            self.joinRates(item, testObject[index%2], 1, testRates[index%2].results, index%2);
+        });
+        self.setState({
+            isCharging: false
         });
     }
     
     getAddressTo(item, index){
 
-        let self = this;
+        self = this;
 
         //Validate if address is valid 
         var valid = validAddress(item, index);
@@ -134,7 +185,7 @@ export default class Example extends Component {
     
     callCreateShipment(item, addressToId, index){
 
-        let self = this;
+        self = this;
 
         var valid = validShipment(item.package, index);
 
@@ -182,7 +233,7 @@ export default class Example extends Component {
 
     getRate(item, shipmentObject, shipmentId, index){
 
-        let self = this;
+        self = this;
 
         $.ajax({
             "async": true,
@@ -238,7 +289,7 @@ export default class Example extends Component {
 
     updateShipment(shipmentId, rateId){
 
-        let self = this;
+        self = this;
 
         var rateInformation = {
             "object_purpose" : "PURCHASE",
@@ -338,7 +389,7 @@ export default class Example extends Component {
     }
 
     handleMultipleSelect(values, e){
-        let self = this;
+        self = this;
         let selectedElements = {...self.state.selectedElements};
         if(e){
             selectedElements[values.index] = {object: values.object, rates: values.options};
@@ -353,21 +404,33 @@ export default class Example extends Component {
     }
 
     toggleModal(){
-        let self = this;
+        self = this;
         let success = this.state.success;
         let subTotal = this.state.subTotal;
         var total = 0.0;
+        let error = false;
         success.forEach(function(item, index){
-            total += item['selectedRate'].amount;
-            self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            if(!item['selectedRate']){
+                error = true;
+                console.log(index);
+            }else{
+                console.log(index);
+                console.log(item['selectedRate']);
+                total += item['selectedRate'].amount;
+                //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            }
         });
-        console.log(total);
-        subTotal['subTotal'] = total;
-        subTotal['count'] = success.length;
-        this.setState({
-            redirect: true,
-            subTotal
-        });
+        if(!error){ 
+            subTotal['subTotal'] = total;
+            subTotal['count'] = success.length;
+            this.setState({
+                redirect: true,
+                subTotal
+            });
+        }else{
+            self.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
+            self.setState(self.state);
+        }
         //console.log("toggle", this.state.success);
         /*this.setState({
             modalOpen: !this.state.modalOpen
@@ -377,6 +440,16 @@ export default class Example extends Component {
     render() {
         if (this.state.redirect) {
             return <Redirect to={{ pathname: '/guias', state: {success: this.state.success, subTotal: this.state.subTotal}}}/>;
+        }
+        else if (this.state.isCharging) {
+            let helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important'}
+            return (
+                <Modal.Dialog style={helpStyle}>
+                    <Modal.Body>
+                        <h3 style={{marginTop: "3%", textAlign: 'center'}}>Subiendo archivos</h3>
+                        <ProgressBar style={{marginTop: "5%"}} now={this.state.progressBar} />
+                    </Modal.Body>
+                </Modal.Dialog>);
         }
         return (
             <div className = "container" style={{marginTop: 20}}>
