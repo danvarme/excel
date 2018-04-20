@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import axios from 'axios';
 import { Table, 
          Checkbox, Button, Row, Col,
-         ButtonToolbar, DropdownButton, MenuItem } from 'react-bootstrap'
+         ButtonToolbar, DropdownButton, MenuItem, ProgressBar, Modal } from 'react-bootstrap'
 import OptionModal from './OptionModal'
 import TableRow from './TableRow'
 import { Route, Router } from 'react-router-dom'
@@ -43,7 +43,9 @@ export default class Example extends Component {
             generalProvider: '',
             modalOpen: false,
             redirect: false,
-            subTotal: {}
+            subTotal: {},
+            isCharging: false,
+            progressBar: 0
         };
 
 
@@ -65,14 +67,18 @@ export default class Example extends Component {
     }
 
     componentDidMount() {
-        //console.log(this.props.location.state.newAddressId);
-        //console.log(this.props.location.state.token);
+        this.setState({
+            isCharging: true
+        });
         this.fetchData(this.props.location.state.data);
     }
 
 
     fetchData(shipments){
-        let self = this;
+        self = this;
+
+        var total = 0;
+        var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
 
         var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
           "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
@@ -114,14 +120,23 @@ export default class Example extends Component {
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
+
+            total = ((index+1)/totalRecords)*100;
+            self.setState({
+                progressBar: total
+            });
+
             //self.getAddressTo(item, index + 1);
-            self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+            self.joinRates(item, testObject[index%2], 1, testRates[index%2].results, index%2);
+        });
+        self.setState({
+            isCharging: false
         });
     }
     
     getAddressTo(item, index){
 
-        let self = this;
+        self = this;
 
         //Validate if address is valid 
         var valid = validAddress(item, index);
@@ -173,7 +188,7 @@ export default class Example extends Component {
     
     callCreateShipment(item, addressToId, index){
 
-        let self = this;
+        self = this;
 
         var valid = validShipment(item.package, index);
 
@@ -221,7 +236,7 @@ export default class Example extends Component {
 
     getRate(item, shipmentObject, shipmentId, index){
 
-        let self = this;
+        self = this;
 
         $.ajax({
             "async": true,
@@ -277,7 +292,7 @@ export default class Example extends Component {
 
     updateShipment(shipmentId, rateId){
 
-        let self = this;
+        self = this;
 
         var rateInformation = {
             "object_purpose" : "PURCHASE",
@@ -377,7 +392,7 @@ export default class Example extends Component {
     }
 
     handleMultipleSelect(values, e){
-        let self = this;
+        self = this;
         let selectedElements = {...self.state.selectedElements};
         if(e){
             selectedElements[values.index] = {object: values.object, rates: values.options};
@@ -392,9 +407,29 @@ export default class Example extends Component {
     }
 
     toggleModal(){
-        this.setState({
-            modalOpen: !this.state.modalOpen
-        });
+
+        var error = false;
+        var item = this.state.success;
+
+        for (var i = 0; i < item.length; i++) { 
+            if(!item[i]['selectedRate']){
+                error = true;
+                break;
+            }
+        }
+        console.log("error", error);
+        if(!error){ 
+            self.setState({
+                errors: {}
+            });
+            this.setState({
+                modalOpen: !this.state.modalOpen
+            });
+        }else{
+            self.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
+            self.setState(self.state);
+        }
+        
     }
 
     sendDashboard(){
@@ -402,13 +437,19 @@ export default class Example extends Component {
     }
 
     createLabel(){
-        let self = this;
+        self = this;
+
         let success = this.state.success;
         let subTotal = this.state.subTotal;
         var total = 0.0;
+        let error = false;
         success.forEach(function(item, index){
-            total += item['selectedRate'].amount;
-            //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            if(!item['selectedRate']){
+                error = true;
+            }else{
+                total += item['selectedRate'].amount;
+                //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            }
         });
         console.log(total);
         subTotal['subTotal'] = total;
@@ -422,6 +463,16 @@ export default class Example extends Component {
     render() {
         if (this.state.redirect) {
             return <Redirect to={{ pathname: '/guias', state: {success: this.state.success, subTotal: this.state.subTotal}}}/>;
+        }
+        else if (this.state.isCharging) {
+            let helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important'}
+            return (
+                <Modal.Dialog style={helpStyle}>
+                    <Modal.Body>
+                        <h3 style={{marginTop: "3%", textAlign: 'center'}}>Subiendo archivos</h3>
+                        <ProgressBar style={{marginTop: "5%"}} now={this.state.progressBar} />
+                    </Modal.Body>
+                </Modal.Dialog>);
         }
         return (
             <div className = "container" style={{marginTop: 20}}>

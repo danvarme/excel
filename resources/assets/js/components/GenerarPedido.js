@@ -119,21 +119,20 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        //this.getUserToken();
-        this.toggleModal();
-        /*if(this.validateInformation()){
-            this.getUserToken();
-            // this.toggleModal();
-        }else{
-            let errors = {...this.state.errors};
-            Object.keys(errors).forEach(function(key) {
-                if(self.state[key] == '') errors[key] = 'error';
-            });
+        // if(this.validateInformation()){
+        //     this.getUserToken();
+        //     // this.toggleModal();
+        // }else{
+        //     let errors = {...this.state.errors};
+        //     Object.keys(errors).forEach(function(key) {
+        //         if(self.state[key] == '') errors[key] = 'error';
+        //     });
 
-            this.setState({
-              errors
-            });
-        }*/
+        //     this.setState({
+        //       errors
+        //     });
+        // }
+        this.toggleModal();
     }
 
 
@@ -141,7 +140,6 @@ export default class GenerarPedido extends Component {
         let email = this.state.email;
         self = this;
 
-        console.log("ando obteniendo token");
         $.ajax({
             "async": true,
             "crossDomain": true,
@@ -171,7 +169,6 @@ export default class GenerarPedido extends Component {
     }
 
     createTempAddress(){
-        console.log("VAMOS A CREAR LA DIRECCIÓN");
         self = this;
 
         var address = {
@@ -361,7 +358,7 @@ export default class GenerarPedido extends Component {
                         </FormGroup>
 
                         <Button className="btn-primary pull-right" onClick={this.handleSubmit}>Siguiente</Button>
-                    </Form>;
+                    </Form>
 
                     </div>
                 </div>
