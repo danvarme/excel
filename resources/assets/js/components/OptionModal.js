@@ -13,13 +13,13 @@ export default class OptionMondal extends Component{
 			return <div className="static-modal">
 			  <Modal.Dialog>
 			    <Modal.Header>
-			      <Modal.Title>Elige la opción deseada</Modal.Title>
+			      <Modal.Title className="font-weight-bold">Elige la opción deseada</Modal.Title>
 			    </Modal.Header>
 
 			    <Modal.Body>
-			    	<ButtonToolbar>
-						<Button bsStyle="primary">Generar guías</Button>
-					    <Button bsStyle="primary">Enviar al dashboard del cliente</Button>
+			    	<ButtonToolbar style={{justifyContent:'center'}}>
+						<Button className="pull-left" bsStyle="primary" onClick={(e) => this.props.createLabel(e) }>Generar guías</Button>
+				    	<Button className="pull-right" bsStyle="primary" onClick={(e) => this.props.sendDashboard(e) }>Enviar al dashboard del cliente</Button>
 					</ButtonToolbar>
 			    </Modal.Body>
 

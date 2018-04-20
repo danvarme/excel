@@ -4307,9 +4307,9 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__Glyphicon__ = __webpack_require__(130);
 /* unused harmony reexport Glyphicon */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__Grid__ = __webpack_require__(206);
-/* unused harmony reexport Grid */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_23__Grid__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__HelpBlock__ = __webpack_require__(442);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_24__HelpBlock__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_24__HelpBlock__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__Image__ = __webpack_require__(443);
 /* unused harmony reexport Image */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__InputGroup__ = __webpack_require__(444);
@@ -4325,9 +4325,9 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__Media__ = __webpack_require__(84);
 /* unused harmony reexport Media */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__MenuItem__ = __webpack_require__(456);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_32__MenuItem__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_32__MenuItem__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__Modal__ = __webpack_require__(457);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_33__Modal__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_33__Modal__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__ModalBody__ = __webpack_require__(212);
 /* unused harmony reexport ModalBody */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__ModalFooter__ = __webpack_require__(213);
@@ -4371,7 +4371,7 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__ResponsiveEmbed__ = __webpack_require__(500);
 /* unused harmony reexport ResponsiveEmbed */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__Row__ = __webpack_require__(501);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__SafeAnchor__ = __webpack_require__(26);
 /* unused harmony reexport SafeAnchor */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_57__SplitButton__ = __webpack_require__(502);
@@ -4383,7 +4383,7 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_60__TabContent__ = __webpack_require__(137);
 /* unused harmony reexport TabContent */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_61__Table__ = __webpack_require__(505);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_62__TabPane__ = __webpack_require__(225);
 /* unused harmony reexport TabPane */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_63__Tabs__ = __webpack_require__(506);
@@ -8294,6 +8294,8 @@ var Example = function (_Component) {
         _this.handleGeneralServiceLevel = _this.handleGeneralServiceLevel.bind(_this);
         _this.handleGeneralProvider = _this.handleGeneralProvider.bind(_this);
         _this.toggleModal = _this.toggleModal.bind(_this);
+        _this.createLabel = _this.createLabel.bind(_this);
+        _this.sendDashboard = _this.sendDashboard.bind(_this);
 
         return _this;
     }
@@ -8304,54 +8306,52 @@ var Example = function (_Component) {
             //console.log(this.props.location.state.newAddressId);
             //console.log(this.props.location.state.token);
             this.fetchData(this.props.location.state.data);
-            //this.getPrimaryAddressFrom(this.props.location.state.data);
         }
     }, {
         key: 'fetchData',
         value: function fetchData(shipments) {
             var self = this;
 
-            /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
-              { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
-              var testRates = [{ "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-              "provider_img": "media/providers/redpack.png" }]},
-              { "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-              "provider_img": "media/providers/redpack.png" }]}];*/
+            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
+
+            var testRates = [{ "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
+                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/redpack.png" }] }];
 
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                self.getAddressTo(item, index + 1);
-                //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+                //self.getAddressTo(item, index + 1);
+                self.joinRates(item, testObject[index], 1, testRates[index].results, index);
             });
         }
     }, {
@@ -8626,13 +8626,23 @@ var Example = function (_Component) {
     }, {
         key: 'toggleModal',
         value: function toggleModal() {
+            this.setState({
+                modalOpen: !this.state.modalOpen
+            });
+        }
+    }, {
+        key: 'sendDashboard',
+        value: function sendDashboard() {}
+    }, {
+        key: 'createLabel',
+        value: function createLabel() {
             var self = this;
             var success = this.state.success;
             var subTotal = this.state.subTotal;
             var total = 0.0;
             success.forEach(function (item, index) {
                 total += item['selectedRate'].amount;
-                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+                //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
             });
             console.log(total);
             subTotal['subTotal'] = total;
@@ -8641,10 +8651,6 @@ var Example = function (_Component) {
                 redirect: true,
                 subTotal: subTotal
             });
-            //console.log("toggle", this.state.success);
-            /*this.setState({
-                modalOpen: !this.state.modalOpen
-            });*/
         }
     }, {
         key: 'render',
@@ -8718,7 +8724,7 @@ var Example = function (_Component) {
                                 id: 'dropdown-no-caret' },
                             Object.keys(this.state.allServices).map(function (service) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* MenuItem */],
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["l" /* MenuItem */],
                                     { key: service, eventKey: service,
                                         onSelect: function onSelect(e) {
                                             return _this2.handleGeneralServiceLevel(service, e);
@@ -8751,7 +8757,7 @@ var Example = function (_Component) {
                                 id: 'dropdown-no-caret' },
                             this.state.allServices[this.state.generalServiceLevel] && this.state.allServices[this.state.generalServiceLevel].map(function (provider) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* MenuItem */],
+                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["l" /* MenuItem */],
                                     { key: provider, eventKey: provider,
                                         onSelect: function onSelect(e) {
                                             return _this2.handleGeneralProvider(provider, e);
@@ -8765,10 +8771,10 @@ var Example = function (_Component) {
                     )
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Row */],
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["n" /* Row */],
                     null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["n" /* Table */],
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["o" /* Table */],
                         { striped: true, bordered: true },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'thead',
@@ -8847,7 +8853,8 @@ var Example = function (_Component) {
                         )
                     )
                 ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal })
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal,
+                    sendDashboard: this.sendDashboard, createLabel: this.createLabel })
             );
         }
     }]);
@@ -21811,19 +21818,20 @@ var GenerarPedido = function (_Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit() {
-            if (this.validateInformation()) {
+            //this.getUserToken();
+            this.toggleModal();
+            /*if(this.validateInformation()){
                 this.getUserToken();
                 // this.toggleModal();
-            } else {
-                var errors = _extends({}, this.state.errors);
-                Object.keys(errors).forEach(function (key) {
-                    if (self.state[key] == '') errors[key] = 'error';
+            }else{
+                let errors = {...this.state.errors};
+                Object.keys(errors).forEach(function(key) {
+                    if(self.state[key] == '') errors[key] = 'error';
                 });
-
-                this.setState({
-                    errors: errors
+                  this.setState({
+                  errors
                 });
-            }
+            }*/
         }
     }, {
         key: 'getUserToken',
@@ -21845,7 +21853,8 @@ var GenerarPedido = function (_Component) {
                     self.setState({
                         api_token: data.api_token
                     });
-                    self.createTempAddress();
+                    //self.createTempAddress();
+                    self.toggleModal();
                 },
                 error: function error(xhr, status, _error) {
                     console.log(_error);
@@ -21978,7 +21987,7 @@ var GenerarPedido = function (_Component) {
                                         },
                                         required: true }),
                                     this.state.errors.email && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'Correo electr\xF3nico inv\xE1lido'
                                     )
@@ -22004,7 +22013,7 @@ var GenerarPedido = function (_Component) {
                                         required: true,
                                         maxLength: '80' }),
                                     this.state.errors.name && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'Nombre inv\xE1lido. M\xE1ximo 80 caracteres'
                                     )
@@ -22031,7 +22040,7 @@ var GenerarPedido = function (_Component) {
                                             return _this2.handleChange("phone", e);
                                         } }),
                                     this.state.errors.phone && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'Tel\xE9fono inv\xE1lido'
                                     )
@@ -22056,7 +22065,7 @@ var GenerarPedido = function (_Component) {
                                         required: true,
                                         maxLength: '35' }),
                                     this.state.errors.street && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'Calle y n\xFAmero inv\xE1lido. M\xE1ximo 35 caracteres'
                                     )
@@ -22081,7 +22090,7 @@ var GenerarPedido = function (_Component) {
                                         },
                                         required: true }),
                                     this.state.errors.street2 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'Colonia inv\xE1lida. M\xE1ximo 35 caracteres'
                                     )
@@ -22125,7 +22134,7 @@ var GenerarPedido = function (_Component) {
                                         required: true,
                                         maxLength: '5' }),
                                     this.state.errors.zipcode && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["j" /* HelpBlock */],
+                                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["k" /* HelpBlock */],
                                         { style: helpStyle },
                                         'C\xF3digo postal inv\xE1lido.'
                                     )
@@ -76486,37 +76495,41 @@ var OptionMondal = function (_Component) {
 					'div',
 					{ className: 'static-modal' },
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["l" /* Modal */].Dialog,
+						__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["m" /* Modal */].Dialog,
 						null,
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["l" /* Modal */].Header,
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["m" /* Modal */].Header,
 							null,
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["l" /* Modal */].Title,
-								null,
+								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["m" /* Modal */].Title,
+								{ className: 'font-weight-bold' },
 								'Elige la opci\xF3n deseada'
 							)
 						),
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["l" /* Modal */].Body,
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["m" /* Modal */].Body,
 							null,
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["b" /* ButtonToolbar */],
-								null,
+								{ style: { justifyContent: 'center' } },
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
-									{ bsStyle: 'primary' },
+									{ className: 'pull-left', bsStyle: 'primary', onClick: function onClick(e) {
+											return _this2.props.createLabel(e);
+										} },
 									'Generar gu\xEDas'
 								),
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
-									{ bsStyle: 'primary' },
+									{ className: 'pull-right', bsStyle: 'primary', onClick: function onClick(e) {
+											return _this2.props.sendDashboard(e);
+										} },
 									'Enviar al dashboard del cliente'
 								)
 							)
 						),
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["l" /* Modal */].Footer,
+							__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["m" /* Modal */].Footer,
 							null,
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 								__WEBPACK_IMPORTED_MODULE_2_react_bootstrap__["a" /* Button */],
@@ -76635,7 +76648,7 @@ var TableRow = function TableRow(props) {
                         id: 'dropdown-no-caret' },
                     Object.keys(row['options']).map(function (service) {
                         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["k" /* MenuItem */],
+                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
                             { key: service,
                                 eventKey: service, onSelect: function onSelect(e) {
                                     return props.handleServiceLevel(index, e);
@@ -76662,7 +76675,7 @@ var TableRow = function TableRow(props) {
                         id: 'dropdown-no-caret' },
                     props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
                         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["k" /* MenuItem */],
+                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
                             { key: value.provider, eventKey: value.provider,
                                 onSelect: function onSelect(e) {
                                     return props.handleProvider({ index: index, amount: value.amount }, e);
@@ -79240,19 +79253,19 @@ var UploadModal = function UploadModal(props) {
         'div',
         { className: 'static-modal' },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* Modal */].Dialog,
+            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Dialog,
             null,
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* Modal */].Header,
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Header,
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* Modal */].Title,
+                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Title,
                     null,
                     'Subir archivo excel'
                 )
             ),
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* Modal */].Body,
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Body,
                 null,
                 props.message && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, { message: props.message }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79267,7 +79280,7 @@ var UploadModal = function UploadModal(props) {
                 )
             ),
             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* Modal */].Footer,
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Footer,
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
@@ -79359,15 +79372,45 @@ var Guias = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var subTotal = this.props.location.state.subTotal;
 			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				'div',
-				{ className: 'container' },
+				{ className: 'container', style: { marginTop: 20 } },
+				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+					'div',
+					{ className: 'row' },
+					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+						{ xs: 6, md: 6 },
+						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+							'h3',
+							null,
+							'Subir CSV'
+						)
+					),
+					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+						{ xs: 6, md: 6 },
+						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+							{ className: 'pull-right' },
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+								{ bsStyle: 'primary' },
+								'Descargar gu\xEDas'
+							),
+							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+								{ bsStyle: 'primary' },
+								'Enviar por correo'
+							)
+						)
+					)
+				),
 				this.props.location.state.success && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 					'div',
 					{ className: 'row' },
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Table */],
+						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Table */],
 						{ striped: true, bordered: true },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							'thead',
@@ -79533,53 +79576,69 @@ var Guias = function (_Component) {
 					)
 				),
 				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-					'div',
+					__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["j" /* Grid */],
 					{ className: 'pull-right' },
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						'div',
-						{ className: 'row ' },
+						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+						{ className: 'show-grid' },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ md: 4, mdPush: 4, className: 'text-right' },
+							{ xs: 4, xsOffset: 8 },
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								'strong',
-								null,
-								' $ ',
-								subTotal.subTotal,
-								' '
-							)
-						),
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ md: 8, mdPull: 8 },
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								'strong',
-								null,
-								' Total '
+								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+								{ className: 'show-grid' },
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+									{ md: 3, mdOffset: 4, className: 'text-right' },
+									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+										'strong',
+										null,
+										' Total '
+									)
+								),
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+									{ md: 5, className: 'text-right' },
+									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+										'strong',
+										null,
+										' $ ',
+										this.props.location.state.subTotal.subTotal,
+										' '
+									)
+								)
 							)
 						)
 					),
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						'div',
-						{ className: 'row ' },
+						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+						{ className: 'show-grid' },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ md: 4, mdPush: 4, className: 'text-right' },
+							{ xs: 4, xsOffset: 8 },
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								'strong',
-								null,
-								' ',
-								subTotal.count,
-								' '
-							)
-						),
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ md: 8, mdPull: 8 },
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								'strong',
-								null,
-								' No. gu\xEDas '
+								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+								{ className: 'show-grid' },
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+									{ md: 3, mdOffset: 4, className: 'text-right' },
+									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+										'strong',
+										null,
+										' No. gu\xEDas '
+									)
+								),
+								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+									{ md: 5, className: 'text-right' },
+									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+										'strong',
+										null,
+										' ',
+										this.props.location.state.subTotal.count,
+										' '
+									)
+								)
 							)
 						)
 					)

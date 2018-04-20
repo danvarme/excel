@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import { Table, Row, Col, Grid } from 'react-bootstrap'
+import { Table, 
+		 Row, Col, Grid,
+		 ButtonToolbar, Button } from 'react-bootstrap'
 
 export default class Guias extends Component{
 
@@ -8,9 +10,24 @@ export default class Guias extends Component{
     }
 
 	render(){
-		const subTotal = this.props.location.state.subTotal;
 		return (
-			<div className="container">
+			<div className="container" style={{marginTop: 20}}>
+				<div className="row">
+					<Col xs={6} md={6}>
+						<h3>Subir CSV</h3>
+					</Col>
+					<Col xs={6} md={6}>
+						<ButtonToolbar className="pull-right">
+						    <Button bsStyle="primary">
+						      Descargar guías
+						    </Button>
+						    <Button bsStyle="primary">
+						      Enviar por correo
+						    </Button>
+						</ButtonToolbar>
+					</Col>
+				</div>
+				
 				{ this.props.location.state.success  &&
 				<div className="row">
 					<Table striped bordered>
@@ -52,25 +69,32 @@ export default class Guias extends Component{
 				
 				</div>
 				}
-			  	<div className="pull-right">
-				  	<div className="row ">
-				  		<Col md={4} mdPush={4} className="text-right">
-					      <strong> $ { subTotal.subTotal } </strong>
+				<Grid className="pull-right">
+					<Row className="show-grid">
+					    <Col xs={4} xsOffset={8}>
+					    	<Row className="show-grid">
+					    		<Col md={3} mdOffset={4} className="text-right">
+							     	<strong> Total </strong>
+							    </Col>
+							    <Col md={5} className="text-right">
+							    	<strong> $ { this.props.location.state.subTotal.subTotal } </strong>
+							    </Col>
+						  </Row>
 					    </Col>
-					    <Col md={8} mdPull={8}>
-					      <strong> Total </strong>
+				  	</Row>
+				  	<Row className="show-grid">
+					    <Col xs={4} xsOffset={8}>
+					    	<Row className="show-grid">
+							    <Col md={3} mdOffset={4} className="text-right">
+							    	<strong> No. guías </strong>
+							    </Col>
+							    <Col md={5} className="text-right">
+							    	<strong> { this.props.location.state.subTotal.count} </strong>
+							    </Col>
+						  </Row>
 					    </Col>
-				  	</div>
-				  	<div className="row ">
-				  		<Col md={4} mdPush={4} className="text-right">
-					      <strong> { subTotal.count} </strong>
-					    </Col>
-					    <Col md={8} mdPull={8} >
-					      <strong> No. guías </strong>
-					    </Col>
-				  	</div>
-			  	</div>
-
+				  	</Row>
+				</Grid>
 			</div>
 		)
 	}

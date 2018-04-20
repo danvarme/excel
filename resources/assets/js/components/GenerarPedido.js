@@ -119,7 +119,9 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        if(this.validateInformation()){
+        //this.getUserToken();
+        this.toggleModal();
+        /*if(this.validateInformation()){
             this.getUserToken();
             // this.toggleModal();
         }else{
@@ -131,7 +133,7 @@ export default class GenerarPedido extends Component {
             this.setState({
               errors
             });
-        }
+        }*/
     }
 
 
@@ -154,7 +156,8 @@ export default class GenerarPedido extends Component {
                 self.setState({
                     api_token: data.api_token
                 });
-                self.createTempAddress();
+                //self.createTempAddress();
+                self.toggleModal();
             },
             error: function (xhr, status, error) 
             {

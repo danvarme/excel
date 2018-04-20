@@ -59,6 +59,8 @@ export default class Example extends Component {
         this.handleGeneralServiceLevel = this.handleGeneralServiceLevel.bind(this);
         this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
+        this.createLabel = this.createLabel.bind(this);
+        this.sendDashboard = this.sendDashboard.bind(this);
         
     }
 
@@ -66,17 +68,54 @@ export default class Example extends Component {
         //console.log(this.props.location.state.newAddressId);
         //console.log(this.props.location.state.token);
         this.fetchData(this.props.location.state.data);
-        //this.getPrimaryAddressFrom(this.props.location.state.data);
     }
 
 
     fetchData(shipments){
         let self = this;
 
+        var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
+          { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+          "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
+          "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
+          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+          "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
+
+        var testRates = [{ "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
+          "provider_img": "media/providers/redpack.png" }]},
+          { "total_count": 3, "total_pages": 2,
+          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
+          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
+          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
+          "provider_img": "media/providers/redpack.png" }]}];
+
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
-            self.getAddressTo(item, index + 1);
-            //self.joinRates(item, testObject[index], 1, testRates[index].results, index);
+            //self.getAddressTo(item, index + 1);
+            self.joinRates(item, testObject[index], 1, testRates[index].results, index);
         });
     }
     
@@ -353,13 +392,23 @@ export default class Example extends Component {
     }
 
     toggleModal(){
+        this.setState({
+            modalOpen: !this.state.modalOpen
+        });
+    }
+
+    sendDashboard(){
+
+    }
+
+    createLabel(){
         let self = this;
         let success = this.state.success;
         let subTotal = this.state.subTotal;
         var total = 0.0;
         success.forEach(function(item, index){
             total += item['selectedRate'].amount;
-            self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
         });
         console.log(total);
         subTotal['subTotal'] = total;
@@ -368,10 +417,6 @@ export default class Example extends Component {
             redirect: true,
             subTotal
         });
-        //console.log("toggle", this.state.success);
-        /*this.setState({
-            modalOpen: !this.state.modalOpen
-        });*/
     }
     
     render() {
@@ -455,7 +500,8 @@ export default class Example extends Component {
                   </tbody>
                 </Table>
                 </Row>
-                <OptionModal modalOpen = { this.state.modalOpen} toggleModal = { this.toggleModal }/>
+                <OptionModal modalOpen = { this.state.modalOpen } toggleModal = { this.toggleModal }
+                             sendDashboard = { this.sendDashboard } createLabel = { this.createLabel } />
             </div>
         );
     }
