@@ -119,20 +119,19 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        // if(this.validateInformation()){
-        //     this.getUserToken();
-        //     // this.toggleModal();
-        // }else{
-        //     let errors = {...this.state.errors};
-        //     Object.keys(errors).forEach(function(key) {
-        //         if(self.state[key] == '') errors[key] = 'error';
-        //     });
+        if(this.validateInformation()){
+            this.getUserToken();
+            //this.toggleModal();
+        }else{
+            let errors = {...this.state.errors};
+            Object.keys(errors).forEach(function(key) {
+                if(self.state[key] == '') errors[key] = 'error';
+            });
 
-        //     this.setState({
-        //       errors
-        //     });
-        // }
-        this.toggleModal();
+            this.setState({
+              errors
+            });
+        }
     }
 
 
@@ -154,8 +153,7 @@ export default class GenerarPedido extends Component {
                 self.setState({
                     api_token: data.api_token
                 });
-                //self.createTempAddress();
-                self.toggleModal();
+                self.createTempAddress();
             },
             error: function (xhr, status, error) 
             {
