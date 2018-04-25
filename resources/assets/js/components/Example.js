@@ -45,6 +45,7 @@ export default class Example extends Component {
             redirect: false,
             subTotal: {},
             isCharging: false,
+            emailSent: '',
             progressBar: 0
         };
 
@@ -63,6 +64,9 @@ export default class Example extends Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.createLabel = this.createLabel.bind(this);
         this.sendDashboard = this.sendDashboard.bind(this);
+        this.exportExcel = this.exportExcel.bind(this);
+        this.sendEmail = this.sendEmail.bind(this);
+        this.toggleEmailModal = this.toggleEmailModal.bind(this);
         
     }
 
@@ -77,7 +81,6 @@ export default class Example extends Component {
     fetchData(shipments){
         self = this;
 
-        var total = 0;
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
 
         var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
@@ -121,24 +124,17 @@ export default class Example extends Component {
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
 
-            total = ((index+1)/totalRecords)*100;
-            self.setState({
-                progressBar: total
-            });
-
-            //self.getAddressTo(item, index + 1);
-            self.joinRates(item, testObject[index%2], 1, testRates[index%2].results, index%2);
-        });
-        self.setState({
-            isCharging: false
+            //self.getAddressTo(item, index + 1, totalRecords);
+            self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+            //setTimeout(self.joinRates, 3000,item, testObject[index%2], 1, testRates[index%2].results, index, totalRecords);
         });
     }
     
-    getAddressTo(item, index){
+    getAddressTo(item, index, totalRecords){
 
         self = this;
 
-        //Validate if address is valid 
+        //Validate address 
         var valid = validAddress(item, index);
 
         if(valid[0]){
@@ -186,7 +182,7 @@ export default class Example extends Component {
     }
 
     
-    callCreateShipment(item, addressToId, index){
+    callCreateShipment(item, addressToId, index, totalRecords){
 
         self = this;
 
@@ -234,7 +230,7 @@ export default class Example extends Component {
         }
     }
 
-    getRate(item, shipmentObject, shipmentId, index){
+    getRate(item, shipmentObject, shipmentId, index, totalRecords){
 
         self = this;
 
@@ -260,7 +256,7 @@ export default class Example extends Component {
         });
     }
 
-    joinRates(item, shipmentObject, shipmentId, rates, index){
+    joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords){
         var serviceOptions = {};
         var selectedRate = null;
         let allServices = {...this.state.allServices};
@@ -288,6 +284,18 @@ export default class Example extends Component {
         this.setState({
             allServices
         });
+
+        self.setState({
+            progressBar: ((index+1)/totalRecords)*100
+        });
+
+        if(index == (totalRecords - 1)){
+            setTimeout(function(){
+                self.setState({
+                    isCharging: false
+                });
+            }, 500);
+        }
     }
 
     updateShipment(shipmentId, rateId){
@@ -329,6 +337,7 @@ export default class Example extends Component {
         let defaultValues = {...this.state.defaultValues};
         let success = this.state.success;
         selectedServiceLevel[index] = e;
+        console.log("service", e);
         selectedProvider[index] = null;
         selectedRate[index] = null;
         defaultValues[index] = null;
@@ -384,6 +393,7 @@ export default class Example extends Component {
         let selectedProvider = {...this.state.selectedProvider};
         let selectedRate = {...this.state.selectedRate};
         selectedProvider[values.index] = e;
+        console.log("provider", e, "amount", values.amount);
         selectedRate[values.index] = values.amount;
         this.setState({
             selectedProvider,
@@ -411,7 +421,8 @@ export default class Example extends Component {
         var error = false;
         var item = this.state.success;
 
-        for (var i = 0; i < item.length; i++) { 
+        for (var i = 0; i < item.length; i++) {
+            console.log(item[i]['selectedRate']); 
             if(!item[i]['selectedRate']){
                 error = true;
                 break;
@@ -457,6 +468,65 @@ export default class Example extends Component {
         this.setState({
             redirect: true,
             subTotal
+        });
+    }
+
+    exportExcel(event){
+        //Set errors and success to empty. 
+        self = this;
+
+        $.ajax({
+            url: '/exportExcel',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: JSON.stringify(this.props.location.state.data),
+            contentType: 'application/json',
+            type: 'POST',
+            success: function(data){
+                if(data.error){
+                    console.log(error);
+                }else{
+                    var a = document.createElement("a");
+                    a.href = data.file;
+                    a.download = data.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+            } 
+        });  
+    }
+
+    sendEmail(event){
+
+        self = this;
+
+        $.ajax({
+            url: '/sendEmail',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: JSON.stringify(this.props.location.state.data),
+            contentType: 'application/json',
+            type: 'POST',
+            success: function(data){
+                if(data.error){
+                    self.setState({
+                        emailSent: data.error
+                    });
+                }else{
+                    self.setState({
+                        emailSent: 'Las guías se han eviado exitosamente al correo del cliente'
+                    });
+                }
+            } 
+        });  
+    }
+
+    toggleEmailModal(){
+        this.setState({
+            emailSent: ''
         });
     }
     
@@ -551,8 +621,22 @@ export default class Example extends Component {
                   </tbody>
                 </Table>
                 </Row>
+                <Button className="btn-primary pull-right" onClick={this.exportExcel}>UPLOOOOADD</Button>
+                <Button className="btn-primary pull-right" onClick={this.sendEmail}>EMAIL</Button>
                 <OptionModal modalOpen = { this.state.modalOpen } toggleModal = { this.toggleModal }
                              sendDashboard = { this.sendDashboard } createLabel = { this.createLabel } />
+                {this.state.emailSent && 
+                    <div className="static-modal"> 
+                        <Modal.Dialog style={{position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important'}}>
+                            <Modal.Header>
+                                <Modal.Title className="font-weight-bold">Guías</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <h4 style={{textAlign: 'center', }}>{this.state.emailSent}</h4><br/>
+                                <Button bsStyle="primary" bsSize="small" block onClick={this.toggleEmailModal}>OK</Button>
+                            </Modal.Body>
+                        </Modal.Dialog>
+                    </div>}
             </div>
         );
     }

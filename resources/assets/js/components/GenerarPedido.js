@@ -55,6 +55,7 @@ export default class GenerarPedido extends Component {
         this.setState({
           modal: !this.state.modal
         });
+        console.log(this.state.modal);
     }
 
     handleChange(name,e) {
@@ -94,10 +95,12 @@ export default class GenerarPedido extends Component {
                 errors['street2'] = e.target.value  === '' ? 'error' : (e.target.value > 35 ? 'error' : null);
                 break;
             case 'zipcode':
-                errors['zipcode'] = (e.target.value.length == 5) ? null : 'error';
+                const zipRegex = /\b\d{5}\b/g;
+                errors['zipcode'] = (e.target.value.length != 5) ? 'error' : (zipRegex.test(e.target.value) ? null : 'error');
                 break;
             case 'phone':
-                errors['phone'] = (e.target.value) ? null : 'error';
+                const phoneRegex = /^[0-9:]{10}/g;
+                errors['phone'] = e.target.value === '' ? 'error' : (phoneRegex.test(e.target.value) ? null : 'error');
                 break;
             default:
                 break;
@@ -120,8 +123,8 @@ export default class GenerarPedido extends Component {
 
     handleSubmit(){
         // if(this.validateInformation()){
-        //     this.getUserToken();
-        //     // this.toggleModal();
+        //     //this.getUserToken();
+        //     this.toggleModal();
         // }else{
         //     let errors = {...this.state.errors};
         //     Object.keys(errors).forEach(function(key) {
@@ -132,6 +135,7 @@ export default class GenerarPedido extends Component {
         //       errors
         //     });
         // }
+        console.log("aqui voy");
         this.toggleModal();
     }
 

@@ -8281,6 +8281,7 @@ var Example = function (_Component) {
             redirect: false,
             subTotal: {},
             isCharging: false,
+            emailSent: '',
             progressBar: 0
         };
 
@@ -8298,6 +8299,9 @@ var Example = function (_Component) {
         _this.toggleModal = _this.toggleModal.bind(_this);
         _this.createLabel = _this.createLabel.bind(_this);
         _this.sendDashboard = _this.sendDashboard.bind(_this);
+        _this.exportExcel = _this.exportExcel.bind(_this);
+        _this.sendEmail = _this.sendEmail.bind(_this);
+        _this.toggleEmailModal = _this.toggleEmailModal.bind(_this);
 
         return _this;
     }
@@ -8315,7 +8319,6 @@ var Example = function (_Component) {
         value: function fetchData(shipments) {
             self = this;
 
-            var total = 0;
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
 
             var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
@@ -8357,25 +8360,18 @@ var Example = function (_Component) {
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
 
-                total = (index + 1) / totalRecords * 100;
-                self.setState({
-                    progressBar: total
-                });
-
-                //self.getAddressTo(item, index + 1);
-                self.joinRates(item, testObject[index % 2], 1, testRates[index % 2].results, index % 2);
-            });
-            self.setState({
-                isCharging: false
+                //self.getAddressTo(item, index + 1, totalRecords);
+                self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+                //setTimeout(self.joinRates, 3000,item, testObject[index%2], 1, testRates[index%2].results, index, totalRecords);
             });
         }
     }, {
         key: 'getAddressTo',
-        value: function getAddressTo(item, index) {
+        value: function getAddressTo(item, index, totalRecords) {
 
             self = this;
 
-            //Validate if address is valid 
+            //Validate address 
             var valid = Object(__WEBPACK_IMPORTED_MODULE_9__validators_js__["a" /* validAddress */])(item, index);
 
             if (valid[0]) {
@@ -8406,10 +8402,20 @@ var Example = function (_Component) {
                         //Crear dirección para enviar 
                         self.callCreateShipment(item, addressToId, index);
                     },
-                    error: function error(xhr, status, _error) {
-                        self.state.errors[0] = [_error];
+                    error: function (_error) {
+                        function error(_x, _x2, _x3) {
+                            return _error.apply(this, arguments);
+                        }
+
+                        error.toString = function () {
+                            return _error.toString();
+                        };
+
+                        return error;
+                    }(function (xhr, status, error) {
+                        self.state.errors[0] = [error];
                         self.setState(self.state);
-                    }
+                    })
                 });
             } else {
                 self.state.errors[valid[1].row] = valid[1].errorMessage;
@@ -8418,7 +8424,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'callCreateShipment',
-        value: function callCreateShipment(item, addressToId, index) {
+        value: function callCreateShipment(item, addressToId, index, totalRecords) {
 
             self = this;
 
@@ -8450,10 +8456,20 @@ var Example = function (_Component) {
                         var shipmentId = data.shipment.object_id;
                         self.getRate(item, data.shipment, shipmentId, index);
                     },
-                    error: function error(xhr, status, _error2) {
-                        self.state.errors[0] = [_error2];
+                    error: function (_error2) {
+                        function error(_x4, _x5, _x6) {
+                            return _error2.apply(this, arguments);
+                        }
+
+                        error.toString = function () {
+                            return _error2.toString();
+                        };
+
+                        return error;
+                    }(function (xhr, status, error) {
+                        self.state.errors[0] = [error];
                         self.setState(self.state);
-                    }
+                    })
                 });
             } else {
                 self.state.errors[valid[1].row] = valid[1].errorMessage;
@@ -8462,7 +8478,7 @@ var Example = function (_Component) {
         }
     }, {
         key: 'getRate',
-        value: function getRate(item, shipmentObject, shipmentId, index) {
+        value: function getRate(item, shipmentObject, shipmentId, index, totalRecords) {
 
             self = this;
 
@@ -8479,15 +8495,25 @@ var Example = function (_Component) {
                     //self.checkRates(item, shipmentId, data.results, index);
                     self.joinRates(item, shipmentObject, shipmentId, data.results, index);
                 },
-                error: function error(xhr, status, _error3) {
-                    self.state.errors[0] = [_error3];
+                error: function (_error3) {
+                    function error(_x7, _x8, _x9) {
+                        return _error3.apply(this, arguments);
+                    }
+
+                    error.toString = function () {
+                        return _error3.toString();
+                    };
+
+                    return error;
+                }(function (xhr, status, error) {
+                    self.state.errors[0] = [error];
                     self.setState(self.state);
-                }
+                })
             });
         }
     }, {
         key: 'joinRates',
-        value: function joinRates(item, shipmentObject, shipmentId, rates, index) {
+        value: function joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords) {
             var serviceOptions = {};
             var selectedRate = null;
             var allServices = _extends({}, this.state.allServices);
@@ -8517,6 +8543,18 @@ var Example = function (_Component) {
             this.setState({
                 allServices: allServices
             });
+
+            self.setState({
+                progressBar: (index + 1) / totalRecords * 100
+            });
+
+            if (index == totalRecords - 1) {
+                setTimeout(function () {
+                    self.setState({
+                        isCharging: false
+                    });
+                }, 500);
+            }
         }
     }, {
         key: 'updateShipment',
@@ -8543,10 +8581,20 @@ var Example = function (_Component) {
                 success: function success(data) {
                     console.log(data);
                 },
-                error: function error(xhr, status, _error4) {
-                    self.state.errors[0] = [_error4];
+                error: function (_error4) {
+                    function error(_x10, _x11, _x12) {
+                        return _error4.apply(this, arguments);
+                    }
+
+                    error.toString = function () {
+                        return _error4.toString();
+                    };
+
+                    return error;
+                }(function (xhr, status, error) {
+                    self.state.errors[0] = [error];
                     self.setState(self.state);
-                }
+                })
             });
         }
     }, {
@@ -8558,6 +8606,7 @@ var Example = function (_Component) {
             var defaultValues = _extends({}, this.state.defaultValues);
             var success = this.state.success;
             selectedServiceLevel[index] = e;
+            console.log("service", e);
             selectedProvider[index] = null;
             selectedRate[index] = null;
             defaultValues[index] = null;
@@ -8616,6 +8665,7 @@ var Example = function (_Component) {
             var selectedProvider = _extends({}, this.state.selectedProvider);
             var selectedRate = _extends({}, this.state.selectedRate);
             selectedProvider[values.index] = e;
+            console.log("provider", e, "amount", values.amount);
             selectedRate[values.index] = values.amount;
             this.setState({
                 selectedProvider: selectedProvider,
@@ -8646,6 +8696,7 @@ var Example = function (_Component) {
             var item = this.state.success;
 
             for (var i = 0; i < item.length; i++) {
+                console.log(item[i]['selectedRate']);
                 if (!item[i]['selectedRate']) {
                     error = true;
                     break;
@@ -8690,6 +8741,68 @@ var Example = function (_Component) {
             this.setState({
                 redirect: true,
                 subTotal: subTotal
+            });
+        }
+    }, {
+        key: 'exportExcel',
+        value: function exportExcel(event) {
+            //Set errors and success to empty. 
+            self = this;
+
+            $.ajax({
+                url: '/exportExcel',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: JSON.stringify(this.props.location.state.data),
+                contentType: 'application/json',
+                type: 'POST',
+                success: function success(data) {
+                    if (data.error) {
+                        console.log(error);
+                    } else {
+                        var a = document.createElement("a");
+                        a.href = data.file;
+                        a.download = data.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    }
+                }
+            });
+        }
+    }, {
+        key: 'sendEmail',
+        value: function sendEmail(event) {
+
+            self = this;
+
+            $.ajax({
+                url: '/sendEmail',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: JSON.stringify(this.props.location.state.data),
+                contentType: 'application/json',
+                type: 'POST',
+                success: function success(data) {
+                    if (data.error) {
+                        self.setState({
+                            emailSent: data.error
+                        });
+                    } else {
+                        self.setState({
+                            emailSent: 'Las guías se han eviado exitosamente al correo del cliente'
+                        });
+                    }
+                }
+            });
+        }
+    }, {
+        key: 'toggleEmailModal',
+        value: function toggleEmailModal() {
+            this.setState({
+                emailSent: ''
             });
         }
     }, {
@@ -8909,8 +9022,50 @@ var Example = function (_Component) {
                         )
                     )
                 ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
+                    { className: 'btn-primary pull-right', onClick: this.exportExcel },
+                    'UPLOOOOADD'
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
+                    { className: 'btn-primary pull-right', onClick: this.sendEmail },
+                    'EMAIL'
+                ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal,
-                    sendDashboard: this.sendDashboard, createLabel: this.createLabel })
+                    sendDashboard: this.sendDashboard, createLabel: this.createLabel }),
+                this.state.emailSent && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'static-modal' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Dialog,
+                        { style: { position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important' } },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Header,
+                            null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Title,
+                                { className: 'font-weight-bold' },
+                                'Gu\xEDas'
+                            )
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Body,
+                            null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'h4',
+                                { style: { textAlign: 'center' } },
+                                this.state.emailSent
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
+                                { bsStyle: 'primary', bsSize: 'small', block: true, onClick: this.toggleEmailModal },
+                                'OK'
+                            )
+                        )
+                    )
+                )
             );
         }
     }]);
@@ -21807,6 +21962,7 @@ var GenerarPedido = function (_Component) {
             this.setState({
                 modal: !this.state.modal
             });
+            console.log(this.state.modal);
         }
     }, {
         key: 'handleChange',
@@ -21847,10 +22003,12 @@ var GenerarPedido = function (_Component) {
                     errors['street2'] = e.target.value === '' ? 'error' : e.target.value > 35 ? 'error' : null;
                     break;
                 case 'zipcode':
-                    errors['zipcode'] = e.target.value.length == 5 ? null : 'error';
+                    var zipRegex = /\b\d{5}\b/g;
+                    errors['zipcode'] = e.target.value.length != 5 ? 'error' : zipRegex.test(e.target.value) ? null : 'error';
                     break;
                 case 'phone':
-                    errors['phone'] = e.target.value ? null : 'error';
+                    var phoneRegex = /^[0-9:]{10}/g;
+                    errors['phone'] = e.target.value === '' ? 'error' : phoneRegex.test(e.target.value) ? null : 'error';
                     break;
                 default:
                     break;
@@ -21875,8 +22033,8 @@ var GenerarPedido = function (_Component) {
         key: 'handleSubmit',
         value: function handleSubmit() {
             // if(this.validateInformation()){
-            //     this.getUserToken();
-            //     // this.toggleModal();
+            //     //this.getUserToken();
+            //     this.toggleModal();
             // }else{
             //     let errors = {...this.state.errors};
             //     Object.keys(errors).forEach(function(key) {
@@ -21887,6 +22045,7 @@ var GenerarPedido = function (_Component) {
             //       errors
             //     });
             // }
+            console.log("aqui voy");
             this.toggleModal();
         }
     }, {
@@ -79279,79 +79438,75 @@ function validShipment(item, index) {
 
 
 function ErrorElement(props) {
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'alert alert-danger alert-dismissible' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'a',
-            { href: '#', className: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' },
-            '\xD7'
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'strong',
-            null,
-            '\xA1Error!  '
-        ),
-        '  ',
-        props.message
-    );
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'div',
+    { className: 'alert alert-danger alert-dismissible' },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'a',
+      { href: '#', className: 'close', 'data-dismiss': 'alert', 'aria-label': 'close' },
+      '\xD7'
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'strong',
+      null,
+      '\xA1Error!  '
+    ),
+    '  ',
+    props.message
+  );
 }
 
 var UploadModal = function UploadModal(props) {
 
-    if (!props.modalIsOpen) {
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
-    }
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'static-modal' },
+  if (!props.modalIsOpen) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
+  }
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */],
+    { show: props.modalIsOpen, onHide: props.onRequestClose },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Header,
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Title,
+        null,
+        'Subir archivo excel'
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Body,
+      null,
+      props.message && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, { message: props.message }),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'form',
+        { id: 'center', className: 'uploader', encType: 'multipart/form-data' },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Dialog,
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Header,
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Title,
-                    null,
-                    'Subir archivo excel'
-                )
-            ),
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Body,
-                null,
-                props.message && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ErrorElement, { message: props.message }),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'form',
-                    { id: 'center', className: 'uploader', encType: 'multipart/form-data' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'form-group' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'file', name: 'file', className: 'upload-file' }),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' })
-                    )
-                )
-            ),
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Footer,
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
-                    { onClick: function onClick() {
-                            return props.onRequestClose();
-                        } },
-                    'Close'
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
-                    { bsStyle: 'primary', onClick: function onClick() {
-                            return props.uploadFile();
-                        } },
-                    'Procesar excel'
-                )
-            )
+          'div',
+          { className: 'form-group' },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'file', name: 'file', className: 'upload-file' }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'hidden', value: '{{ csrf_token() }}', name: '_token' })
         )
-    );
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Footer,
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+        { onClick: function onClick() {
+            return props.onRequestClose();
+          } },
+        'Close'
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+        { bsStyle: 'primary', onClick: function onClick() {
+            return props.uploadFile();
+          } },
+        'Procesar excel'
+      )
+    )
+  );
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (UploadModal);

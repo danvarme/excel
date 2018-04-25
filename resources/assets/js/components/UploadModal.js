@@ -16,31 +16,27 @@ const UploadModal = (props) => {
       return <div></div>;
    }
    return (
+      <Modal show={props.modalIsOpen} onHide={props.onRequestClose}>
+        <Modal.Header>
+            <Modal.Title>Subir archivo excel</Modal.Title>
+        </Modal.Header>
 
-        <div className="static-modal">
-          <Modal.Dialog>
-            <Modal.Header>
-              <Modal.Title>Subir archivo excel</Modal.Title>
-            </Modal.Header>
+        <Modal.Body>
+          {props.message && <ErrorElement message={props.message}/>}
+          <form id="center" className="uploader" encType="multipart/form-data" >
+            <div className="form-group">
+              <input type="file" name="file" className="upload-file"/>
+              <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
+            </div>
+          </form> 
+        </Modal.Body>
 
-            <Modal.Body>
-              {props.message && <ErrorElement message={props.message}/>}
-              <form id="center" className="uploader" encType="multipart/form-data" >
-                  <div className="form-group">
-                      <input type="file" name="file" className="upload-file"/>
-                      <input type="hidden" value="{{ csrf_token() }}" name="_token"/>
-                  </div>
-              </form> 
-
-            </Modal.Body>
-
-            <Modal.Footer>
-              <Button onClick={() => props.onRequestClose()}>Close</Button>
-              <Button bsStyle="primary" onClick={() => props.uploadFile()}>Procesar excel</Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </div>
-   );
+        <Modal.Footer>
+          <Button onClick={() => props.onRequestClose()}>Close</Button>
+          <Button bsStyle="primary" onClick={() => props.uploadFile()}>Procesar excel</Button>
+        </Modal.Footer>
+      </Modal>
+    );
 };
 
 export default UploadModal;

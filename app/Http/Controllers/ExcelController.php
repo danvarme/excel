@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Excel;
+use Mail;
 
 class ExcelController extends Controller
 {
+	protected $hidden = ['package'];
 	
 
     public function getInfo(Request $request)
@@ -64,6 +66,40 @@ class ExcelController extends Controller
 
 	    return json_encode(['error' => "Archivo requerido. Favor de adjunta archivo."]);
 
+	}
+
+	public function exportExcel(Request $request)
+	{
+		$data = $request->all();
+
+		$myFile = Excel::create('guia', function ($excel) use ($data) {
+            $excel->sheet('guia', function ($sheet) use ($data) {
+                $sheet->fromArray($data);
+
+            });
+        });
+        $myFile   = $myFile->string('xlsx'); 
+
+        $response = array(
+            'name' => 'guia', 
+            'file' => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($myFile), 
+        );
+
+        return response()->json($response);
+	
+	}
+
+	public function sendEmail(Request $request)
+	{	
+		Mail::send(
+			'sendEmail',
+			array(
+				'data' => $request->all()
+			),
+			function( $message ){
+				$message->to('fervargas59@gmail.com')->subject('Mi envío, contacto');
+			}
+		);
 	}
 
 	public function showTable(Request $request)
