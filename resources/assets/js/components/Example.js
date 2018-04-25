@@ -43,7 +43,7 @@ export default class Example extends Component {
             generalProvider: '',
             modalOpen: false,
             redirect: false,
-            subTotal: {},
+            purchaseId: null,
             isCharging: false,
             emailSent: '',
             progressBar: 0
@@ -82,52 +82,13 @@ export default class Example extends Component {
         self = this;
 
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-
-        var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-          "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-          "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-          "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
-          { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-          "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-          "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-          "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
-
-        var testRates = [{ "total_count": 3, "total_pages": 2,
-          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-          "provider_img": "media/providers/redpack.png" }]},
-          { "total_count": 3, "total_pages": 2,
-          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-          "provider_img": "media/providers/redpack.png" }]}];
-
+        console.log(totalRecords);
+        
         //Iterate over each shipment 
-        shipments.forEach(function(item, index){
-
-            //self.getAddressTo(item, index + 1, totalRecords);
-            self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
-            //setTimeout(self.joinRates, 3000,item, testObject[index%2], 1, testRates[index%2].results, index, totalRecords);
-        });
+        // shipments.forEach(function(item, index){
+        //     self.getAddressTo(item, index + 1, totalRecords);
+        //     //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+        // });
     }
     
     getAddressTo(item, index, totalRecords){
@@ -161,21 +122,18 @@ export default class Example extends Component {
                 },
                 "processData": false,
                 "data": JSON.stringify(address),
-                success: function (data)
-                {
+                success: function (data){
                     var addressToId = data.address.object_id;
                     //Crear dirección para enviar 
                     self.callCreateShipment(item, addressToId, index);
                 },
-                error: function (xhr, status, error) 
-                {
+                error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
                     self.setState(self.state);
                 }
             });
         }
-        else
-        {
+        else{
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
         }
@@ -188,8 +146,7 @@ export default class Example extends Component {
 
         var valid = validShipment(item.package, index);
 
-        if(valid[0])
-        {
+        if(valid[0]){
             var shipmentData = {
                 "object_purpose" : "QUOTE",
                 "address_from" : this.props.location.state.newAddressId,
@@ -211,20 +168,17 @@ export default class Example extends Component {
                     "authorization": "Bearer " + this.props.location.state.token
                 },
                 "data": JSON.stringify(shipmentData),
-                success: function (data)
-                {
+                success: function (data){
                     var shipmentId = data.shipment.object_id;
                     self.getRate(item, data.shipment, shipmentId, index);
                 },
-                error: function (xhr, status, error) 
-                {
+                error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
                     self.setState(self.state);
                 }
             });
         }
-        else
-        {
+        else{
             self.state.errors[valid[1].row] = valid[1].errorMessage;
             self.setState(self.state);
         }
@@ -243,13 +197,11 @@ export default class Example extends Component {
                 "content-type": "application/json",
                 "authorization": "Bearer " + this.props.location.state.token
             },
-            success: function (data)
-            {
+            success: function (data){
                 //self.checkRates(item, shipmentId, data.results, index);
                 self.joinRates(item, shipmentObject, shipmentId, data.results, index);
             },
-            error: function (xhr, status, error) 
-            {
+            error: function (xhr, status, error){
                 self.state.errors[0] = [error];
                 self.setState(self.state);
             }
@@ -257,6 +209,7 @@ export default class Example extends Component {
     }
 
     joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords){
+        console.log("JOIN RATES");
         var serviceOptions = {};
         var selectedRate = null;
         let allServices = {...this.state.allServices};
@@ -288,14 +241,18 @@ export default class Example extends Component {
         self.setState({
             progressBar: ((index+1)/totalRecords)*100
         });
-
-        if(index == (totalRecords - 1)){
-            setTimeout(function(){
-                self.setState({
-                    isCharging: false
-                });
-            }, 500);
-        }
+        console.log(index);
+        console.log(totalRecords);
+        // if(index == (totalRecords - 1)){
+        //     setTimeout(function(){
+        //         self.setState({
+        //             isCharging: false
+        //         });
+        //     }, 500);
+        // }
+        self.setState({
+            isCharging: false
+        });
     }
 
     updateShipment(shipmentId, rateId){
@@ -318,12 +275,10 @@ export default class Example extends Component {
             },
             "processData": false,
             "data": JSON.stringify(rateInformation),
-            success: function (data)
-            {
-                console.log(data);
+            success: function (data){
+                console.log("update", data);
             },
-            error: function (xhr, status, error) 
-            {
+            error: function (xhr, status, error) {
                 self.state.errors[0] = [error];
                 self.setState(self.state);
             }
@@ -390,14 +345,12 @@ export default class Example extends Component {
     }
 
     handleProvider(values, e) {
-        let selectedProvider = {...this.state.selectedProvider};
-        let selectedRate = {...this.state.selectedRate};
-        selectedProvider[values.index] = e;
-        console.log("provider", e, "amount", values.amount);
-        selectedRate[values.index] = values.amount;
+        let success = this.state.success;
+        let defaultValues = this.state.defaultValues;
+        success[values.index].selectedRate = values.amount;
+        defaultValues[values.index] = values.amount;   
         this.setState({
-            selectedProvider,
-            selectedRate
+            success
         });
     }
 
@@ -416,8 +369,8 @@ export default class Example extends Component {
         });
     }
 
-    toggleModal(){
-
+    toggleModal(e){
+        e.preventDefault();
         var error = false;
         var item = this.state.success;
 
@@ -428,47 +381,60 @@ export default class Example extends Component {
                 break;
             }
         }
-        console.log("error", error);
         if(!error){ 
-            self.setState({
-                errors: {}
-            });
             this.setState({
+                errors: {},
                 modalOpen: !this.state.modalOpen
             });
         }else{
-            self.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
-            self.setState(self.state);
+            this.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
+            this.setState(self.state);
         }
         
     }
 
-    sendDashboard(){
-
+    sendDashboard(e){
+        e.preventDefault();
     }
 
-    createLabel(){
+    createLabel(e){
+        e.preventDefault();
         self = this;
-
         let success = this.state.success;
-        let subTotal = this.state.subTotal;
-        var total = 0.0;
-        let error = false;
+        let purchases = [];
+
         success.forEach(function(item, index){
-            if(!item['selectedRate']){
-                error = true;
-            }else{
-                total += item['selectedRate'].amount;
-                //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-            }
+            self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            purchases.push(item['object'].object_id);
         });
-        console.log(total);
-        subTotal['subTotal'] = total;
-        subTotal['count'] = success.length;
-        this.setState({
-            redirect: true,
-            subTotal
-        });
+
+        var purchaseData = { "shipments" : purchases };
+
+        setTimeout(function(){ 
+            $.ajax({
+                "async": true,
+                "crossDomain": true,
+                "method": 'POST',
+                "url": "https://app.mienvio.mx/api/purchases",
+                "headers": {
+                    "content-type": "application/json",
+                    "authorization": "Bearer " + self.props.location.state.token
+                },
+                "data": JSON.stringify(purchaseData),
+                success: function (data){
+                    console.log("compra", data);
+                    self.setState({
+                        modalOpen: !self.state.modalOpen,
+                        purchaseId: data.purchase.object_id,
+                        redirect: true
+                    });
+                },
+                error: function (xhr, status, error){
+                    self.state.errors[0] = [error];
+                    self.setState(self.state);
+                }
+            });}
+        , 3000);
     }
 
     exportExcel(event){
@@ -532,7 +498,7 @@ export default class Example extends Component {
     
     render() {
         if (this.state.redirect) {
-            return <Redirect to={{ pathname: '/guias', state: {success: this.state.success, subTotal: this.state.subTotal}}}/>;
+            return <Redirect to={{ pathname: '/guias', state: {token: this.props.location.state.token, purchaseId: this.state.purchaseId}}}/>;
         }
         else if (this.state.isCharging) {
             let helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important'}
@@ -610,7 +576,7 @@ export default class Example extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.success.length > 1 &&
+                  {this.state.success.length > 0 &&
                     (this.state.success).map((row, index) => 
                     <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
                        selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }

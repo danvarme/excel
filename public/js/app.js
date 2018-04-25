@@ -8279,7 +8279,7 @@ var Example = function (_Component) {
             generalProvider: '',
             modalOpen: false,
             redirect: false,
-            subTotal: {},
+            purchaseId: null,
             isCharging: false,
             emailSent: '',
             progressBar: 0
@@ -8320,50 +8320,13 @@ var Example = function (_Component) {
             self = this;
 
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-
-            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
-
-            var testRates = [{ "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
-                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/redpack.png" }] }];
+            console.log(totalRecords);
 
             //Iterate over each shipment 
-            shipments.forEach(function (item, index) {
-
-                //self.getAddressTo(item, index + 1, totalRecords);
-                self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
-                //setTimeout(self.joinRates, 3000,item, testObject[index%2], 1, testRates[index%2].results, index, totalRecords);
-            });
+            // shipments.forEach(function(item, index){
+            //     self.getAddressTo(item, index + 1, totalRecords);
+            //     //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+            // });
         }
     }, {
         key: 'getAddressTo',
@@ -8514,6 +8477,7 @@ var Example = function (_Component) {
     }, {
         key: 'joinRates',
         value: function joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords) {
+            console.log("JOIN RATES");
             var serviceOptions = {};
             var selectedRate = null;
             var allServices = _extends({}, this.state.allServices);
@@ -8547,14 +8511,18 @@ var Example = function (_Component) {
             self.setState({
                 progressBar: (index + 1) / totalRecords * 100
             });
-
-            if (index == totalRecords - 1) {
-                setTimeout(function () {
-                    self.setState({
-                        isCharging: false
-                    });
-                }, 500);
-            }
+            console.log(index);
+            console.log(totalRecords);
+            // if(index == (totalRecords - 1)){
+            //     setTimeout(function(){
+            //         self.setState({
+            //             isCharging: false
+            //         });
+            //     }, 500);
+            // }
+            self.setState({
+                isCharging: false
+            });
         }
     }, {
         key: 'updateShipment',
@@ -8579,7 +8547,7 @@ var Example = function (_Component) {
                 "processData": false,
                 "data": JSON.stringify(rateInformation),
                 success: function success(data) {
-                    console.log(data);
+                    console.log("update", data);
                 },
                 error: function (_error4) {
                     function error(_x10, _x11, _x12) {
@@ -8662,14 +8630,12 @@ var Example = function (_Component) {
     }, {
         key: 'handleProvider',
         value: function handleProvider(values, e) {
-            var selectedProvider = _extends({}, this.state.selectedProvider);
-            var selectedRate = _extends({}, this.state.selectedRate);
-            selectedProvider[values.index] = e;
-            console.log("provider", e, "amount", values.amount);
-            selectedRate[values.index] = values.amount;
+            var success = this.state.success;
+            var defaultValues = this.state.defaultValues;
+            success[values.index].selectedRate = values.amount;
+            defaultValues[values.index] = values.amount;
             this.setState({
-                selectedProvider: selectedProvider,
-                selectedRate: selectedRate
+                success: success
             });
         }
     }, {
@@ -8690,8 +8656,8 @@ var Example = function (_Component) {
         }
     }, {
         key: 'toggleModal',
-        value: function toggleModal() {
-
+        value: function toggleModal(e) {
+            e.preventDefault();
             var error = false;
             var item = this.state.success;
 
@@ -8702,46 +8668,71 @@ var Example = function (_Component) {
                     break;
                 }
             }
-            console.log("error", error);
             if (!error) {
-                self.setState({
-                    errors: {}
-                });
                 this.setState({
+                    errors: {},
                     modalOpen: !this.state.modalOpen
                 });
             } else {
-                self.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
-                self.setState(self.state);
+                this.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
+                this.setState(self.state);
             }
         }
     }, {
         key: 'sendDashboard',
-        value: function sendDashboard() {}
+        value: function sendDashboard(e) {
+            e.preventDefault();
+        }
     }, {
         key: 'createLabel',
-        value: function createLabel() {
+        value: function createLabel(e) {
+            e.preventDefault();
             self = this;
-
             var success = this.state.success;
-            var subTotal = this.state.subTotal;
-            var total = 0.0;
-            var error = false;
+            var purchases = [];
+
             success.forEach(function (item, index) {
-                if (!item['selectedRate']) {
-                    error = true;
-                } else {
-                    total += item['selectedRate'].amount;
-                    //self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-                }
+                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+                purchases.push(item['object'].object_id);
             });
-            console.log(total);
-            subTotal['subTotal'] = total;
-            subTotal['count'] = success.length;
-            this.setState({
-                redirect: true,
-                subTotal: subTotal
-            });
+
+            var purchaseData = { "shipments": purchases };
+
+            setTimeout(function () {
+                $.ajax({
+                    "async": true,
+                    "crossDomain": true,
+                    "method": 'POST',
+                    "url": "https://app.mienvio.mx/api/purchases",
+                    "headers": {
+                        "content-type": "application/json",
+                        "authorization": "Bearer " + self.props.location.state.token
+                    },
+                    "data": JSON.stringify(purchaseData),
+                    success: function success(data) {
+                        console.log("compra", data);
+                        self.setState({
+                            modalOpen: !self.state.modalOpen,
+                            purchaseId: data.purchase.object_id,
+                            redirect: true
+                        });
+                    },
+                    error: function (_error5) {
+                        function error(_x13, _x14, _x15) {
+                            return _error5.apply(this, arguments);
+                        }
+
+                        error.toString = function () {
+                            return _error5.toString();
+                        };
+
+                        return error;
+                    }(function (xhr, status, error) {
+                        self.state.errors[0] = [error];
+                        self.setState(self.state);
+                    })
+                });
+            }, 3000);
         }
     }, {
         key: 'exportExcel',
@@ -8811,7 +8802,7 @@ var Example = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { success: this.state.success, subTotal: this.state.subTotal } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, purchaseId: this.state.purchaseId } } });
             } else if (this.state.isCharging) {
                 var helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important' };
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -9012,7 +9003,7 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'tbody',
                             null,
-                            this.state.success.length > 1 && this.state.success.map(function (row, index) {
+                            this.state.success.length > 0 && this.state.success.map(function (row, index) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__TableRow__["a" /* default */], { key: index, index: index, row: row, selectedProvider: _this2.state.selectedProvider,
                                     selectedServiceLevel: _this2.state.selectedServiceLevel, defaultValues: _this2.state.defaultValues,
                                     selectedElements: _this2.state.selectedElements,
@@ -22032,21 +22023,19 @@ var GenerarPedido = function (_Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit() {
-            // if(this.validateInformation()){
-            //     //this.getUserToken();
-            //     this.toggleModal();
-            // }else{
-            //     let errors = {...this.state.errors};
-            //     Object.keys(errors).forEach(function(key) {
-            //         if(self.state[key] == '') errors[key] = 'error';
-            //     });
+            if (this.validateInformation()) {
+                this.getUserToken();
+                //this.toggleModal();
+            } else {
+                var errors = _extends({}, this.state.errors);
+                Object.keys(errors).forEach(function (key) {
+                    if (self.state[key] == '') errors[key] = 'error';
+                });
 
-            //     this.setState({
-            //       errors
-            //     });
-            // }
-            console.log("aqui voy");
-            this.toggleModal();
+                this.setState({
+                    errors: errors
+                });
+            }
         }
     }, {
         key: 'getUserToken',
@@ -22067,8 +22056,7 @@ var GenerarPedido = function (_Component) {
                     self.setState({
                         api_token: data.api_token
                     });
-                    //self.createTempAddress();
-                    self.toggleModal();
+                    self.createTempAddress();
                 },
                 error: function error(xhr, status, _error) {
                     console.log(_error);
@@ -76776,135 +76764,135 @@ var OptionMondal = function (_Component) {
 
 var TableRow = function TableRow(props) {
 
-    var row = props.row;
-    var index = props.index;
-    //console.log(row);
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'tr',
-        { key: row },
+  var row = props.row;
+  var index = props.index;
+  //console.log(row);
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'tr',
+    { key: row },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
+          return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
+        } })
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_from.zipcode,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_to.street,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_to.zipcode,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].description,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].weight,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].length,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].height,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].width,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+        null,
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
-                    return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
-                } })
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_from.zipcode,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_to.street,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_to.zipcode,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].description,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].weight,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].length,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].height,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].width,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-                    {
-                        bsStyle: 'default',
-                        title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
-                        noCaret: true,
-                        id: 'dropdown-no-caret' },
-                    Object.keys(row['options']).map(function (service) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-                            { key: service,
-                                eventKey: service, onSelect: function onSelect(e) {
-                                    return props.handleServiceLevel(index, e);
-                                } },
-                            service,
-                            ' '
-                        );
-                    })
-                )
-            )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-                    {
-                        bsStyle: 'default',
-                        title: row['selectedRate'] ? row['selectedRate'].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
-                        noCaret: true,
-                        id: 'dropdown-no-caret' },
-                    props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-                            { key: value.provider, eventKey: value.provider,
-                                onSelect: function onSelect(e) {
-                                    return props.handleProvider({ index: index, amount: value.amount }, e);
-                                } },
-                            value.provider
-                        );
-                    })
-                )
-            )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            '$ ',
-            row['selectedRate'] ? row['selectedRate'].amount : props.selectedRate[index] ? props.selectedRate[index] : "0.0"
+          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+          {
+            bsStyle: 'default',
+            title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
+            noCaret: true,
+            id: 'dropdown-no-caret' },
+          Object.keys(row['options']).map(function (service) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+              { key: service,
+                eventKey: service, onSelect: function onSelect(e) {
+                  return props.handleServiceLevel(index, e);
+                } },
+              service,
+              ' '
+            );
+          })
         )
-    );
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+          {
+            bsStyle: 'default',
+            title: row['selectedRate'] ? row['selectedRate'].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
+            noCaret: true,
+            id: 'dropdown-no-caret' },
+          props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+              { key: value.provider, eventKey: value.provider,
+                onSelect: function onSelect(e) {
+                  return props.handleProvider({ index: index, amount: value }, e);
+                } },
+              value.provider
+            );
+          })
+        )
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      '$ ',
+      row['selectedRate'] ? row['selectedRate'].amount : props.selectedRate[index] ? props.selectedRate[index] : "0.0"
+    )
+  );
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (TableRow);
@@ -79566,20 +79554,77 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Guias = function (_Component) {
 	_inherits(Guias, _Component);
 
-	function Guias() {
+	function Guias(props) {
 		_classCallCheck(this, Guias);
 
-		return _possibleConstructorReturn(this, (Guias.__proto__ || Object.getPrototypeOf(Guias)).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, (Guias.__proto__ || Object.getPrototypeOf(Guias)).call(this, props));
+
+		_this.state = {
+			loading: true,
+			purchase: null
+		};
+
+		_this.getPurchase = _this.getPurchase.bind(_this);
+		return _this;
 	}
 
 	_createClass(Guias, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			console.log("GUIAS", this.props.location.state.success);
+			var _this2 = this;
+
+			console.log("GUIAS", this.props.location.state.purchaseId);
+			var purchaseId = this.props.location.state.purchaseId;
+			//this.getPurchase(purchaseId);
+			this.timerID = setInterval(function () {
+				return _this2.getPurchase(purchaseId);
+			}, 3000);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			clearInterval(this.timerID);
+		}
+	}, {
+		key: 'getPurchase',
+		value: function getPurchase(purchaseId) {
+			self = this;
+			var label = true;
+			console.log("getPurchase");
+			$.ajax({
+				"async": true,
+				"crossDomain": true,
+				"method": 'GET',
+				"url": "https://app.mienvio.mx/api/purchases/" + purchaseId,
+				"headers": {
+					"content-type": "application/json",
+					"authorization": "Bearer " + this.props.location.state.token
+				},
+				success: function success(data) {
+					data.purchase.shipments.forEach(function (shipment, index) {
+						if (!shipment.label) label = false;
+					});
+					if (label) {
+						console.log("todos label", data.purchase);
+						self.setState({
+							loading: false,
+							purchase: data.purchase
+						});
+						clearInterval(self.timerID);
+					} else console.log("alguno sin label");
+				},
+				error: function error(xhr, status, _error) {
+					console.log("obtener compra", _error);
+				}
+			});
 		}
 	}, {
 		key: 'render',
 		value: function render() {
+			if (!this.state.purchase) {
+				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
+			}
+			var purchaseObject = this.state.purchase;
 			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				'div',
 				{ className: 'container', style: { marginTop: 20 } },
@@ -79614,7 +79659,7 @@ var Guias = function (_Component) {
 						)
 					)
 				),
-				this.props.location.state.success && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 					'div',
 					{ className: 'row' },
 					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79691,91 +79736,91 @@ var Guias = function (_Component) {
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							'tbody',
 							null,
-							this.props.location.state.success.map(function (row, index) {
+							purchaseObject.shipments.map(function (shipment, index) {
 								return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									'tr',
-									{ key: row['object'].object_id },
+									{ key: shipment.object_id },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].object_id
+										shipment.label.tracking_number
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].address_from.zipcode,
+										shipment.address_from.zipcode,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].address_to.street,
+										shipment.address_to.street,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].address_to.zipcode,
+										shipment.address_to.zipcode,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].description,
+										shipment.description,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].weight,
+										shipment.weight,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].length,
+										shipment.length,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].height,
+										shipment.height,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['object'].width,
+										shipment.width,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['selectedRate'].servicelevel,
+										shipment.rate.servicelevel,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['selectedRate'].provider,
+										shipment.rate.provider,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row['selectedRate'].amount,
+										shipment.rate.amount,
 										' '
 									)
 								);
@@ -79797,7 +79842,7 @@ var Guias = function (_Component) {
 								{ className: 'show-grid' },
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 3, mdOffset: 4, className: 'text-right' },
+									{ md: 4, mdOffset: 3, className: 'text-right' },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'strong',
 										null,
@@ -79811,7 +79856,7 @@ var Guias = function (_Component) {
 										'strong',
 										null,
 										' $ ',
-										this.props.location.state.subTotal.subTotal,
+										purchaseObject.amount,
 										' '
 									)
 								)
@@ -79829,11 +79874,11 @@ var Guias = function (_Component) {
 								{ className: 'show-grid' },
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 3, mdOffset: 4, className: 'text-right' },
+									{ md: 4, mdOffset: 3, className: 'text-right' },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'strong',
 										null,
-										' No. gu\xEDas '
+										' No. de gu\xEDas '
 									)
 								),
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79843,7 +79888,7 @@ var Guias = function (_Component) {
 										'strong',
 										null,
 										' ',
-										this.props.location.state.subTotal.count,
+										purchaseObject.shipments.length,
 										' '
 									)
 								)

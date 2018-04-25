@@ -20,48 +20,48 @@ const TableRow = (props) => {
         <td> { row['object'].height } </td>
         <td> { row['object'].width } </td>
         <td>
-            <ButtonToolbar>
-                <DropdownButton
-                bsStyle="default"
-                title={row['selectedRate'] ? (
-                        row['selectedRate'].servicelevel
-                      ) : (
-                        props.selectedServiceLevel[index] ? (
-                            props.selectedServiceLevel[index]
-                            ): (
-                                "Seleccionar"
-                            )
-                      )}
-                noCaret
-                id="dropdown-no-caret">
-                { Object.keys(row['options']).map((service) => <MenuItem key = {service}
-                eventKey = {service} onSelect={(e) => props.handleServiceLevel(index, e)}> 
-                { service } </MenuItem>)}
-                </DropdownButton>
-            </ButtonToolbar>
+          <ButtonToolbar>
+            <DropdownButton
+            bsStyle="default"
+            title={row['selectedRate'] ? (
+                    row['selectedRate'].servicelevel
+                  ) : (
+                    props.selectedServiceLevel[index] ? (
+                        props.selectedServiceLevel[index]
+                        ): (
+                            "Seleccionar"
+                        )
+                  )}
+            noCaret
+            id="dropdown-no-caret">
+            { Object.keys(row['options']).map((service) => <MenuItem key = {service}
+            eventKey = {service} onSelect={(e) => props.handleServiceLevel(index, e)}> 
+            { service } </MenuItem>)}
+            </DropdownButton>
+          </ButtonToolbar>
         </td>
         <td>
-            <ButtonToolbar>
-              <DropdownButton
-              bsStyle="default"
-              title={ row['selectedRate'] ? (
-                      row['selectedRate'].provider
-                    ) : (
-                      props.selectedProvider[index] ? (
-                          props.selectedProvider[index]
-                          ): (
-                              "Seleccionar"
-                          )
-                    )}
-              noCaret
-              id="dropdown-no-caret">
-              { props.selectedServiceLevel[index] && 
-                  (row['options'][props.selectedServiceLevel[index]]).map((value) =>
-                  <MenuItem key = {value.provider} eventKey = {value.provider} 
-                            onSelect={(e) => props.handleProvider({index: index, amount: value.amount}, e)}> 
-                      { value.provider } 
-                  </MenuItem>
-              )}
+          <ButtonToolbar>
+            <DropdownButton
+            bsStyle="default"
+            title={ row['selectedRate'] ? (
+                    row['selectedRate'].provider
+                  ) : (
+                    props.selectedProvider[index] ? (
+                        props.selectedProvider[index]
+                        ): (
+                            "Seleccionar"
+                        )
+                  )}
+            noCaret
+            id="dropdown-no-caret">
+            { props.selectedServiceLevel[index] && 
+                (row['options'][props.selectedServiceLevel[index]]).map((value) =>
+                <MenuItem key = {value.provider} eventKey = {value.provider} 
+                          onSelect={(e) => props.handleProvider({index: index, amount: value}, e)}> 
+                    { value.provider } 
+                </MenuItem>
+            )}
               </DropdownButton>
             </ButtonToolbar>
         </td>
