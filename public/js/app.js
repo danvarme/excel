@@ -8314,46 +8314,8 @@ var Example = function (_Component) {
         key: 'fetchData',
         value: function fetchData(shipments) {
             self = this;
-
             var total = 0;
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-
-            /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
-              { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-              "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-              "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-              "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-              "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-              "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-              "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-              "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
-              var testRates = [{ "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-              "provider_img": "media/providers/redpack.png" }]},
-              { "total_count": 3, "total_pages": 2,
-              "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-              "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-              "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-              "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
-              "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-              "provider_img": "media/providers/redpack.png" }]}];*/
 
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
@@ -8614,13 +8576,12 @@ var Example = function (_Component) {
     }, {
         key: 'handleProvider',
         value: function handleProvider(values, e) {
-            var selectedProvider = _extends({}, this.state.selectedProvider);
-            var selectedRate = _extends({}, this.state.selectedRate);
-            selectedProvider[values.index] = e;
-            selectedRate[values.index] = values.amount;
+            var success = this.state.success;
+            var defaultValues = this.state.defaultValues;
+            success[values.index].selectedRate = values.amount;
+            defaultValues[values.index] = values.amount;
             this.setState({
-                selectedProvider: selectedProvider,
-                selectedRate: selectedRate
+                success: success
             });
         }
     }, {
@@ -8641,8 +8602,8 @@ var Example = function (_Component) {
         }
     }, {
         key: 'toggleModal',
-        value: function toggleModal() {
-
+        value: function toggleModal(e) {
+            e.preventDefault();
             var error = false;
             var item = this.state.success;
 
@@ -8652,7 +8613,6 @@ var Example = function (_Component) {
                     break;
                 }
             }
-            console.log("error", error);
             if (!error) {
                 this.setState({
                     errors: {},
@@ -8665,19 +8625,25 @@ var Example = function (_Component) {
         }
     }, {
         key: 'sendDashboard',
-        value: function sendDashboard() {}
+        value: function sendDashboard(e) {
+            e.preventDefault();
+        }
     }, {
         key: 'createLabel',
-        value: function createLabel() {
+        value: function createLabel(e) {
+            e.preventDefault();
             self = this;
             var success = this.state.success;
             var purchases = [];
+
             success.forEach(function (item, index) {
                 self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
                 purchases.push(item['object'].object_id);
             });
 
-            setInterval(function () {
+            var purchaseData = { "shipments": purchases };
+
+            setTimeout(function () {
                 $.ajax({
                     "async": true,
                     "crossDomain": true,
@@ -8691,9 +8657,9 @@ var Example = function (_Component) {
                     success: function success(data) {
                         console.log("compra", data);
                         self.setState({
-                            modalOpen: !this.state.modalOpen,
-                            redirect: true,
-                            purchaseId: data.purchase.object_id
+                            modalOpen: !self.state.modalOpen,
+                            purchaseId: data.purchase.object_id,
+                            redirect: true
                         });
                     },
                     error: function error(xhr, status, _error5) {
@@ -8702,10 +8668,6 @@ var Example = function (_Component) {
                     }
                 });
             }, 3000);
-
-            var purchaseData = {
-                "shipments": purchases
-            };
         }
     }, {
         key: 'render',
@@ -8914,7 +8876,7 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'tbody',
                             null,
-                            this.state.success.length > 1 && this.state.success.map(function (row, index) {
+                            this.state.success.length > 0 && this.state.success.map(function (row, index) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__TableRow__["a" /* default */], { key: index, index: index, row: row, selectedProvider: _this2.state.selectedProvider,
                                     selectedServiceLevel: _this2.state.selectedServiceLevel, defaultValues: _this2.state.defaultValues,
                                     selectedElements: _this2.state.selectedElements,
@@ -76630,135 +76592,135 @@ var OptionMondal = function (_Component) {
 
 var TableRow = function TableRow(props) {
 
-    var row = props.row;
-    var index = props.index;
-    //console.log(row);
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'tr',
-        { key: row },
+  var row = props.row;
+  var index = props.index;
+  //console.log(row);
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'tr',
+    { key: row },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
+          return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
+        } })
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_from.zipcode,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_to.street,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].address_to.zipcode,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].description,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].weight,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].length,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].height,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      ' ',
+      row['object'].width,
+      ' '
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+        null,
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
-                    return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
-                } })
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_from.zipcode,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_to.street,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].address_to.zipcode,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].description,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].weight,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].length,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].height,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            ' ',
-            row['object'].width,
-            ' '
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-                    {
-                        bsStyle: 'default',
-                        title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
-                        noCaret: true,
-                        id: 'dropdown-no-caret' },
-                    Object.keys(row['options']).map(function (service) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-                            { key: service,
-                                eventKey: service, onSelect: function onSelect(e) {
-                                    return props.handleServiceLevel(index, e);
-                                } },
-                            service,
-                            ' '
-                        );
-                    })
-                )
-            )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-                    {
-                        bsStyle: 'default',
-                        title: row['selectedRate'] ? row['selectedRate'].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
-                        noCaret: true,
-                        id: 'dropdown-no-caret' },
-                    props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-                            { key: value.provider, eventKey: value.provider,
-                                onSelect: function onSelect(e) {
-                                    return props.handleProvider({ index: index, amount: value.amount }, e);
-                                } },
-                            value.provider
-                        );
-                    })
-                )
-            )
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'td',
-            null,
-            '$ ',
-            row['selectedRate'] ? row['selectedRate'].amount : props.selectedRate[index] ? props.selectedRate[index] : "0.0"
+          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+          {
+            bsStyle: 'default',
+            title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
+            noCaret: true,
+            id: 'dropdown-no-caret' },
+          Object.keys(row['options']).map(function (service) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+              { key: service,
+                eventKey: service, onSelect: function onSelect(e) {
+                  return props.handleServiceLevel(index, e);
+                } },
+              service,
+              ' '
+            );
+          })
         )
-    );
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+          {
+            bsStyle: 'default',
+            title: row['selectedRate'] ? row['selectedRate'].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
+            noCaret: true,
+            id: 'dropdown-no-caret' },
+          props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+              { key: value.provider, eventKey: value.provider,
+                onSelect: function onSelect(e) {
+                  return props.handleProvider({ index: index, amount: value }, e);
+                } },
+              value.provider
+            );
+          })
+        )
+      )
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'td',
+      null,
+      '$ ',
+      row['selectedRate'] ? row['selectedRate'].amount : props.selectedRate[index] ? props.selectedRate[index] : "0.0"
+    )
+  );
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (TableRow);
@@ -79433,23 +79395,34 @@ var Guias = function (_Component) {
 			loading: true,
 			purchase: null
 		};
+
+		_this.getPurchase = _this.getPurchase.bind(_this);
 		return _this;
 	}
 
 	_createClass(Guias, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			var _this2 = this;
+
 			console.log("GUIAS", this.props.location.state.purchaseId);
 			var purchaseId = this.props.location.state.purchaseId;
-			while (this.state.loading) {
-				setInterval(this.getPurchase(purchaseId), 30000);
-			}
+			//this.getPurchase(purchaseId);
+			this.timerID = setInterval(function () {
+				return _this2.getPurchase(purchaseId);
+			}, 3000);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			clearInterval(this.timerID);
 		}
 	}, {
 		key: 'getPurchase',
 		value: function getPurchase(purchaseId) {
 			self = this;
 			var label = true;
+			console.log("getPurchase");
 			$.ajax({
 				"async": true,
 				"crossDomain": true,
@@ -79464,14 +79437,16 @@ var Guias = function (_Component) {
 						if (!shipment.label) label = false;
 					});
 					if (label) {
+						console.log("todos label", data.purchase);
 						self.setState({
 							loading: false,
 							purchase: data.purchase
 						});
-					}
+						clearInterval(self.timerID);
+					} else console.log("alguno sin label");
 				},
 				error: function error(xhr, status, _error) {
-					console.lof("obtener compra", _error);
+					console.log("obtener compra", _error);
 				}
 			});
 		}
@@ -79481,6 +79456,7 @@ var Guias = function (_Component) {
 			if (!this.state.purchase) {
 				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
 			}
+			var purchaseObject = this.state.purchase;
 			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				'div',
 				{ className: 'container', style: { marginTop: 20 } },
@@ -79592,91 +79568,91 @@ var Guias = function (_Component) {
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							'tbody',
 							null,
-							this.state.purchase.shipments.map(function (row, index) {
+							purchaseObject.shipments.map(function (shipment, index) {
 								return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									'tr',
-									{ key: row.object_id },
+									{ key: shipment.object_id },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.label.tracking_number
+										shipment.label.tracking_number
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.address_from.zipcode,
+										shipment.address_from.zipcode,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.address_to.street,
+										shipment.address_to.street,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.address_to.zipcode,
+										shipment.address_to.zipcode,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.description,
+										shipment.description,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.weight,
+										shipment.weight,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.length,
+										shipment.length,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.height,
+										shipment.height,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.width,
+										shipment.width,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.rate.servicelevel,
+										shipment.rate.servicelevel,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.rate.provider,
+										shipment.rate.provider,
 										' '
 									),
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'td',
 										null,
 										' ',
-										row.rate.amount,
+										shipment.rate.amount,
 										' '
 									)
 								);
@@ -79698,7 +79674,7 @@ var Guias = function (_Component) {
 								{ className: 'show-grid' },
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 3, mdOffset: 4, className: 'text-right' },
+									{ md: 4, mdOffset: 3, className: 'text-right' },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'strong',
 										null,
@@ -79712,7 +79688,7 @@ var Guias = function (_Component) {
 										'strong',
 										null,
 										' $ ',
-										this.state.purchase.amount,
+										purchaseObject.amount,
 										' '
 									)
 								)
@@ -79730,11 +79706,11 @@ var Guias = function (_Component) {
 								{ className: 'show-grid' },
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 3, mdOffset: 4, className: 'text-right' },
+									{ md: 4, mdOffset: 3, className: 'text-right' },
 									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 										'strong',
 										null,
-										' No. gu\xEDas '
+										' No. de gu\xEDas '
 									)
 								),
 								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79744,7 +79720,7 @@ var Guias = function (_Component) {
 										'strong',
 										null,
 										' ',
-										this.state.purchase.shipments.length,
+										purchaseObject.shipments.length,
 										' '
 									)
 								)

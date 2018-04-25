@@ -76,47 +76,8 @@ export default class Example extends Component {
 
     fetchData(shipments){
         self = this;
-
         var total = 0;
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-
-        /*var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-          "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-          "email": "dev@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-          "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null },
-          { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-          "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800", 
-          "email": "daniela@mienvio.mx", "phone": "+0864219858661","bookmark": false, "alias": "", "owner_id": 1 },"address_to": {
-          "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-          "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-          "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-          "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-          "provider": "Fedex", "provider_img": "media/providers/fedex.png"}, "label": null }];
-
-        var testRates = [{ "total_count": 3, "total_pages": 2,
-          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 150, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", 
-          "provider_img": "media/providers/redpack.png" }]},
-          { "total_count": 3, "total_pages": 2,
-          "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-          "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-          "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 99,"amount": 99, "servicelevel": "express",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex", 
-          "provider_img": "media/providers/fedex.png" }, { "object_id": 929,"amount": 120, "servicelevel": "estandar",
-          "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta", 
-          "provider_img": "media/providers/redpack.png" }]}];*/
 
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
@@ -370,13 +331,12 @@ export default class Example extends Component {
     }
 
     handleProvider(values, e) {
-        let selectedProvider = {...this.state.selectedProvider};
-        let selectedRate = {...this.state.selectedRate};
-        selectedProvider[values.index] = e;
-        selectedRate[values.index] = values.amount;
+        let success = this.state.success;
+        let defaultValues = this.state.defaultValues;
+        success[values.index].selectedRate = values.amount;
+        defaultValues[values.index] = values.amount;   
         this.setState({
-            selectedProvider,
-            selectedRate
+            success
         });
     }
 
@@ -395,8 +355,8 @@ export default class Example extends Component {
         });
     }
 
-    toggleModal(){
-
+    toggleModal(e){
+        e.preventDefault();
         var error = false;
         var item = this.state.success;
 
@@ -406,7 +366,6 @@ export default class Example extends Component {
                 break;
             }
         }
-        console.log("error", error);
         if(!error){ 
             this.setState({
                 errors: {},
@@ -419,48 +378,48 @@ export default class Example extends Component {
         
     }
 
-    sendDashboard(){
-
+    sendDashboard(e){
+        e.preventDefault();
     }
 
-    createLabel(){
+    createLabel(e){
+        e.preventDefault();
         self = this;
         let success = this.state.success;
         let purchases = [];
+
         success.forEach(function(item, index){
             self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
             purchases.push(item['object'].object_id);
         });
 
-        setInterval(function(){ 
-                    $.ajax({
-                        "async": true,
-                        "crossDomain": true,
-                        "method": 'POST',
-                        "url": "https://app.mienvio.mx/api/purchases",
-                        "headers": {
-                            "content-type": "application/json",
-                            "authorization": "Bearer " + self.props.location.state.token
-                        },
-                        "data": JSON.stringify(purchaseData),
-                        success: function (data){
-                            console.log("compra", data);
-                            self.setState({
-                                modalOpen: !this.state.modalOpen,
-                                redirect: true,
-                                purchaseId: data.purchase.object_id
-                            });
-                        },
-                        error: function (xhr, status, error){
-                            self.state.errors[0] = [error];
-                            self.setState(self.state);
-                        }
-                    });}
-        , 3000);
+        var purchaseData = { "shipments" : purchases };
 
-        var purchaseData = {
-            "shipments" : purchases
-        };
+        setTimeout(function(){ 
+            $.ajax({
+                "async": true,
+                "crossDomain": true,
+                "method": 'POST',
+                "url": "https://app.mienvio.mx/api/purchases",
+                "headers": {
+                    "content-type": "application/json",
+                    "authorization": "Bearer " + self.props.location.state.token
+                },
+                "data": JSON.stringify(purchaseData),
+                success: function (data){
+                    console.log("compra", data);
+                    self.setState({
+                        modalOpen: !self.state.modalOpen,
+                        purchaseId: data.purchase.object_id,
+                        redirect: true
+                    });
+                },
+                error: function (xhr, status, error){
+                    self.state.errors[0] = [error];
+                    self.setState(self.state);
+                }
+            });}
+        , 3000);
     }
     
     render() {
@@ -543,7 +502,7 @@ export default class Example extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                  {this.state.success.length > 1 &&
+                  {this.state.success.length > 0 &&
                     (this.state.success).map((row, index) => 
                     <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
                        selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }

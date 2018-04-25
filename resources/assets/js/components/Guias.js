@@ -12,25 +12,31 @@ export default class Guias extends Component{
         	loading: true,
         	purchase: null
         };
+
+        this.getPurchase = this.getPurchase.bind(this);
     }
 
     componentDidMount() {
     	console.log("GUIAS", this.props.location.state.purchaseId);
     	let purchaseId = this.props.location.state.purchaseId;
-    	while(this.state.loading){
-    		setInterval(this.getPurchase(purchaseId), 30000);
-    	}
+    	//this.getPurchase(purchaseId);
+    	this.timerID = setInterval( () => this.getPurchase(purchaseId), 3000 );
     }
+
+    componentWillUnmount() {
+	    clearInterval(this.timerID);
+	}
 
 
     getPurchase(purchaseId){
-        self = this;
-        var label = true;
-        $.ajax({
+    	self = this;
+    	var label = true;
+		console.log("getPurchase");
+    	$.ajax({
             "async": true,
             "crossDomain": true,
             "method": 'GET',
-            "url": "https://app.mienvio.mx/api/purchases/"+ purchaseId,
+            "url": "https://app.mienvio.mx/api/purchases/" + purchaseId,
             "headers": {
                 "content-type": "application/json",
                 "authorization": "Bearer " + this.props.location.state.token
@@ -40,14 +46,16 @@ export default class Guias extends Component{
             		if(!shipment.label) label = false;
 		        });
 		        if(label){
+		        	console.log("todos label", data.purchase);
 		        	self.setState({
 		        		loading: false,
 		        		purchase: data.purchase
 		        	});
-		        }
+		        	clearInterval(self.timerID);
+		        }else console.log("alguno sin label");
             },
             error: function (xhr, status, error) {
-            	console.lof("obtener compra", error);
+            	console.log("obtener compra", error);
             }
         });
     }
@@ -56,6 +64,7 @@ export default class Guias extends Component{
 		if(!this.state.purchase){
 			return <div></div>;
 		}
+		const purchaseObject = this.state.purchase;
 		return (
 			<div className="container" style={{marginTop: 20}}>
 				<div className="row">
@@ -93,20 +102,20 @@ export default class Guias extends Component{
 							</tr>
 						</thead>
 						<tbody>
-							{(this.state.purchase.shipments).map((row, index) =>
-								<tr key={row.object_id}>
-									<td> { row.label.tracking_number }</td>
-									<td> { row.address_from.zipcode } </td>
-									<td> { row.address_to.street } </td>
-									<td> { row.address_to.zipcode } </td>
-									<td> { row.description } </td>
-									<td> { row.weight } </td>
-									<td> { row.length } </td>
-									<td> { row.height } </td>
-									<td> { row.width } </td>
-									<td> { row.rate.servicelevel } </td>
-									<td> { row.rate.provider } </td>
-									<td> { row.rate.amount } </td>
+							{(purchaseObject.shipments).map((shipment, index) =>
+								<tr key={ shipment.object_id } >
+									<td> { shipment.label.tracking_number }</td>
+									<td> { shipment.address_from.zipcode } </td>
+									<td> { shipment.address_to.street } </td>
+									<td> { shipment.address_to.zipcode } </td>
+									<td> { shipment.description } </td>
+									<td> { shipment.weight } </td>
+									<td> { shipment.length } </td>
+									<td> { shipment.height } </td>
+									<td> { shipment.width } </td>
+									<td> { shipment.rate.servicelevel } </td>
+									<td> { shipment.rate.provider } </td>
+									<td> { shipment.rate.amount } </td>
 								</tr>
 							)}
 						</tbody>
@@ -117,11 +126,11 @@ export default class Guias extends Component{
 					<Row className="show-grid">
 					    <Col xs={4} xsOffset={8}>
 					    	<Row className="show-grid">
-					    		<Col md={3} mdOffset={4} className="text-right">
+					    		<Col md={4} mdOffset={3} className="text-right">
 							     	<strong> Total </strong>
 							    </Col>
 							    <Col md={5} className="text-right">
-							    	<strong> $ { this.state.purchase.amount } </strong>
+							    	<strong> $ { purchaseObject.amount } </strong>
 							    </Col>
 						  </Row>
 					    </Col>
@@ -129,11 +138,11 @@ export default class Guias extends Component{
 				  	<Row className="show-grid">
 					    <Col xs={4} xsOffset={8}>
 					    	<Row className="show-grid">
-							    <Col md={3} mdOffset={4} className="text-right">
-							    	<strong> No. guías </strong>
+							    <Col md={4} mdOffset={3} className="text-right">
+							    	<strong> No. de guías </strong>
 							    </Col>
 							    <Col md={5} className="text-right">
-							    	<strong> { this.state.purchase.shipments.length } </strong>
+							    	<strong> { purchaseObject.shipments.length } </strong>
 							    </Col>
 						  </Row>
 					    </Col>
