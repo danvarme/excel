@@ -8319,14 +8319,50 @@ var Example = function (_Component) {
         value: function fetchData(shipments) {
             self = this;
 
+            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
+
+            var testRates = [{ "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
+                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/redpack.png" }] }];
+
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
             console.log(totalRecords);
 
             //Iterate over each shipment 
-            // shipments.forEach(function(item, index){
-            //     self.getAddressTo(item, index + 1, totalRecords);
-            //     //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
-            // });
+            shipments.forEach(function (item, index) {
+                //self.getAddressTo(item, index + 1, totalRecords);
+                self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+            });
         }
     }, {
         key: 'getAddressTo',
@@ -8691,48 +8727,44 @@ var Example = function (_Component) {
             var success = this.state.success;
             var purchases = [];
 
-            success.forEach(function (item, index) {
-                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-                purchases.push(item['object'].object_id);
+            self.setState({
+                modalOpen: !self.state.modalOpen,
+                purchaseId: 62469,
+                redirect: true
             });
 
-            var purchaseData = { "shipments": purchases };
+            // success.forEach(function(item, index){
+            //     self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            //     purchases.push(item['object'].object_id);
+            // });
 
-            setTimeout(function () {
-                $.ajax({
-                    "async": true,
-                    "crossDomain": true,
-                    "method": 'POST',
-                    "url": "https://app.mienvio.mx/api/purchases",
-                    "headers": {
-                        "content-type": "application/json",
-                        "authorization": "Bearer " + self.props.location.state.token
-                    },
-                    "data": JSON.stringify(purchaseData),
-                    success: function success(data) {
-                        console.log("compra", data);
-                        self.setState({
-                            modalOpen: !self.state.modalOpen,
-                            purchaseId: data.purchase.object_id,
-                            redirect: true
-                        });
-                    },
-                    error: function (_error5) {
-                        function error(_x13, _x14, _x15) {
-                            return _error5.apply(this, arguments);
-                        }
+            // var purchaseData = { "shipments" : purchases };
 
-                        error.toString = function () {
-                            return _error5.toString();
-                        };
-
-                        return error;
-                    }(function (xhr, status, error) {
-                        self.state.errors[0] = [error];
-                        self.setState(self.state);
-                    })
-                });
-            }, 3000);
+            // setTimeout(function(){ 
+            //     $.ajax({
+            //         "async": true,
+            //         "crossDomain": true,
+            //         "method": 'POST',
+            //         "url": "https://app.mienvio.mx/api/purchases",
+            //         "headers": {
+            //             "content-type": "application/json",
+            //             "authorization": "Bearer " + self.props.location.state.token
+            //         },
+            //         "data": JSON.stringify(purchaseData),
+            //         success: function (data){
+            //             console.log("compra", data);
+            //             self.setState({
+            //                 modalOpen: !self.state.modalOpen,
+            //                 purchaseId: data.purchase.object_id,
+            //                 redirect: true
+            //             });
+            //         },
+            //         error: function (xhr, status, error){
+            //             self.state.errors[0] = [error];
+            //             self.setState(self.state);
+            //         }
+            //     });}
+            // , 3000);
         }
     }, {
         key: 'exportExcel',
@@ -22023,19 +22055,19 @@ var GenerarPedido = function (_Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit() {
-            if (this.validateInformation()) {
+            this.toggleModal();
+            /*if(this.validateInformation()){
                 this.getUserToken();
                 //this.toggleModal();
-            } else {
-                var errors = _extends({}, this.state.errors);
-                Object.keys(errors).forEach(function (key) {
-                    if (self.state[key] == '') errors[key] = 'error';
+            }else{
+                let errors = {...this.state.errors};
+                Object.keys(errors).forEach(function(key) {
+                    if(self.state[key] == '') errors[key] = 'error';
                 });
-
-                this.setState({
-                    errors: errors
+                  this.setState({
+                  errors
                 });
-            }
+            }*/
         }
     }, {
         key: 'getUserToken',
@@ -22148,7 +22180,7 @@ var GenerarPedido = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData, token: this.state.api_token, newAddressId: this.state.newAddressId } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", newAddressId: this.state.newAddressId } } });
             }
             var helpStyle = { top: 0, margin: 0 };
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -22395,7 +22427,7 @@ if (document.getElementById('generarPedido')) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(242);
-module.exports = __webpack_require__(538);
+module.exports = __webpack_require__(539);
 
 
 /***/ }),
@@ -79540,6 +79572,8 @@ Object(__WEBPACK_IMPORTED_MODULE_1_react_dom__["render"])(__WEBPACK_IMPORTED_MOD
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__public_media_loader_gif__ = __webpack_require__(538);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__public_media_loader_gif___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__public_media_loader_gif__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -79547,6 +79581,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
 
 
 
@@ -79622,7 +79658,11 @@ var Guias = function (_Component) {
 		key: 'render',
 		value: function render() {
 			if (!this.state.purchase) {
-				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
+				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+					'div',
+					{ className: 'container', style: { flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' } },
+					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { src: __WEBPACK_IMPORTED_MODULE_2__public_media_loader_gif___default.a, alt: 'loading...' })
+				);
 			}
 			var purchaseObject = this.state.purchase;
 			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -79907,6 +79947,12 @@ var Guias = function (_Component) {
 
 /***/ }),
 /* 538 */
+/***/ (function(module, exports) {
+
+module.exports = "/images/loader.gif?2c4ca55d6e72b54bf07a76725385a632";
+
+/***/ }),
+/* 539 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

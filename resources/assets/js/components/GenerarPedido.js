@@ -122,7 +122,8 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        if(this.validateInformation()){
+        this.toggleModal();
+        /*if(this.validateInformation()){
             this.getUserToken();
             //this.toggleModal();
         }else{
@@ -134,7 +135,7 @@ export default class GenerarPedido extends Component {
             this.setState({
               errors
             });
-        }
+        }*/
     }
 
 
@@ -248,7 +249,7 @@ export default class GenerarPedido extends Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData, token: this.state.api_token, newAddressId: this.state.newAddressId}}}/>;
+            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", newAddressId: this.state.newAddressId}}}/>;
         }
         let helpStyle = {top:0, margin: 0}
         return (

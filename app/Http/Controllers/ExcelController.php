@@ -46,19 +46,25 @@ class ExcelController extends Controller
 			    		$reader->all();
 			    	})->get();
 
-			        $type = TRUE;
-			        $envios_arr = [];
-			        if(!empty($envios)){
-			        	foreach ($envios as $key => $value) {
-			        		if(array_key_exists($value->package, $box_Arr)){
-			        			$add_element = ['name' => $value->name, 'street' => $value->street, 'street2' => $value->street2, 'reference' => $value->reference, 'city' => $value->city, 'state' => $value->state, 'zipcode' => $value->zipcode, 'phone' => $value->phone, 'service' => $value->service, 'provider' => $value->provider, 'package' => $box_Arr[$value->package], 'description' => $value->description, 'email' => $value->email];
-			        			array_push($envios_arr, $add_element);
-			        		}
-			        	}
-			        }
-			        $path = 'files/'.$fullname;
-			        unlink($path); 
-			        return json_encode($envios_arr);
+			    	$firstRow = (($envios->first())->keys())->toArray();
+			    	$path = 'files/'.$fullname;
+
+			    	if ($firstRow === array("name", "street", "street2", "reference", "city", "state", "zipcode", "phone", "service", "provider", "package", "description", "email")) {
+				            $envios_arr = [];
+					        if(!empty($envios)){
+					        	foreach ($envios as $key => $value) {
+					        		if(array_key_exists($value->package, $box_Arr)){
+					        			$add_element = ['name' => $value->name, 'street' => $value->street, 'street2' => $value->street2, 'reference' => $value->reference, 'city' => $value->city, 'state' => $value->state, 'zipcode' => $value->zipcode, 'phone' => $value->phone, 'service' => $value->service, 'provider' => $value->provider, 'package' => $box_Arr[$value->package], 'description' => $value->description, 'email' => $value->email];
+					        			array_push($envios_arr, $add_element);
+					        		}
+					        	}
+					        }
+					        unlink($path); 
+					        return json_encode($envios_arr);
+			        }else{
+				        unlink($path);
+						return json_encode(['error' => "Favor de seguir el formato del archivo"]);
+			        }			        
 			    }
 			    return json_encode(['error' => "Archivo inválido."]);
 		    }

@@ -3,6 +3,8 @@ import { Table,
 		 Row, Col, Grid,
 		 ButtonToolbar, Button } from 'react-bootstrap'
 
+import logo from '../../../../public/media/loader.gif'
+
 export default class Guias extends Component{
 
 	constructor(props) {
@@ -62,7 +64,11 @@ export default class Guias extends Component{
 
 	render(){
 		if(!this.state.purchase){
-			return <div></div>;
+			return (
+				<div className="container" style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+					<img src={ logo } alt="loading..." />
+				</div>
+			)
 		}
 		const purchaseObject = this.state.purchase;
 		return (
