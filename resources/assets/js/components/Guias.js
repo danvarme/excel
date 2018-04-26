@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Table, 
 		 Row, Col, Grid,
-		 ButtonToolbar, Button } from 'react-bootstrap'
+		 ButtonToolbar, Button, Modal} from 'react-bootstrap'
 
 export default class Guias extends Component{
 
@@ -10,10 +10,14 @@ export default class Guias extends Component{
 
         this.state = {
         	loading: true,
-        	purchase: null
+        	purchase: null,
+        	emailSent: ''
         };
 
         this.getPurchase = this.getPurchase.bind(this);
+        this.sendEmail = this.sendEmail.bind(this);
+        this.exportExcel = this.exportExcel.bind(this);
+        this.toggleEmailModal = this.toggleEmailModal.bind(this);
     }
 
     componentDidMount() {
@@ -60,6 +64,65 @@ export default class Guias extends Component{
         });
     }
 
+    exportExcel(event){
+        //Set errors and success to empty. 
+        self = this;
+
+        $.ajax({
+            url: '/exportExcel',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: JSON.stringify(this.props.location.state.data),
+            contentType: 'application/json',
+            type: 'POST',
+            success: function(data){
+                if(data.error){
+                    console.log(error);
+                }else{
+                    var a = document.createElement("a");
+                    a.href = data.file;
+                    a.download = data.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+            } 
+        });  
+    }
+
+    sendEmail(event){
+
+        self = this;
+
+        $.ajax({
+            url: '/sendEmail',
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: JSON.stringify(this.props.location.state.data),
+            contentType: 'application/json',
+            type: 'POST',
+            success: function(data){
+                if(data.error){
+                    self.setState({
+                        emailSent: 'Hubo un error al enviar el correo,intente nuevamente'
+                    });
+                }else{
+                    self.setState({
+                        emailSent: 'Las guías se han eviado exitosamente al correo del cliente'
+                    });
+                }
+            } 
+        });  
+    }
+
+    toggleEmailModal(){
+        this.setState({
+            emailSent: ''
+        });
+    }
+
 	render(){
 		if(!this.state.purchase){
 			return <div></div>;
@@ -73,10 +136,10 @@ export default class Guias extends Component{
 					</Col>
 					<Col xs={6} md={6}>
 						<ButtonToolbar className="pull-right">
-						    <Button bsStyle="primary">
+						    <Button bsStyle="primary" onClick={this.exportExcel}>
 						      Descargar guías
 						    </Button>
-						    <Button bsStyle="primary">
+						    <Button bsStyle="primary" onClick={this.sendEmail}>
 						      Enviar por correo
 						    </Button>
 						</ButtonToolbar>
@@ -148,6 +211,18 @@ export default class Guias extends Component{
 					    </Col>
 				  	</Row>
 				</Grid>
+				{this.state.emailSent && 
+                    <div className="static-modal"> 
+                        <Modal.Dialog style={{position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important'}}>
+                            <Modal.Header>
+                                <Modal.Title className="font-weight-bold">Guías</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <h4 style={{textAlign: 'center', }}>{this.state.emailSent}</h4><br/>
+                                <Button bsStyle="primary" bsSize="small" block onClick={this.toggleEmailModal}>OK</Button>
+                            </Modal.Body>
+                        </Modal.Dialog>
+                    </div>}
 			</div>
 		)
 	}

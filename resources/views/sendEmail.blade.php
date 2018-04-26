@@ -27,6 +27,7 @@
                             <thead>
                                 <tr>
                                     <th>No.guía</th>
+                                    <th>Origen</th>
                                     <th>Destino</th>
                                     <th>CP</th>
                                     <th>Contenido</th>
@@ -42,9 +43,10 @@
                             <tbody>
                                 @foreach ($data as $guia)
                                 <tr>
-                                    <td class="text-center">1234</td>
-                                    <td class="text-center">{{ $guia['city'] }}</td>
-                                    <td class="text-center">{{ $guia['zipcode'] }}</td>
+                                    <td class="text-center">{{ $guia['label']['tracking_number'] }}</td>
+                                    <td class="text-center">{{ $guia['address_from']['zipcode'] }}</td>
+                                    <td class="text-center">{{ $guia['address_to']['city'] }}</td>
+                                    <td class="text-center">{{ $guia['address_to']['zipcode'] }}</td>
                                     <td>
                                         @if(isset($guia['description']))
                                             {{ $guia['description'] }}
@@ -52,18 +54,45 @@
                                             -
                                         @endif
                                     </td>
-                                    <td>{{ $guia['package']['weight'] }}</td>
-                                    <td>{{ $guia['package']['length'] }}</td>
-                                    <td>{{ $guia['package']['height'] }}</td>
-                                    <td>{{ $guia['package']['width'] }}</td>
-                                    <td class="text-center">{{ $guia['service'] }}</td>
-                                    <td class="text-center">{{ $guia['provider'] }}</td>
-                                    <td class="text-center">$1234</td>
+                                    <td>{{ $guia['weight'] }}</td>
+                                    <td>{{ $guia['length'] }}</td>
+                                    <td>{{ $guia['height'] }}</td>
+                                    <td>{{ $guia['width'] }}</td>
+                                    <td class="text-center">{{ $guia['rate']['servicelevel'] }}</td>
+                                    <td class="text-center">{{ $guia['rate']['provider'] }}</td>
+                                    <td class="text-center">{{ number_format($guia['rate']['amount'], 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
+
+                        <div class="pull-right">
+                            <div class="row">
+                                <div class="col col-xs-4 col-xs-offset-8" >
+                                    <div class="row">
+                                        <div class="col col-md-4 col-md-offset-3 text-right">
+                                            <strong> Total </strong>
+                                        </div>
+                                        <div class="col col-md-5 text-right">
+                                            <strong> {{ number_format($data['amount'], 2) }} </strong>
+                                        </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-xs-4 col-xs-offset-8">
+                                    <div class="row">
+                                        <div class="col col-md-4 col-md-offset-3 text-right">
+                                            <strong> No. de guías </strong>
+                                        </div>
+                                        <div class="col col-md-5 text-right">
+                                            <strong> {{ purchaseObject.shipments.length }}</strong>
+                                        </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
             </div>
         </div>
 

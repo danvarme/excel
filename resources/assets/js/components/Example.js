@@ -82,19 +82,17 @@ export default class Example extends Component {
         self = this;
 
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-        console.log(totalRecords);
         
         //Iterate over each shipment 
-        // shipments.forEach(function(item, index){
-        //     self.getAddressTo(item, index + 1, totalRecords);
-        //     //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
-        // });
+        shipments.forEach(function(item, index){
+            self.getAddressTo(item, index + 1, totalRecords);
+            //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+        });
     }
     
     getAddressTo(item, index, totalRecords){
 
         self = this;
-
         //Validate address 
         var valid = validAddress(item, index);
 
@@ -125,7 +123,7 @@ export default class Example extends Component {
                 success: function (data){
                     var addressToId = data.address.object_id;
                     //Crear dirección para enviar 
-                    self.callCreateShipment(item, addressToId, index);
+                    self.callCreateShipment(item, addressToId, index, totalRecords);
                 },
                 error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
@@ -170,7 +168,7 @@ export default class Example extends Component {
                 "data": JSON.stringify(shipmentData),
                 success: function (data){
                     var shipmentId = data.shipment.object_id;
-                    self.getRate(item, data.shipment, shipmentId, index);
+                    self.getRate(item, data.shipment, shipmentId, index, totalRecords);
                 },
                 error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
@@ -187,7 +185,6 @@ export default class Example extends Component {
     getRate(item, shipmentObject, shipmentId, index, totalRecords){
 
         self = this;
-
         $.ajax({
             "async": true,
             "crossDomain": true,
@@ -199,7 +196,7 @@ export default class Example extends Component {
             },
             success: function (data){
                 //self.checkRates(item, shipmentId, data.results, index);
-                self.joinRates(item, shipmentObject, shipmentId, data.results, index);
+                self.joinRates(item, shipmentObject, shipmentId, data.results, index,totalRecords);
             },
             error: function (xhr, status, error){
                 self.state.errors[0] = [error];
@@ -209,7 +206,6 @@ export default class Example extends Component {
     }
 
     joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords){
-        console.log("JOIN RATES");
         var serviceOptions = {};
         var selectedRate = null;
         let allServices = {...this.state.allServices};
@@ -238,21 +234,20 @@ export default class Example extends Component {
             allServices
         });
 
-        self.setState({
-            progressBar: ((index+1)/totalRecords)*100
-        });
-        console.log(index);
-        console.log(totalRecords);
-        // if(index == (totalRecords - 1)){
-        //     setTimeout(function(){
-        //         self.setState({
-        //             isCharging: false
-        //         });
-        //     }, 500);
-        // }
-        self.setState({
-            isCharging: false
-        });
+        // self.setState({
+        //     progressBar: ((index+1)/totalRecords)*100
+        // });
+
+        if(index == totalRecords){
+            self.setState({
+                isCharging: false
+            });
+            // setTimeout(function(){
+            //     self.setState({
+            //         isCharging: false
+            //     });
+            // }, 200);
+        }
     }
 
     updateShipment(shipmentId, rateId){
@@ -501,14 +496,12 @@ export default class Example extends Component {
             return <Redirect to={{ pathname: '/guias', state: {token: this.props.location.state.token, purchaseId: this.state.purchaseId}}}/>;
         }
         else if (this.state.isCharging) {
-            let helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important'}
+            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%"}
             return (
-                <Modal.Dialog style={helpStyle}>
-                    <Modal.Body>
-                        <h3 style={{marginTop: "3%", textAlign: 'center'}}>Subiendo archivos</h3>
-                        <ProgressBar style={{marginTop: "5%"}} now={this.state.progressBar} />
-                    </Modal.Body>
-                </Modal.Dialog>);
+                <div  >
+                    <img style={helpStyle} src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" />
+                    <h1 style={{textAlign: "center", marginTop: "-5%"}}>Loading....</h1>
+                </div>);
         }
         return (
             <div className = "container" style={{marginTop: 20}}>

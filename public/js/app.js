@@ -4365,13 +4365,13 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_51__Popover__ = __webpack_require__(497);
 /* unused harmony reexport Popover */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_52__ProgressBar__ = __webpack_require__(498);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_52__ProgressBar__["a"]; });
+/* unused harmony reexport ProgressBar */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_53__Radio__ = __webpack_require__(499);
 /* unused harmony reexport Radio */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__ResponsiveEmbed__ = __webpack_require__(500);
 /* unused harmony reexport ResponsiveEmbed */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__Row__ = __webpack_require__(501);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_55__Row__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__SafeAnchor__ = __webpack_require__(26);
 /* unused harmony reexport SafeAnchor */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_57__SplitButton__ = __webpack_require__(502);
@@ -4383,7 +4383,7 @@ module.exports = DOMLazyTree;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_60__TabContent__ = __webpack_require__(137);
 /* unused harmony reexport TabContent */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_61__Table__ = __webpack_require__(505);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_61__Table__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_62__TabPane__ = __webpack_require__(225);
 /* unused harmony reexport TabPane */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_63__Tabs__ = __webpack_require__(506);
@@ -8320,20 +8320,18 @@ var Example = function (_Component) {
             self = this;
 
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-            console.log(totalRecords);
 
             //Iterate over each shipment 
-            // shipments.forEach(function(item, index){
-            //     self.getAddressTo(item, index + 1, totalRecords);
-            //     //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
-            // });
+            shipments.forEach(function (item, index) {
+                self.getAddressTo(item, index + 1, totalRecords);
+                //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+            });
         }
     }, {
         key: 'getAddressTo',
         value: function getAddressTo(item, index, totalRecords) {
 
             self = this;
-
             //Validate address 
             var valid = Object(__WEBPACK_IMPORTED_MODULE_9__validators_js__["a" /* validAddress */])(item, index);
 
@@ -8363,7 +8361,7 @@ var Example = function (_Component) {
                     success: function success(data) {
                         var addressToId = data.address.object_id;
                         //Crear dirección para enviar 
-                        self.callCreateShipment(item, addressToId, index);
+                        self.callCreateShipment(item, addressToId, index, totalRecords);
                     },
                     error: function (_error) {
                         function error(_x, _x2, _x3) {
@@ -8417,7 +8415,7 @@ var Example = function (_Component) {
                     "data": JSON.stringify(shipmentData),
                     success: function success(data) {
                         var shipmentId = data.shipment.object_id;
-                        self.getRate(item, data.shipment, shipmentId, index);
+                        self.getRate(item, data.shipment, shipmentId, index, totalRecords);
                     },
                     error: function (_error2) {
                         function error(_x4, _x5, _x6) {
@@ -8444,7 +8442,6 @@ var Example = function (_Component) {
         value: function getRate(item, shipmentObject, shipmentId, index, totalRecords) {
 
             self = this;
-
             $.ajax({
                 "async": true,
                 "crossDomain": true,
@@ -8456,7 +8453,7 @@ var Example = function (_Component) {
                 },
                 success: function success(data) {
                     //self.checkRates(item, shipmentId, data.results, index);
-                    self.joinRates(item, shipmentObject, shipmentId, data.results, index);
+                    self.joinRates(item, shipmentObject, shipmentId, data.results, index, totalRecords);
                 },
                 error: function (_error3) {
                     function error(_x7, _x8, _x9) {
@@ -8477,7 +8474,6 @@ var Example = function (_Component) {
     }, {
         key: 'joinRates',
         value: function joinRates(item, shipmentObject, shipmentId, rates, index, totalRecords) {
-            console.log("JOIN RATES");
             var serviceOptions = {};
             var selectedRate = null;
             var allServices = _extends({}, this.state.allServices);
@@ -8508,21 +8504,20 @@ var Example = function (_Component) {
                 allServices: allServices
             });
 
-            self.setState({
-                progressBar: (index + 1) / totalRecords * 100
-            });
-            console.log(index);
-            console.log(totalRecords);
-            // if(index == (totalRecords - 1)){
-            //     setTimeout(function(){
-            //         self.setState({
-            //             isCharging: false
-            //         });
-            //     }, 500);
-            // }
-            self.setState({
-                isCharging: false
-            });
+            // self.setState({
+            //     progressBar: ((index+1)/totalRecords)*100
+            // });
+
+            if (index == totalRecords) {
+                self.setState({
+                    isCharging: false
+                });
+                // setTimeout(function(){
+                //     self.setState({
+                //         isCharging: false
+                //     });
+                // }, 200);
+            }
         }
     }, {
         key: 'updateShipment',
@@ -8804,19 +8799,15 @@ var Example = function (_Component) {
             if (this.state.redirect) {
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, purchaseId: this.state.purchaseId } } });
             } else if (this.state.isCharging) {
-                var helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important' };
+                var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%" };
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Dialog,
-                    { style: helpStyle },
+                    'div',
+                    null,
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { style: helpStyle, src: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' }),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Body,
-                        null,
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'h3',
-                            { style: { marginTop: "3%", textAlign: 'center' } },
-                            'Subiendo archivos'
-                        ),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["n" /* ProgressBar */], { style: { marginTop: "5%" }, now: this.state.progressBar })
+                        'h1',
+                        { style: { textAlign: "center", marginTop: "-5%" } },
+                        'Loading....'
                     )
                 );
             }
@@ -8931,10 +8922,10 @@ var Example = function (_Component) {
                     )
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["o" /* Row */],
+                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["n" /* Row */],
                     null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["p" /* Table */],
+                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["o" /* Table */],
                         { striped: true, bordered: true },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'thead',
@@ -75327,7 +75318,7 @@ var ProgressBar = function (_React$Component) {
 ProgressBar.propTypes = propTypes;
 ProgressBar.defaultProps = defaultProps;
 
-/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["a" /* bsClass */])('progress-bar', Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["c" /* bsStyles */])(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_values___default()(__WEBPACK_IMPORTED_MODULE_10__utils_StyleConfig__["d" /* State */]), ProgressBar)));
+/* unused harmony default export */ var _unused_webpack_default_export = (Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["a" /* bsClass */])('progress-bar', Object(__WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__["c" /* bsStyles */])(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_values___default()(__WEBPACK_IMPORTED_MODULE_10__utils_StyleConfig__["d" /* State */]), ProgressBar)));
 
 /***/ }),
 /* 499 */
@@ -79552,355 +79543,463 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 var Guias = function (_Component) {
-	_inherits(Guias, _Component);
+				_inherits(Guias, _Component);
 
-	function Guias(props) {
-		_classCallCheck(this, Guias);
+				function Guias(props) {
+								_classCallCheck(this, Guias);
 
-		var _this = _possibleConstructorReturn(this, (Guias.__proto__ || Object.getPrototypeOf(Guias)).call(this, props));
+								var _this = _possibleConstructorReturn(this, (Guias.__proto__ || Object.getPrototypeOf(Guias)).call(this, props));
 
-		_this.state = {
-			loading: true,
-			purchase: null
-		};
+								_this.state = {
+												loading: true,
+												purchase: null,
+												emailSent: ''
+								};
 
-		_this.getPurchase = _this.getPurchase.bind(_this);
-		return _this;
-	}
-
-	_createClass(Guias, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			var _this2 = this;
-
-			console.log("GUIAS", this.props.location.state.purchaseId);
-			var purchaseId = this.props.location.state.purchaseId;
-			//this.getPurchase(purchaseId);
-			this.timerID = setInterval(function () {
-				return _this2.getPurchase(purchaseId);
-			}, 3000);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			clearInterval(this.timerID);
-		}
-	}, {
-		key: 'getPurchase',
-		value: function getPurchase(purchaseId) {
-			self = this;
-			var label = true;
-			console.log("getPurchase");
-			$.ajax({
-				"async": true,
-				"crossDomain": true,
-				"method": 'GET',
-				"url": "https://app.mienvio.mx/api/purchases/" + purchaseId,
-				"headers": {
-					"content-type": "application/json",
-					"authorization": "Bearer " + this.props.location.state.token
-				},
-				success: function success(data) {
-					data.purchase.shipments.forEach(function (shipment, index) {
-						if (!shipment.label) label = false;
-					});
-					if (label) {
-						console.log("todos label", data.purchase);
-						self.setState({
-							loading: false,
-							purchase: data.purchase
-						});
-						clearInterval(self.timerID);
-					} else console.log("alguno sin label");
-				},
-				error: function error(xhr, status, _error) {
-					console.log("obtener compra", _error);
+								_this.getPurchase = _this.getPurchase.bind(_this);
+								_this.sendEmail = _this.sendEmail.bind(_this);
+								_this.exportExcel = _this.exportExcel.bind(_this);
+								_this.toggleEmailModal = _this.toggleEmailModal.bind(_this);
+								return _this;
 				}
-			});
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			if (!this.state.purchase) {
-				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
-			}
-			var purchaseObject = this.state.purchase;
-			return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-				'div',
-				{ className: 'container', style: { marginTop: 20 } },
-				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-					'div',
-					{ className: 'row' },
-					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-						{ xs: 6, md: 6 },
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							'h3',
-							null,
-							'Subir CSV'
-						)
-					),
-					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-						{ xs: 6, md: 6 },
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-							{ className: 'pull-right' },
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
-								{ bsStyle: 'primary' },
-								'Descargar gu\xEDas'
-							),
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
-								{ bsStyle: 'primary' },
-								'Enviar por correo'
-							)
-						)
-					)
-				),
-				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-					'div',
-					{ className: 'row' },
-					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["p" /* Table */],
-						{ striped: true, bordered: true },
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							'thead',
-							null,
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								'tr',
-								null,
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'No. gu\xEDa'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Origen'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Destino'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'CP'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Contenido'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Peso (kg)'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Largo (cm)'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Alto (cm)'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Ancho (cm)'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Servicio'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Paqueter\xEDa'
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'th',
-									null,
-									'Subtotal'
-								)
-							)
-						),
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							'tbody',
-							null,
-							purchaseObject.shipments.map(function (shipment, index) {
-								return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									'tr',
-									{ key: shipment.object_id },
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.label.tracking_number
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.address_from.zipcode,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.address_to.street,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.address_to.zipcode,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.description,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.weight,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.length,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.height,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.width,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.rate.servicelevel,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.rate.provider,
-										' '
-									),
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'td',
-										null,
-										' ',
-										shipment.rate.amount,
-										' '
-									)
-								);
-							})
-						)
-					)
-				),
-				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-					__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["j" /* Grid */],
-					{ className: 'pull-right' },
-					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Row */],
-						{ className: 'show-grid' },
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ xs: 4, xsOffset: 8 },
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Row */],
-								{ className: 'show-grid' },
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 4, mdOffset: 3, className: 'text-right' },
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'strong',
-										null,
-										' Total '
-									)
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 5, className: 'text-right' },
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'strong',
-										null,
-										' $ ',
-										purchaseObject.amount,
-										' '
-									)
-								)
-							)
-						)
-					),
-					__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-						__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Row */],
-						{ className: 'show-grid' },
-						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-							__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-							{ xs: 4, xsOffset: 8 },
-							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Row */],
-								{ className: 'show-grid' },
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 4, mdOffset: 3, className: 'text-right' },
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'strong',
-										null,
-										' No. de gu\xEDas '
-									)
-								),
-								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-									__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-									{ md: 5, className: 'text-right' },
-									__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-										'strong',
-										null,
-										' ',
-										purchaseObject.shipments.length,
-										' '
-									)
-								)
-							)
-						)
-					)
-				)
-			);
-		}
-	}]);
 
-	return Guias;
+				_createClass(Guias, [{
+								key: 'componentDidMount',
+								value: function componentDidMount() {
+												var _this2 = this;
+
+												console.log("GUIAS", this.props.location.state.purchaseId);
+												var purchaseId = this.props.location.state.purchaseId;
+												//this.getPurchase(purchaseId);
+												this.timerID = setInterval(function () {
+																return _this2.getPurchase(purchaseId);
+												}, 3000);
+								}
+				}, {
+								key: 'componentWillUnmount',
+								value: function componentWillUnmount() {
+												clearInterval(this.timerID);
+								}
+				}, {
+								key: 'getPurchase',
+								value: function getPurchase(purchaseId) {
+												self = this;
+												var label = true;
+												console.log("getPurchase");
+												$.ajax({
+																"async": true,
+																"crossDomain": true,
+																"method": 'GET',
+																"url": "https://app.mienvio.mx/api/purchases/" + purchaseId,
+																"headers": {
+																				"content-type": "application/json",
+																				"authorization": "Bearer " + this.props.location.state.token
+																},
+																success: function success(data) {
+																				data.purchase.shipments.forEach(function (shipment, index) {
+																								if (!shipment.label) label = false;
+																				});
+																				if (label) {
+																								console.log("todos label", data.purchase);
+																								self.setState({
+																												loading: false,
+																												purchase: data.purchase
+																								});
+																								clearInterval(self.timerID);
+																				} else console.log("alguno sin label");
+																},
+																error: function (_error) {
+																				function error(_x, _x2, _x3) {
+																								return _error.apply(this, arguments);
+																				}
+
+																				error.toString = function () {
+																								return _error.toString();
+																				};
+
+																				return error;
+																}(function (xhr, status, error) {
+																				console.log("obtener compra", error);
+																})
+												});
+								}
+				}, {
+								key: 'exportExcel',
+								value: function exportExcel(event) {
+												//Set errors and success to empty. 
+												self = this;
+
+												$.ajax({
+																url: '/exportExcel',
+																headers: {
+																				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+																},
+																data: JSON.stringify(this.props.location.state.data),
+																contentType: 'application/json',
+																type: 'POST',
+																success: function success(data) {
+																				if (data.error) {
+																								console.log(error);
+																				} else {
+																								var a = document.createElement("a");
+																								a.href = data.file;
+																								a.download = data.name;
+																								document.body.appendChild(a);
+																								a.click();
+																								a.remove();
+																				}
+																}
+												});
+								}
+				}, {
+								key: 'sendEmail',
+								value: function sendEmail(event) {
+
+												self = this;
+
+												$.ajax({
+																url: '/sendEmail',
+																headers: {
+																				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+																},
+																data: JSON.stringify(this.props.location.state.data),
+																contentType: 'application/json',
+																type: 'POST',
+																success: function success(data) {
+																				if (data.error) {
+																								self.setState({
+																												emailSent: 'Hubo un error al enviar el correo,intente nuevamente'
+																								});
+																				} else {
+																								self.setState({
+																												emailSent: 'Las guías se han eviado exitosamente al correo del cliente'
+																								});
+																				}
+																}
+												});
+								}
+				}, {
+								key: 'toggleEmailModal',
+								value: function toggleEmailModal() {
+												this.setState({
+																emailSent: ''
+												});
+								}
+				}, {
+								key: 'render',
+								value: function render() {
+												if (!this.state.purchase) {
+																return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null);
+												}
+												var purchaseObject = this.state.purchase;
+												return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																'div',
+																{ className: 'container', style: { marginTop: 20 } },
+																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																				'div',
+																				{ className: 'row' },
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																								{ xs: 6, md: 6 },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												'h3',
+																												null,
+																												'Subir CSV'
+																								)
+																				),
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																								{ xs: 6, md: 6 },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+																												{ className: 'pull-right' },
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+																																{ bsStyle: 'primary', onClick: this.exportExcel },
+																																'Descargar gu\xEDas'
+																												),
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+																																{ bsStyle: 'primary', onClick: this.sendEmail },
+																																'Enviar por correo'
+																												)
+																								)
+																				)
+																),
+																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																				'div',
+																				{ className: 'row' },
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Table */],
+																								{ striped: true, bordered: true },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												'thead',
+																												null,
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																'tr',
+																																null,
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'No. gu\xEDa'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Origen'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Destino'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'CP'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Contenido'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Peso (kg)'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Largo (cm)'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Alto (cm)'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Ancho (cm)'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Servicio'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Paqueter\xEDa'
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'th',
+																																				null,
+																																				'Subtotal'
+																																)
+																												)
+																								),
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												'tbody',
+																												null,
+																												purchaseObject.shipments.map(function (shipment, index) {
+																																return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				'tr',
+																																				{ key: shipment.object_id },
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.label.tracking_number
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.address_from.zipcode,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.address_to.street,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.address_to.zipcode,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.description,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.weight,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.length,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.height,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.width,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.rate.servicelevel,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.rate.provider,
+																																								' '
+																																				),
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'td',
+																																								null,
+																																								' ',
+																																								shipment.rate.amount,
+																																								' '
+																																				)
+																																);
+																												})
+																								)
+																				)
+																),
+																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["j" /* Grid */],
+																				{ className: 'pull-right' },
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+																								{ className: 'show-grid' },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																												{ xs: 4, xsOffset: 8 },
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+																																{ className: 'show-grid' },
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																																				{ md: 4, mdOffset: 3, className: 'text-right' },
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'strong',
+																																								null,
+																																								' Total '
+																																				)
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																																				{ md: 5, className: 'text-right' },
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'strong',
+																																								null,
+																																								' $ ',
+																																								purchaseObject.amount,
+																																								' '
+																																				)
+																																)
+																												)
+																								)
+																				),
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+																								{ className: 'show-grid' },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																												{ xs: 4, xsOffset: 8 },
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
+																																{ className: 'show-grid' },
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																																				{ md: 4, mdOffset: 3, className: 'text-right' },
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'strong',
+																																								null,
+																																								' No. de gu\xEDas '
+																																				)
+																																),
+																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
+																																				{ md: 5, className: 'text-right' },
+																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																								'strong',
+																																								null,
+																																								' ',
+																																								purchaseObject.shipments.length,
+																																								' '
+																																				)
+																																)
+																												)
+																								)
+																				)
+																),
+																this.state.emailSent && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																				'div',
+																				{ className: 'static-modal' },
+																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																								__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Dialog,
+																								{ style: { position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important' } },
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Header,
+																												null,
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Title,
+																																{ className: 'font-weight-bold' },
+																																'Gu\xEDas'
+																												)
+																								),
+																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["m" /* Modal */].Body,
+																												null,
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																'h4',
+																																{ style: { textAlign: 'center' } },
+																																this.state.emailSent
+																												),
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["a" /* Button */],
+																																{ bsStyle: 'primary', bsSize: 'small', block: true, onClick: this.toggleEmailModal },
+																																'OK'
+																												)
+																								)
+																				)
+																)
+												);
+								}
+				}]);
+
+				return Guias;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
 /* harmony default export */ __webpack_exports__["a"] = (Guias);
