@@ -122,8 +122,7 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        this.toggleModal();
-        /*if(this.validateInformation()){
+        if(this.validateInformation()){
             this.getUserToken();
             //this.toggleModal();
         }else{
@@ -135,7 +134,7 @@ export default class GenerarPedido extends Component {
             this.setState({
               errors
             });
-        }*/
+        }
     }
 
 
@@ -233,6 +232,10 @@ export default class GenerarPedido extends Component {
                 if(data.error){
                     self.setState({
                         uploadError: data.error
+                    });
+                }else if(data.length == 0){
+                    self.setState({
+                        uploadError: 'No se econtraron datos válidos'
                     });
                 }else{
                     self.setState({ 
