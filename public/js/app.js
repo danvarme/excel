@@ -8309,9 +8309,9 @@ var Example = function (_Component) {
     _createClass(Example, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            this.setState({
-                isCharging: true
-            });
+            // this.setState({
+            //     isCharging: true
+            // });
             this.fetchData(this.props.location.state.data);
         }
     }, {
@@ -8320,11 +8320,45 @@ var Example = function (_Component) {
             self = this;
 
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
+            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
+                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
+                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
+                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
+                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
+                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
+                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
+                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
 
+            var testRates = [{ "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
+                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
+                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
+                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
+                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
+                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
+                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
+                    "provider_img": "media/providers/redpack.png" }] }];
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                self.getAddressTo(item, index + 1, totalRecords);
-                //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+                //self.getAddressTo(item, index + 1, totalRecords);
+                self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
             });
         }
     }, {
@@ -8681,53 +8715,46 @@ var Example = function (_Component) {
     }, {
         key: 'createLabel',
         value: function createLabel(e) {
-            e.preventDefault();
-            self = this;
-            var success = this.state.success;
-            var purchases = [];
-
-            success.forEach(function (item, index) {
-                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-                purchases.push(item['object'].object_id);
+            self.setState({
+                redirect: true
             });
+            // e.preventDefault();
+            // self = this;
+            // let success = this.state.success;
+            // let purchases = [];
 
-            var purchaseData = { "shipments": purchases };
+            // success.forEach(function(item, index){
+            //     self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+            //     purchases.push(item['object'].object_id);
+            // });
 
-            setTimeout(function () {
-                $.ajax({
-                    "async": true,
-                    "crossDomain": true,
-                    "method": 'POST',
-                    "url": "https://app.mienvio.mx/api/purchases",
-                    "headers": {
-                        "content-type": "application/json",
-                        "authorization": "Bearer " + self.props.location.state.token
-                    },
-                    "data": JSON.stringify(purchaseData),
-                    success: function success(data) {
-                        console.log("compra", data);
-                        self.setState({
-                            modalOpen: !self.state.modalOpen,
-                            purchaseId: data.purchase.object_id,
-                            redirect: true
-                        });
-                    },
-                    error: function (_error5) {
-                        function error(_x13, _x14, _x15) {
-                            return _error5.apply(this, arguments);
-                        }
+            // var purchaseData = { "shipments" : purchases };
 
-                        error.toString = function () {
-                            return _error5.toString();
-                        };
-
-                        return error;
-                    }(function (xhr, status, error) {
-                        self.state.errors[0] = [error];
-                        self.setState(self.state);
-                    })
-                });
-            }, 3000);
+            // setTimeout(function(){ 
+            //     $.ajax({
+            //         "async": true,
+            //         "crossDomain": true,
+            //         "method": 'POST',
+            //         "url": "https://app.mienvio.mx/api/purchases",
+            //         "headers": {
+            //             "content-type": "application/json",
+            //             "authorization": "Bearer " + self.props.location.state.token
+            //         },
+            //         "data": JSON.stringify(purchaseData),
+            //         success: function (data){
+            //             console.log("compra", data);
+            //             self.setState({
+            //                 modalOpen: !self.state.modalOpen,
+            //                 purchaseId: data.purchase.object_id,
+            //                 redirect: true
+            //             });
+            //         },
+            //         error: function (xhr, status, error){
+            //             self.state.errors[0] = [error];
+            //             self.setState(self.state);
+            //         }
+            //     });}
+            // , 3000);
         }
     }, {
         key: 'exportExcel',
@@ -9003,16 +9030,6 @@ var Example = function (_Component) {
                             })
                         )
                     )
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
-                    { className: 'btn-primary pull-right', onClick: this.exportExcel },
-                    'UPLOOOOADD'
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
-                    { className: 'btn-primary pull-right', onClick: this.sendEmail },
-                    'EMAIL'
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal,
                     sendDashboard: this.sendDashboard, createLabel: this.createLabel }),
@@ -22014,19 +22031,20 @@ var GenerarPedido = function (_Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit() {
-            if (this.validateInformation()) {
-                this.getUserToken();
-                //this.toggleModal();
-            } else {
-                var errors = _extends({}, this.state.errors);
-                Object.keys(errors).forEach(function (key) {
-                    if (self.state[key] == '') errors[key] = 'error';
-                });
+            // if(this.validateInformation()){
+            //     this.getUserToken();
+            //     //this.toggleModal();
+            // }else{
+            //     let errors = {...this.state.errors};
+            //     Object.keys(errors).forEach(function(key) {
+            //         if(self.state[key] == '') errors[key] = 'error';
+            //     });
 
-                this.setState({
-                    errors: errors
-                });
-            }
+            //     this.setState({
+            //       errors
+            //     });
+            // }
+            this.toggleModal();
         }
     }, {
         key: 'getUserToken',
@@ -79551,9 +79569,11 @@ var Guias = function (_Component) {
 								var _this = _possibleConstructorReturn(this, (Guias.__proto__ || Object.getPrototypeOf(Guias)).call(this, props));
 
 								_this.state = {
-												loading: true,
-												purchase: null,
-												emailSent: ''
+												//loading: true,
+												loading: false,
+												emailSent: '',
+												purchase: { "object_status": "MONTHLY_PAYMENT_PENDING", "object_id": 62469, "owner_id": 3880, "invoice_id": null, "invoice_url": null, "invoiced_at": null, "payment_provider": "mienvio_credit", "payment_id": "mienvio_credit_1524590040_3880", "amount": 627.07000000000005, "created_at": "2018-04-24 12:14:00", "shipments": [{ "object_purpose": "LABEL_CREATED", "status": "LABEL_CREATED", "created_at": "2018-04-24 12:12:56", "updated_at": "2018-04-24 12:14:05", "object_id": 179927, "owner_id": 3880, "address_from": { "object_type": "PURCHASE", "object_id": 358421, "name": 'Mar\xEDa Fernanda Vargas', "street": "Av. Miguel Hidalgo 876 Int 29", "street2": "Independencia", "reference": 'Casa blanca con port\xF3n negro', "zipcode": "76120", "city": "Quer?taro", "state": 'Quer\xE9taro', "email": "fernanda@mienvio.mx", "phone": "4427893348", "bookmark": false, "alias": "", "owner_id": 3880 }, "address_to": { "object_type": "PURCHASE", "object_id": 358425, "name": "Fernanda Vargas", "street": "Epigmenio Gonzales", "street2": "ITESM", "reference": "Cerca del tec", "zipcode": "76120", "city": "Quer?taro", "state": 'Quer\xE9taro', "email": "fer@mienvio.mx", "phone": "4426976668", "bookmark": false, "alias": "", "owner_id": 3880 }, "weight": 6, "height": 4, "length": 5, "width": 3, "description": "prueba", "rate": { "object_id": 700, "amount": 391.68000000000001, "servicelevel": "express", "duration_terms": '1 a 3 d\xEDas', "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", "provider_img": "\/media\/providers\/redpack.png", "extended_zone": false }, "label": { "tracking_number": "783849941036", "tracking_url": "https:\/\/extranet.redpack.com.mx\/extranet\/RastreoEnvios", "label_url": "http:\/\/dummyimage.com\/300\/09f.png", "pickup": null }, "insurance": null, "order": null, "coupon_code": "" }, { "object_purpose": "LABEL_CREATED", "status": "LABEL_CREATED", "created_at": "2018-04-24 12:12:56", "updated_at": "2018-04-24 12:14:05", "object_id": 179926, "owner_id": 3880, "address_from": { "object_type": "PURCHASE", "object_id": 358421, "name": 'Mar\xEDa Fernanda Vargas', "street": "Av. Miguel Hidalgo 876 Int 29", "street2": "Independencia", "reference": 'Casa blanca con port\xF3n negro', "zipcode": "76120", "city": "Quer?taro", "state": 'Quer\xE9taro', "email": "fernanda@mienvio.mx", "phone": "4427893348", "bookmark": false, "alias": "", "owner_id": 3880 }, "address_to": { "object_type": "PURCHASE", "object_id": 358424, "name": 'Mar\xEDa Herrera', "street": "Jesus Rivera", "street2": "Parque 2000", "reference": "ITESM", "zipcode": "76090", "city": "Quer?taro", "state": 'Quer\xE9taro', "email": "maria@mienvio.mx", "phone": "4424789998", "bookmark": false, "alias": "", "owner_id": 3880 }, "weight": 3, "height": 5, "length": 4, "width": 6, "description": "prueba", "rate": { "object_id": 697, "amount": 235.38999999999999, "servicelevel": "express", "duration_terms": '1 a 3 d\xEDas', "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack", "provider_img": "\/media\/providers\/redpack.png", "extended_zone": false }, "label": { "tracking_number": "783849941036", "tracking_url": "https:\/\/extranet.redpack.com.mx\/extranet\/RastreoEnvios", "label_url": "http:\/\/dummyimage.com\/300\/09f.png", "pickup": null }, "insurance": null, "order": null, "coupon_code": "" }] }
+
 								};
 
 								_this.getPurchase = _this.getPurchase.bind(_this);
@@ -79563,24 +79583,19 @@ var Guias = function (_Component) {
 								return _this;
 				}
 
-				_createClass(Guias, [{
-								key: 'componentDidMount',
-								value: function componentDidMount() {
-												var _this2 = this;
+				//    componentDidMount() {
+				//    	console.log("GUIAS", this.props.location.state.purchaseId);
+				//    	let purchaseId = this.props.location.state.purchaseId;
+				//    	//this.getPurchase(purchaseId);
+				//    	this.timerID = setInterval( () => this.getPurchase(purchaseId), 3000 );
+				//    }
 
-												console.log("GUIAS", this.props.location.state.purchaseId);
-												var purchaseId = this.props.location.state.purchaseId;
-												//this.getPurchase(purchaseId);
-												this.timerID = setInterval(function () {
-																return _this2.getPurchase(purchaseId);
-												}, 3000);
-								}
-				}, {
-								key: 'componentWillUnmount',
-								value: function componentWillUnmount() {
-												clearInterval(this.timerID);
-								}
-				}, {
+				//    componentWillUnmount() {
+				//     clearInterval(this.timerID);
+				// }
+
+
+				_createClass(Guias, [{
 								key: 'getPurchase',
 								value: function getPurchase(purchaseId) {
 												self = this;
@@ -79634,7 +79649,7 @@ var Guias = function (_Component) {
 																headers: {
 																				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 																},
-																data: JSON.stringify(this.props.location.state.data),
+																data: JSON.stringify(this.state.purchase),
 																contentType: 'application/json',
 																type: 'POST',
 																success: function success(data) {
@@ -79662,7 +79677,7 @@ var Guias = function (_Component) {
 																headers: {
 																				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 																},
-																data: JSON.stringify(this.props.location.state.data),
+																data: JSON.stringify(this.state.purchase),
 																contentType: 'application/json',
 																type: 'POST',
 																success: function success(data) {
@@ -79903,13 +79918,13 @@ var Guias = function (_Component) {
 																								{ className: 'show-grid' },
 																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																												{ xs: 4, xsOffset: 8 },
+																												{ xs: 5, xsOffset: 7 },
 																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
 																																{ className: 'show-grid' },
 																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																																				{ md: 4, mdOffset: 3, className: 'text-right' },
+																																				{ md: 6, className: 'text-right' },
 																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																								'strong',
 																																								null,
@@ -79918,7 +79933,7 @@ var Guias = function (_Component) {
 																																),
 																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																																				{ md: 5, className: 'text-right' },
+																																				{ md: 6, className: 'text-right' },
 																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																								'strong',
 																																								null,
@@ -79935,13 +79950,13 @@ var Guias = function (_Component) {
 																								{ className: 'show-grid' },
 																								__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																												__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																												{ xs: 4, xsOffset: 8 },
+																												{ xs: 5, xsOffset: 7 },
 																												__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["n" /* Row */],
 																																{ className: 'show-grid' },
 																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																																				{ md: 4, mdOffset: 3, className: 'text-right' },
+																																				{ md: 6, className: 'text-right' },
 																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																								'strong',
 																																								null,
@@ -79950,7 +79965,7 @@ var Guias = function (_Component) {
 																																),
 																																__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																				__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["d" /* Col */],
-																																				{ md: 5, className: 'text-right' },
+																																				{ md: 6, className: 'text-right' },
 																																				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 																																								'strong',
 																																								null,

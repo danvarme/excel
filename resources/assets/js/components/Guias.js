@@ -9,9 +9,11 @@ export default class Guias extends Component{
         super(props);
 
         this.state = {
-        	loading: true,
-        	purchase: null,
-        	emailSent: ''
+        	//loading: true,
+        	loading: false,
+        	emailSent: '',
+        	purchase: {"object_status":"MONTHLY_PAYMENT_PENDING","object_id":62469,"owner_id":3880,"invoice_id":null,"invoice_url":null,"invoiced_at":null,"payment_provider":"mienvio_credit","payment_id":"mienvio_credit_1524590040_3880","amount":627.07000000000005,"created_at":"2018-04-24 12:14:00","shipments":[{"object_purpose":"LABEL_CREATED","status":"LABEL_CREATED","created_at":"2018-04-24 12:12:56","updated_at":"2018-04-24 12:14:05","object_id":179927,"owner_id":3880,"address_from":{"object_type":"PURCHASE","object_id":358421,"name":"Mar\u00eda Fernanda Vargas","street":"Av. Miguel Hidalgo 876 Int 29","street2":"Independencia","reference":"Casa blanca con port\u00f3n negro","zipcode":"76120","city":"Quer?taro","state":"Quer\u00e9taro","email":"fernanda@mienvio.mx","phone":"4427893348","bookmark":false,"alias":"","owner_id":3880},"address_to":{"object_type":"PURCHASE","object_id":358425,"name":"Fernanda Vargas","street":"Epigmenio Gonzales","street2":"ITESM","reference":"Cerca del tec","zipcode":"76120","city":"Quer?taro","state":"Quer\u00e9taro","email":"fer@mienvio.mx","phone":"4426976668","bookmark":false,"alias":"","owner_id":3880},"weight":6,"height":4,"length":5,"width":3,"description":"prueba","rate":{"object_id":700,"amount":391.68000000000001,"servicelevel":"express","duration_terms":"1 a 3 d\u00edas","days":2,"trackable":true,"collect_home":true,"provider":"Redpack","provider_img":"\/media\/providers\/redpack.png","extended_zone":false},"label":{"tracking_number":"783849941036","tracking_url":"https:\/\/extranet.redpack.com.mx\/extranet\/RastreoEnvios","label_url":"http:\/\/dummyimage.com\/300\/09f.png","pickup":null},"insurance":null,"order":null,"coupon_code":""},{"object_purpose":"LABEL_CREATED","status":"LABEL_CREATED","created_at":"2018-04-24 12:12:56","updated_at":"2018-04-24 12:14:05","object_id":179926,"owner_id":3880,"address_from":{"object_type":"PURCHASE","object_id":358421,"name":"Mar\u00eda Fernanda Vargas","street":"Av. Miguel Hidalgo 876 Int 29","street2":"Independencia","reference":"Casa blanca con port\u00f3n negro","zipcode":"76120","city":"Quer?taro","state":"Quer\u00e9taro","email":"fernanda@mienvio.mx","phone":"4427893348","bookmark":false,"alias":"","owner_id":3880},"address_to":{"object_type":"PURCHASE","object_id":358424,"name":"Mar\u00eda Herrera","street":"Jesus Rivera","street2":"Parque 2000","reference":"ITESM","zipcode":"76090","city":"Quer?taro","state":"Quer\u00e9taro","email":"maria@mienvio.mx","phone":"4424789998","bookmark":false,"alias":"","owner_id":3880},"weight":3,"height":5,"length":4,"width":6,"description":"prueba","rate":{"object_id":697,"amount":235.38999999999999,"servicelevel":"express","duration_terms":"1 a 3 d\u00edas","days":2,"trackable":true,"collect_home":true,"provider":"Redpack","provider_img":"\/media\/providers\/redpack.png","extended_zone":false},"label":{"tracking_number":"783849941036","tracking_url":"https:\/\/extranet.redpack.com.mx\/extranet\/RastreoEnvios","label_url":"http:\/\/dummyimage.com\/300\/09f.png","pickup":null},"insurance":null,"order":null,"coupon_code":""}]}
+        	
         };
 
         this.getPurchase = this.getPurchase.bind(this);
@@ -20,16 +22,16 @@ export default class Guias extends Component{
         this.toggleEmailModal = this.toggleEmailModal.bind(this);
     }
 
-    componentDidMount() {
-    	console.log("GUIAS", this.props.location.state.purchaseId);
-    	let purchaseId = this.props.location.state.purchaseId;
-    	//this.getPurchase(purchaseId);
-    	this.timerID = setInterval( () => this.getPurchase(purchaseId), 3000 );
-    }
+ //    componentDidMount() {
+ //    	console.log("GUIAS", this.props.location.state.purchaseId);
+ //    	let purchaseId = this.props.location.state.purchaseId;
+ //    	//this.getPurchase(purchaseId);
+ //    	this.timerID = setInterval( () => this.getPurchase(purchaseId), 3000 );
+ //    }
 
-    componentWillUnmount() {
-	    clearInterval(this.timerID);
-	}
+ //    componentWillUnmount() {
+	//     clearInterval(this.timerID);
+	// }
 
 
     getPurchase(purchaseId){
@@ -73,7 +75,7 @@ export default class Guias extends Component{
             headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            data: JSON.stringify(this.props.location.state.data),
+            data: JSON.stringify(this.state.purchase),
             contentType: 'application/json',
             type: 'POST',
             success: function(data){
@@ -100,7 +102,7 @@ export default class Guias extends Component{
             headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            data: JSON.stringify(this.props.location.state.data),
+            data: JSON.stringify(this.state.purchase),
             contentType: 'application/json',
             type: 'POST',
             success: function(data){
@@ -187,24 +189,24 @@ export default class Guias extends Component{
 				</div>
 				<Grid className="pull-right">
 					<Row className="show-grid">
-					    <Col xs={4} xsOffset={8}>
+					    <Col xs={5} xsOffset={7}>
 					    	<Row className="show-grid">
-					    		<Col md={4} mdOffset={3} className="text-right">
+					    		<Col md={6}  className="text-right">
 							     	<strong> Total </strong>
 							    </Col>
-							    <Col md={5} className="text-right">
+							    <Col md={6} className="text-right">
 							    	<strong> $ { purchaseObject.amount } </strong>
 							    </Col>
 						  </Row>
 					    </Col>
 				  	</Row>
 				  	<Row className="show-grid">
-					    <Col xs={4} xsOffset={8}>
+					    <Col xs={5} xsOffset={7} >
 					    	<Row className="show-grid">
-							    <Col md={4} mdOffset={3} className="text-right">
+							    <Col md={6}  className="text-right">
 							    	<strong> No. de guías </strong>
 							    </Col>
-							    <Col md={5} className="text-right">
+							    <Col md={6} className="text-right">
 							    	<strong> { purchaseObject.shipments.length } </strong>
 							    </Col>
 						  </Row>

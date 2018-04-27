@@ -122,19 +122,20 @@ export default class GenerarPedido extends Component {
     }
 
     handleSubmit(){
-        if(this.validateInformation()){
-            this.getUserToken();
-            //this.toggleModal();
-        }else{
-            let errors = {...this.state.errors};
-            Object.keys(errors).forEach(function(key) {
-                if(self.state[key] == '') errors[key] = 'error';
-            });
+        // if(this.validateInformation()){
+        //     this.getUserToken();
+        //     //this.toggleModal();
+        // }else{
+        //     let errors = {...this.state.errors};
+        //     Object.keys(errors).forEach(function(key) {
+        //         if(self.state[key] == '') errors[key] = 'error';
+        //     });
 
-            this.setState({
-              errors
-            });
-        }
+        //     this.setState({
+        //       errors
+        //     });
+        // }
+        this.toggleModal();
     }
 
 
