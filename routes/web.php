@@ -16,15 +16,11 @@ Route::get('/', function () {
 });
 
 Route::post('/getInfo', 'ExcelController@getInfo');
-
 Route::post('/exportExcel', 'ExcelController@exportExcel');
 Route::post('/sendEmail', 'ExcelController@sendEmail');
 
-
-Route::post('/showTable', 'ExcelController@showTable');
+Route::get('/showTable', function(){
+	return '<div></div>';
+});
 
 Route::get('/shipments', 'TableController@table');
-
-Route::get('/generarPedido', function () {
-    return view('generarPedido');
-});

@@ -7,6 +7,7 @@ import { Table,
          ButtonToolbar, DropdownButton, MenuItem, ProgressBar, Modal } from 'react-bootstrap'
 import OptionModal from './OptionModal'
 import TableRow from './TableRow'
+import SelectService from './SelectService'
 import { Route, Router } from 'react-router-dom'
 import { Redirect } from 'react-router'
 import { validAddress, validShipment} from '../validators.js'
@@ -19,7 +20,7 @@ function ErrorElement(props){
             <dt>Errores de la fila #{props.index}</dt>
         }
         {props.errors.map((error, id) => 
-            <dd key={id+error}>{error}</dd>
+            <dd key={id + error}> { error } </dd>
         )}
     </dl>
   );
@@ -34,20 +35,14 @@ export default class Example extends Component {
         this.state = {
             errors: {}, 
             success: [],
-            selectedProvider: [],
-            selectedRate: [],
             selectedServiceLevel: [],
-            defaultValues: [],
             allServices: {},
             selectedElements: {},
             generalServiceLevel: '',
             generalProvider: '',
-            modalOpen: false,
             redirect: false,
             purchaseId: null,
-            isCharging: false,
-            emailSent: '',
-            progressBar: 0
+            isCharging: false
         };
 
 
@@ -62,8 +57,8 @@ export default class Example extends Component {
         this.handleMultipleSelect = this.handleMultipleSelect.bind(this);
         this.handleGeneralServiceLevel = this.handleGeneralServiceLevel.bind(this);
         this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
-        this.toggleModal = this.toggleModal.bind(this);
         this.createLabel = this.createLabel.bind(this);
+        this.allSelected = this.allSelected.bind(this);
         
     }
 
@@ -72,6 +67,10 @@ export default class Example extends Component {
             isCharging: true
         });
         this.fetchData(this.props.location.state.data);
+    }
+
+    componentWillUnmount() {
+        window.location.reload()
     }
 
 
@@ -88,14 +87,12 @@ export default class Example extends Component {
     }
     
     getAddressTo(item, index, totalRecords){
-
         self = this;
         //Validate address 
         var valid = validAddress(item, index);
 
         if(valid[0]){
-            var address = 
-            {
+            var address = {
                 "object_type": "PURCHASE",
                 "name": item.name,
                 "street": item.street,
@@ -136,7 +133,6 @@ export default class Example extends Component {
 
     
     callCreateShipment(item, addressToId, index, totalRecords){
-
         self = this;
 
         var valid = validShipment(item.package, index);
@@ -180,8 +176,8 @@ export default class Example extends Component {
     }
 
     getRate(item, shipmentObject, shipmentId, index, totalRecords){
-
         self = this;
+
         $.ajax({
             "async": true,
             "crossDomain": true,
@@ -192,7 +188,6 @@ export default class Example extends Component {
                 "authorization": "Bearer " + this.props.location.state.token
             },
             success: function (data){
-                //self.checkRates(item, shipmentId, data.results, index);
                 self.joinRates(item, shipmentObject, shipmentId, data.results, index,totalRecords);
             },
             error: function (xhr, status, error){
@@ -213,27 +208,19 @@ export default class Example extends Component {
             if(rate.servicelevel in allServices){
                 if(allServices[rate.servicelevel].indexOf(rate.provider) == -1){
                     allServices[rate.servicelevel].push(rate.provider);
-              }
+                }
             }else{
                 allServices[rate.servicelevel] = [rate.provider];
             }
-            if(rate.servicelevel in serviceOptions){
-              serviceOptions[rate.servicelevel].push(rate);
-            }else{
-              serviceOptions[rate.servicelevel] = [rate];
-            }
+            if(rate.servicelevel in serviceOptions) serviceOptions[rate.servicelevel].push(rate);
+            else serviceOptions[rate.servicelevel] = [rate]; 
         });
         this.setState(prevState => ({
             success: [...prevState.success, {object: shipmentObject, options: serviceOptions, selectedRate: selectedRate}],
-            defaultValues: [...prevState.defaultValues, selectedRate],
         }));
         this.setState({
             allServices
         });
-
-        // self.setState({
-        //     progressBar: ((index+1)/totalRecords)*100
-        // });
 
         if(index == totalRecords){
             setTimeout(function(){
@@ -245,7 +232,6 @@ export default class Example extends Component {
     }
 
     updateShipment(shipmentId, rateId){
-
         self = this;
 
         var rateInformation = {
@@ -265,7 +251,6 @@ export default class Example extends Component {
             "processData": false,
             "data": JSON.stringify(rateInformation),
             success: function (data){
-                console.log("update", data);
             },
             error: function (xhr, status, error) {
                 self.state.errors[0] = [error];
@@ -276,21 +261,19 @@ export default class Example extends Component {
 
     handleServiceLevel(index, e) {
         let selectedServiceLevel = {...this.state.selectedServiceLevel};
-        let selectedProvider = {...this.state.selectedProvider};
-        let selectedRate = {...this.state.selectedRate};
-        let defaultValues = {...this.state.defaultValues};
         let success = this.state.success;
         selectedServiceLevel[index] = e;
-        console.log("service", e);
-        selectedProvider[index] = null;
-        selectedRate[index] = null;
-        defaultValues[index] = null;
         success[index].selectedRate = null;
         this.setState({
             selectedServiceLevel,
-            selectedProvider,
-            selectedRate,
-            defaultValues,
+            success
+        });
+    }
+
+    handleProvider(values, e) {
+        let success = this.state.success;
+        success[values.index].selectedRate = values.amount;
+        this.setState({
             success
         });
     }
@@ -304,7 +287,6 @@ export default class Example extends Component {
 
     handleGeneralProvider(provider, e){
         let errors = this.state.errors;
-        let defaultValues = this.state.defaultValues;
         let success = this.state.success;
         let generalServiceLevel = this.state.generalServiceLevel;
         let selectedElements = this.state.selectedElements;
@@ -315,8 +297,7 @@ export default class Example extends Component {
             if(this.state.generalServiceLevel in options){
                 (options[this.state.generalServiceLevel]).map( function(item) {
                     if(item.provider === provider){
-                        success[key].selectedRate = item;
-                        defaultValues[key] = item;      
+                        success[key].selectedRate = item;   
                         found = true;
                     }
                 })
@@ -327,19 +308,8 @@ export default class Example extends Component {
         }
         this.setState({
             generalProvider: provider,
-            defaultValues,
             success,
             errors
-        });
-    }
-
-    handleProvider(values, e) {
-        let success = this.state.success;
-        let defaultValues = this.state.defaultValues;
-        success[values.index].selectedRate = values.amount;
-        defaultValues[values.index] = values.amount;   
-        this.setState({
-            success
         });
     }
 
@@ -358,13 +328,11 @@ export default class Example extends Component {
         });
     }
 
-    toggleModal(e){
-        e.preventDefault();
+    allSelected(){
         var error = false;
         var item = this.state.success;
 
         for (var i = 0; i < item.length; i++) {
-            console.log(item[i]['selectedRate']); 
             if(!item[i]['selectedRate']){
                 error = true;
                 break;
@@ -372,54 +340,55 @@ export default class Example extends Component {
         }
         if(!error){ 
             this.setState({
-                errors: {},
-                modalOpen: !this.state.modalOpen
+                errors: {}
             });
+            return true;
         }else{
             this.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
             this.setState(self.state);
+            return false;
         }
-        
     }
 
     createLabel(e){
         e.preventDefault();
-        self = this;
-        let success = this.state.success;
-        let purchases = [];
+        if(this.allSelected()){
+            self = this;
+            let success = this.state.success;
+            let purchases = [];
 
-        success.forEach(function(item, index){
-            self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-            purchases.push(item['object'].object_id);
-        });
+            success.forEach(function(item, index){
+                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+                purchases.push(item['object'].object_id);
+            });
 
-        var purchaseData = { "shipments" : purchases };
+            var purchaseData = { "shipments" : purchases };
 
-        setTimeout(function(){ 
-            $.ajax({
-                "async": true,
-                "crossDomain": true,
-                "method": 'POST',
-                "url": "https://app.mienvio.mx/api/purchases",
-                "headers": {
-                    "content-type": "application/json",
-                    "authorization": "Bearer " + self.props.location.state.token
-                },
-                "data": JSON.stringify(purchaseData),
-                success: function (data){
-                    console.log("compra", data);
-                    self.setState({
-                        modalOpen: !self.state.modalOpen,
-                        purchaseId: data.purchase.object_id,
-                        redirect: true
-                    });
-                },
-                error: function (xhr, status, error){
-                    self.state.errors[0] = [error];
-                    self.setState(self.state);
-                }
-            });}
-        , 3000);
+            setTimeout(function(){ 
+                $.ajax({
+                    "async": true,
+                    "crossDomain": true,
+                    "method": 'POST',
+                    "url": "https://app.mienvio.mx/api/purchases",
+                    "headers": {
+                        "content-type": "application/json",
+                        "authorization": "Bearer " + self.props.location.state.token
+                    },
+                    "data": JSON.stringify(purchaseData),
+                    success: function (data){
+                        console.log("compra", data);
+                        self.setState({
+                            purchaseId: data.purchase.object_id,
+                            redirect: true
+                        });
+                    },
+                    error: function (xhr, status, error){
+                        self.state.errors[0] = [error];
+                        self.setState(self.state);
+                    }
+                });}
+            , 3000);
+        }
     }
     
     render() {
@@ -427,104 +396,40 @@ export default class Example extends Component {
             return <Redirect to={{ pathname: '/guias', state: {token: this.props.location.state.token, purchaseId: this.state.purchaseId}}}/>;
         }
         else if (this.state.isCharging) {
-            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%"}
+            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%"}
             return (
-                <div  >
+                <div>
                     <img style={helpStyle} src={logo} />
                     <h1 style={{textAlign: "center", marginTop: "-5%"}}>Loading....</h1>
                 </div>);
         }
         return (
             <div className = "container" style={{marginTop: 20}}>
-                {Object.keys(this.state.errors).length > 0 &&
+                { Object.keys(this.state.errors).length > 0 &&
                     <div className="alert alert-danger alert-dismissible" role="alert" >
                         <button className = "close" data-dismiss = "alert" aria-hidden = "true">&times;</button>
                         {Object.keys(this.state.errors).map((row, value) => <ErrorElement 
                             key = {row} index = {row} errors = {this.state.errors[row]}/>)}
                     </div>
                 }
-                
                 <div className="row">
                     <Col xs={12} md={8}>
                       <h3>Subir CSV</h3>
                     </Col>
                     <Col xs={6} md={4}>
-                        <Button bsStyle="primary" onClick={(e) => this.toggleModal(e)} className="pull-right">Siguiente</Button>                            
+                        <Button bsStyle="primary" onClick={(e) => this.createLabel(e)} className="pull-right">Generar guías</Button>                            
                     </Col>
                 </div>
                 {Object.keys(this.state.selectedElements).length > 1 &&
-                    <div className="row" >
-                        <h5><strong>Servicio</strong></h5>
-                        <ButtonToolbar style={{margin:5}}>
-                            <DropdownButton
-                            bsStyle="default"
-                            title={this.state.generalServiceLevel ? ( this.state.generalServiceLevel)  : ("Seleccionar")}
-                            noCaret
-                            id="dropdown-no-caret">
-                            { Object.keys(this.state.allServices).map((service) => <MenuItem key = {service} eventKey = {service} 
-                                onSelect={(e) => this.handleGeneralServiceLevel(service, e)}> { service } </MenuItem>)}
-                            </DropdownButton>
-                        </ButtonToolbar>
-                        <h5><strong>Paquetería</strong></h5>
-                        <ButtonToolbar style={{margin:5}}>
-                            <DropdownButton
-                            bsStyle="default"
-                            title={this.state.generalProvider ? ( this.state.generalProvider ) : ("Seleccionar")}
-                            noCaret
-                            id="dropdown-no-caret">
-                            { this.state.allServices[this.state.generalServiceLevel] && 
-                                (this.state.allServices[this.state.generalServiceLevel]).map((provider) =>
-                                <MenuItem key = { provider } eventKey = { provider } 
-                                onSelect = {(e) => this.handleGeneralProvider(provider, e)}> { provider } </MenuItem>
-                            )}
-                            </DropdownButton>
-                        </ButtonToolbar>
-                    </div>
+                    <SelectService generalServiceLevel = { this.state.generalServiceLevel } allServices = { this.state.allServices } 
+                       generalProvider = { this.state.generalProvider } 
+                       handleGeneralServiceLevel = { this.handleGeneralServiceLevel } handleGeneralProvider = { this.handleGeneralProvider }/>
                 }
                 <Row>
-                <Table striped bordered>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>CP Origen</th>
-                      <th>Destino</th>
-                      <th>CP</th>
-                      <th>Contenido</th>
-                      <th>Peso (kg)</th>
-                      <th>Largo (cm)</th>
-                      <th>Alto (cm)</th>
-                      <th>Ancho (cm)</th>
-                      <th>Servicio</th>
-                      <th>Paquetería</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {this.state.success.length > 0 &&
-                    (this.state.success).map((row, index) => 
-                    <TableRow key = { index } index = { index } row = { row } selectedProvider = { this.state.selectedProvider} 
-                       selectedServiceLevel = { this.state.selectedServiceLevel } defaultValues = { this.state.defaultValues }
-                       selectedElements = { this.state.selectedElements }
-                       selectedRate = { this.state.selectedRate } handleProvider = { this.handleProvider }
+                    <TableRow selectedServiceLevel = { this.state.selectedServiceLevel }
+                       handleProvider = { this.handleProvider } success = { this.state.success}
                        handleServiceLevel = { this.handleServiceLevel } handleMultipleSelect = { this.handleMultipleSelect }/>
-                   )}
-                  </tbody>
-                </Table>
                 </Row>
-                <OptionModal modalOpen = { this.state.modalOpen } toggleModal = { this.toggleModal }
-                             sendDashboard = { this.sendDashboard } createLabel = { this.createLabel } />
-                {this.state.emailSent && 
-                    <div className="static-modal"> 
-                        <Modal.Dialog style={{position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important'}}>
-                            <Modal.Header>
-                                <Modal.Title className="font-weight-bold">Guías</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <h4 style={{textAlign: 'center', }}>{this.state.emailSent}</h4><br/>
-                                <Button bsStyle="primary" bsSize="small" block onClick={this.toggleEmailModal}>OK</Button>
-                            </Modal.Body>
-                        </Modal.Dialog>
-                    </div>}
             </div>
         );
     }

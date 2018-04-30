@@ -128,7 +128,7 @@ export default class Guias extends Component{
 
 	render(){
 		if(!this.state.purchase){
-			let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%"}
+			let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%"}
             return (
                 <div  >
                     <img style={helpStyle} src={logo} />

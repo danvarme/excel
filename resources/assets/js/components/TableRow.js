@@ -5,11 +5,28 @@ import { Table,
 
 const TableRow = (props) => {
 
-  const row = props.row;
-  const index = props.index;
-  //console.log(row);
   return(
-    <tr key = { row }>
+    <Table striped bordered>
+    <thead>
+      <tr>
+        <th></th>
+        <th>CP Origen</th>
+        <th>Destino</th>
+        <th>CP</th>
+        <th>Contenido</th>
+        <th>Peso (kg)</th>
+        <th>Largo (cm)</th>
+        <th>Alto (cm)</th>
+        <th>Ancho (cm)</th>
+        <th>Servicio</th>
+        <th>Paquetería</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+    {props.success.length > 0 &&
+      (props.success).map((row, index) =>
+        <tr key = { row['object'].object_id }>
         <td><Checkbox onClick={e => props.handleMultipleSelect({index: index, object: row['object'], options: row['options']}, e.target.checked)} /></td>
         <td> { row['object'].address_from.zipcode } </td>
         <td> { row['object'].address_to.street } </td>
@@ -46,13 +63,7 @@ const TableRow = (props) => {
             bsStyle="default"
             title={ row['selectedRate'] ? (
                     row['selectedRate'].provider
-                  ) : (
-                    props.selectedProvider[index] ? (
-                        props.selectedProvider[index]
-                        ): (
-                            "Seleccionar"
-                        )
-                  )}
+                  ) : ( "Seleccionar" )}
             noCaret
             id="dropdown-no-caret">
             { props.selectedServiceLevel[index] && 
@@ -66,12 +77,12 @@ const TableRow = (props) => {
             </ButtonToolbar>
         </td>
         <td>
-           $ { row['selectedRate'] ? ( row['selectedRate'].amount ) : 
-                ( props.selectedRate[index] ? ( props.selectedRate[index] ): 
-                        ("0.0")
-                )}
+           $ { row['selectedRate'] ? ( row['selectedRate'].amount ) : ( "0.0" )}
         </td>
-    </tr>
+    </tr> 
+    )}
+    </tbody>
+  </Table>
   );
 };
 

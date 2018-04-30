@@ -8211,11 +8211,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__OptionModal__ = __webpack_require__(513);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__TableRow__ = __webpack_require__(514);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_router_dom__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_router__ = __webpack_require__(239);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__validators_js__ = __webpack_require__(535);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__public_media_loader_gif__ = __webpack_require__(240);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__public_media_loader_gif___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__public_media_loader_gif__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SelectService__ = __webpack_require__(550);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_router_dom__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_react_router__ = __webpack_require__(239);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__validators_js__ = __webpack_require__(535);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__public_media_loader_gif__ = __webpack_require__(240);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__public_media_loader_gif___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__public_media_loader_gif__);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8227,6 +8228,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -8254,7 +8256,9 @@ function ErrorElement(props) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'dd',
                 { key: id + error },
-                error
+                ' ',
+                error,
+                ' '
             );
         })
     );
@@ -8272,20 +8276,14 @@ var Example = function (_Component) {
         _this.state = {
             errors: {},
             success: [],
-            selectedProvider: [],
-            selectedRate: [],
             selectedServiceLevel: [],
-            defaultValues: [],
             allServices: {},
             selectedElements: {},
             generalServiceLevel: '',
             generalProvider: '',
-            modalOpen: false,
             redirect: false,
             purchaseId: null,
-            isCharging: false,
-            emailSent: '',
-            progressBar: 0
+            isCharging: false
         };
 
         //Methods
@@ -8299,8 +8297,8 @@ var Example = function (_Component) {
         _this.handleMultipleSelect = _this.handleMultipleSelect.bind(_this);
         _this.handleGeneralServiceLevel = _this.handleGeneralServiceLevel.bind(_this);
         _this.handleGeneralProvider = _this.handleGeneralProvider.bind(_this);
-        _this.toggleModal = _this.toggleModal.bind(_this);
         _this.createLabel = _this.createLabel.bind(_this);
+        _this.allSelected = _this.allSelected.bind(_this);
 
         return _this;
     }
@@ -8312,6 +8310,11 @@ var Example = function (_Component) {
                 isCharging: true
             });
             this.fetchData(this.props.location.state.data);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            window.location.reload();
         }
     }, {
         key: 'fetchData',
@@ -8329,10 +8332,9 @@ var Example = function (_Component) {
     }, {
         key: 'getAddressTo',
         value: function getAddressTo(item, index, totalRecords) {
-
             self = this;
             //Validate address 
-            var valid = Object(__WEBPACK_IMPORTED_MODULE_9__validators_js__["a" /* validAddress */])(item, index);
+            var valid = Object(__WEBPACK_IMPORTED_MODULE_10__validators_js__["a" /* validAddress */])(item, index);
 
             if (valid[0]) {
                 var address = {
@@ -8375,10 +8377,9 @@ var Example = function (_Component) {
     }, {
         key: 'callCreateShipment',
         value: function callCreateShipment(item, addressToId, index, totalRecords) {
-
             self = this;
 
-            var valid = Object(__WEBPACK_IMPORTED_MODULE_9__validators_js__["b" /* validShipment */])(item.package, index);
+            var valid = Object(__WEBPACK_IMPORTED_MODULE_10__validators_js__["b" /* validShipment */])(item.package, index);
 
             if (valid[0]) {
                 var shipmentData = {
@@ -8419,8 +8420,8 @@ var Example = function (_Component) {
     }, {
         key: 'getRate',
         value: function getRate(item, shipmentObject, shipmentId, index, totalRecords) {
-
             self = this;
+
             $.ajax({
                 "async": true,
                 "crossDomain": true,
@@ -8431,7 +8432,6 @@ var Example = function (_Component) {
                     "authorization": "Bearer " + this.props.location.state.token
                 },
                 success: function success(data) {
-                    //self.checkRates(item, shipmentId, data.results, index);
                     self.joinRates(item, shipmentObject, shipmentId, data.results, index, totalRecords);
                 },
                 error: function error(xhr, status, _error3) {
@@ -8457,25 +8457,16 @@ var Example = function (_Component) {
                 } else {
                     allServices[rate.servicelevel] = [rate.provider];
                 }
-                if (rate.servicelevel in serviceOptions) {
-                    serviceOptions[rate.servicelevel].push(rate);
-                } else {
-                    serviceOptions[rate.servicelevel] = [rate];
-                }
+                if (rate.servicelevel in serviceOptions) serviceOptions[rate.servicelevel].push(rate);else serviceOptions[rate.servicelevel] = [rate];
             });
             this.setState(function (prevState) {
                 return {
-                    success: [].concat(_toConsumableArray(prevState.success), [{ object: shipmentObject, options: serviceOptions, selectedRate: selectedRate }]),
-                    defaultValues: [].concat(_toConsumableArray(prevState.defaultValues), [selectedRate])
+                    success: [].concat(_toConsumableArray(prevState.success), [{ object: shipmentObject, options: serviceOptions, selectedRate: selectedRate }])
                 };
             });
             this.setState({
                 allServices: allServices
             });
-
-            // self.setState({
-            //     progressBar: ((index+1)/totalRecords)*100
-            // });
 
             if (index == totalRecords) {
                 setTimeout(function () {
@@ -8488,7 +8479,6 @@ var Example = function (_Component) {
     }, {
         key: 'updateShipment',
         value: function updateShipment(shipmentId, rateId) {
-
             self = this;
 
             var rateInformation = {
@@ -8507,9 +8497,7 @@ var Example = function (_Component) {
                 },
                 "processData": false,
                 "data": JSON.stringify(rateInformation),
-                success: function success(data) {
-                    console.log("update", data);
-                },
+                success: function success(data) {},
                 error: function error(xhr, status, _error4) {
                     self.state.errors[0] = [_error4];
                     self.setState(self.state);
@@ -8520,21 +8508,20 @@ var Example = function (_Component) {
         key: 'handleServiceLevel',
         value: function handleServiceLevel(index, e) {
             var selectedServiceLevel = _extends({}, this.state.selectedServiceLevel);
-            var selectedProvider = _extends({}, this.state.selectedProvider);
-            var selectedRate = _extends({}, this.state.selectedRate);
-            var defaultValues = _extends({}, this.state.defaultValues);
             var success = this.state.success;
             selectedServiceLevel[index] = e;
-            console.log("service", e);
-            selectedProvider[index] = null;
-            selectedRate[index] = null;
-            defaultValues[index] = null;
             success[index].selectedRate = null;
             this.setState({
                 selectedServiceLevel: selectedServiceLevel,
-                selectedProvider: selectedProvider,
-                selectedRate: selectedRate,
-                defaultValues: defaultValues,
+                success: success
+            });
+        }
+    }, {
+        key: 'handleProvider',
+        value: function handleProvider(values, e) {
+            var success = this.state.success;
+            success[values.index].selectedRate = values.amount;
+            this.setState({
                 success: success
             });
         }
@@ -8550,7 +8537,6 @@ var Example = function (_Component) {
         key: 'handleGeneralProvider',
         value: function handleGeneralProvider(provider, e) {
             var errors = this.state.errors;
-            var defaultValues = this.state.defaultValues;
             var success = this.state.success;
             var generalServiceLevel = this.state.generalServiceLevel;
             var selectedElements = this.state.selectedElements;
@@ -8562,7 +8548,6 @@ var Example = function (_Component) {
                     options[this.state.generalServiceLevel].map(function (item) {
                         if (item.provider === provider) {
                             success[key].selectedRate = item;
-                            defaultValues[key] = item;
                             found = true;
                         }
                     });
@@ -8573,20 +8558,8 @@ var Example = function (_Component) {
             }
             this.setState({
                 generalProvider: provider,
-                defaultValues: defaultValues,
                 success: success,
                 errors: errors
-            });
-        }
-    }, {
-        key: 'handleProvider',
-        value: function handleProvider(values, e) {
-            var success = this.state.success;
-            var defaultValues = this.state.defaultValues;
-            success[values.index].selectedRate = values.amount;
-            defaultValues[values.index] = values.amount;
-            this.setState({
-                success: success
             });
         }
     }, {
@@ -8606,14 +8579,12 @@ var Example = function (_Component) {
             });
         }
     }, {
-        key: 'toggleModal',
-        value: function toggleModal(e) {
-            e.preventDefault();
+        key: 'allSelected',
+        value: function allSelected() {
             var error = false;
             var item = this.state.success;
 
             for (var i = 0; i < item.length; i++) {
-                console.log(item[i]['selectedRate']);
                 if (!item[i]['selectedRate']) {
                     error = true;
                     break;
@@ -8621,54 +8592,56 @@ var Example = function (_Component) {
             }
             if (!error) {
                 this.setState({
-                    errors: {},
-                    modalOpen: !this.state.modalOpen
+                    errors: {}
                 });
+                return true;
             } else {
                 this.state.errors[0] = ["Para continuar debes seleccionar todos los servicios y paqueterías"];
                 this.setState(self.state);
+                return false;
             }
         }
     }, {
         key: 'createLabel',
         value: function createLabel(e) {
             e.preventDefault();
-            self = this;
-            var success = this.state.success;
-            var purchases = [];
+            if (this.allSelected()) {
+                self = this;
+                var success = this.state.success;
+                var purchases = [];
 
-            success.forEach(function (item, index) {
-                self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
-                purchases.push(item['object'].object_id);
-            });
-
-            var purchaseData = { "shipments": purchases };
-
-            setTimeout(function () {
-                $.ajax({
-                    "async": true,
-                    "crossDomain": true,
-                    "method": 'POST',
-                    "url": "https://app.mienvio.mx/api/purchases",
-                    "headers": {
-                        "content-type": "application/json",
-                        "authorization": "Bearer " + self.props.location.state.token
-                    },
-                    "data": JSON.stringify(purchaseData),
-                    success: function success(data) {
-                        console.log("compra", data);
-                        self.setState({
-                            modalOpen: !self.state.modalOpen,
-                            purchaseId: data.purchase.object_id,
-                            redirect: true
-                        });
-                    },
-                    error: function error(xhr, status, _error5) {
-                        self.state.errors[0] = [_error5];
-                        self.setState(self.state);
-                    }
+                success.forEach(function (item, index) {
+                    self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
+                    purchases.push(item['object'].object_id);
                 });
-            }, 3000);
+
+                var purchaseData = { "shipments": purchases };
+
+                setTimeout(function () {
+                    $.ajax({
+                        "async": true,
+                        "crossDomain": true,
+                        "method": 'POST',
+                        "url": "https://app.mienvio.mx/api/purchases",
+                        "headers": {
+                            "content-type": "application/json",
+                            "authorization": "Bearer " + self.props.location.state.token
+                        },
+                        "data": JSON.stringify(purchaseData),
+                        success: function success(data) {
+                            console.log("compra", data);
+                            self.setState({
+                                purchaseId: data.purchase.object_id,
+                                redirect: true
+                            });
+                        },
+                        error: function error(xhr, status, _error5) {
+                            self.state.errors[0] = [_error5];
+                            self.setState(self.state);
+                        }
+                    });
+                }, 3000);
+            }
         }
     }, {
         key: 'render',
@@ -8676,13 +8649,13 @@ var Example = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_8_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, purchaseId: this.state.purchaseId } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, purchaseId: this.state.purchaseId } } });
             } else if (this.state.isCharging) {
-                var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%" };
+                var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%" };
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     null,
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { style: helpStyle, src: __WEBPACK_IMPORTED_MODULE_10__public_media_loader_gif___default.a }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { style: helpStyle, src: __WEBPACK_IMPORTED_MODULE_11__public_media_loader_gif___default.a }),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'h1',
                         { style: { textAlign: "center", marginTop: "-5%" } },
@@ -8724,198 +8697,21 @@ var Example = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
                             { bsStyle: 'primary', onClick: function onClick(e) {
-                                    return _this2.toggleModal(e);
+                                    return _this2.createLabel(e);
                                 }, className: 'pull-right' },
-                            'Siguiente'
+                            'Generar gu\xEDas'
                         )
                     )
                 ),
-                Object.keys(this.state.selectedElements).length > 1 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'row' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'h5',
-                        null,
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'strong',
-                            null,
-                            'Servicio'
-                        )
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
-                        { style: { margin: 5 } },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* DropdownButton */],
-                            {
-                                bsStyle: 'default',
-                                title: this.state.generalServiceLevel ? this.state.generalServiceLevel : "Seleccionar",
-                                noCaret: true,
-                                id: 'dropdown-no-caret' },
-                            Object.keys(this.state.allServices).map(function (service) {
-                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["l" /* MenuItem */],
-                                    { key: service, eventKey: service,
-                                        onSelect: function onSelect(e) {
-                                            return _this2.handleGeneralServiceLevel(service, e);
-                                        } },
-                                    ' ',
-                                    service,
-                                    ' '
-                                );
-                            })
-                        )
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'h5',
-                        null,
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'strong',
-                            null,
-                            'Paqueter\xEDa'
-                        )
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["b" /* ButtonToolbar */],
-                        { style: { margin: 5 } },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["f" /* DropdownButton */],
-                            {
-                                bsStyle: 'default',
-                                title: this.state.generalProvider ? this.state.generalProvider : "Seleccionar",
-                                noCaret: true,
-                                id: 'dropdown-no-caret' },
-                            this.state.allServices[this.state.generalServiceLevel] && this.state.allServices[this.state.generalServiceLevel].map(function (provider) {
-                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["l" /* MenuItem */],
-                                    { key: provider, eventKey: provider,
-                                        onSelect: function onSelect(e) {
-                                            return _this2.handleGeneralProvider(provider, e);
-                                        } },
-                                    ' ',
-                                    provider,
-                                    ' '
-                                );
-                            })
-                        )
-                    )
-                ),
+                Object.keys(this.state.selectedElements).length > 1 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__SelectService__["a" /* default */], { generalServiceLevel: this.state.generalServiceLevel, allServices: this.state.allServices,
+                    generalProvider: this.state.generalProvider,
+                    handleGeneralServiceLevel: this.handleGeneralServiceLevel, handleGeneralProvider: this.handleGeneralProvider }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["n" /* Row */],
                     null,
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["o" /* Table */],
-                        { striped: true, bordered: true },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'thead',
-                            null,
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'tr',
-                                null,
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('th', null),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'CP Origen'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Destino'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'CP'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Contenido'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Peso (kg)'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Largo (cm)'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Alto (cm)'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Ancho (cm)'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Servicio'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Paqueter\xEDa'
-                                ),
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'th',
-                                    null,
-                                    'Subtotal'
-                                )
-                            )
-                        ),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'tbody',
-                            null,
-                            this.state.success.length > 0 && this.state.success.map(function (row, index) {
-                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__TableRow__["a" /* default */], { key: index, index: index, row: row, selectedProvider: _this2.state.selectedProvider,
-                                    selectedServiceLevel: _this2.state.selectedServiceLevel, defaultValues: _this2.state.defaultValues,
-                                    selectedElements: _this2.state.selectedElements,
-                                    selectedRate: _this2.state.selectedRate, handleProvider: _this2.handleProvider,
-                                    handleServiceLevel: _this2.handleServiceLevel, handleMultipleSelect: _this2.handleMultipleSelect });
-                            })
-                        )
-                    )
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__OptionModal__["a" /* default */], { modalOpen: this.state.modalOpen, toggleModal: this.toggleModal,
-                    sendDashboard: this.sendDashboard, createLabel: this.createLabel }),
-                this.state.emailSent && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'static-modal' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Dialog,
-                        { style: { position: 'absolute', top: '20%', left: '0%', transform: 'translate(-20%, -0%) !important' } },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Header,
-                            null,
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Title,
-                                { className: 'font-weight-bold' },
-                                'Gu\xEDas'
-                            )
-                        ),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["m" /* Modal */].Body,
-                            null,
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'h4',
-                                { style: { textAlign: 'center' } },
-                                this.state.emailSent
-                            ),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
-                                { bsStyle: 'primary', bsSize: 'small', block: true, onClick: this.toggleEmailModal },
-                                'OK'
-                            )
-                        )
-                    )
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__TableRow__["a" /* default */], { selectedServiceLevel: this.state.selectedServiceLevel,
+                        handleProvider: this.handleProvider, success: this.state.success,
+                        handleServiceLevel: this.handleServiceLevel, handleMultipleSelect: this.handleMultipleSelect })
                 )
             );
         }
@@ -76617,7 +76413,7 @@ var OptionMondal = function (_Component) {
 	return OptionMondal;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
-/* harmony default export */ __webpack_exports__["a"] = (OptionMondal);
+/* unused harmony default export */ var _unused_webpack_default_export = (OptionMondal);
 
 /***/ }),
 /* 514 */
@@ -76632,133 +76428,204 @@ var OptionMondal = function (_Component) {
 
 var TableRow = function TableRow(props) {
 
-  var row = props.row;
-  var index = props.index;
-  //console.log(row);
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-    'tr',
-    { key: row },
+    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["o" /* Table */],
+    { striped: true, bordered: true },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
-          return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
-        } })
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].address_from.zipcode,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].address_to.street,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].address_to.zipcode,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].description,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].weight,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].length,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].height,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      ' ',
-      row['object'].width,
-      ' '
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
+      'thead',
       null,
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+        'tr',
         null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('th', null),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-          {
-            bsStyle: 'default',
-            title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
-            noCaret: true,
-            id: 'dropdown-no-caret' },
-          Object.keys(row['options']).map(function (service) {
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-              { key: service,
-                eventKey: service, onSelect: function onSelect(e) {
-                  return props.handleServiceLevel(index, e);
-                } },
-              service,
-              ' '
-            );
-          })
+          'th',
+          null,
+          'CP Origen'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Destino'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'CP'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Contenido'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Peso (kg)'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Largo (cm)'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Alto (cm)'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Ancho (cm)'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Servicio'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Paqueter\xEDa'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'th',
+          null,
+          'Subtotal'
         )
       )
     ),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
+      'tbody',
       null,
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
-        null,
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
-          {
-            bsStyle: 'default',
-            title: row['selectedRate'] ? row['selectedRate'].provider : props.selectedProvider[index] ? props.selectedProvider[index] : "Seleccionar",
-            noCaret: true,
-            id: 'dropdown-no-caret' },
-          props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
-              { key: value.provider, eventKey: value.provider,
-                onSelect: function onSelect(e) {
-                  return props.handleProvider({ index: index, amount: value }, e);
-                } },
-              value.provider
-            );
-          })
-        )
-      )
-    ),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      'td',
-      null,
-      '$ ',
-      row['selectedRate'] ? row['selectedRate'].amount : props.selectedRate[index] ? props.selectedRate[index] : "0.0"
+      props.success.length > 0 && props.success.map(function (row, index) {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'tr',
+          { key: row['object'].object_id },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["c" /* Checkbox */], { onClick: function onClick(e) {
+                return props.handleMultipleSelect({ index: index, object: row['object'], options: row['options'] }, e.target.checked);
+              } })
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_from.zipcode,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_to.street,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].address_to.zipcode,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].description,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].weight,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].length,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].height,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            ' ',
+            row['object'].width,
+            ' '
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+              null,
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+                {
+                  bsStyle: 'default',
+                  title: row['selectedRate'] ? row['selectedRate'].servicelevel : props.selectedServiceLevel[index] ? props.selectedServiceLevel[index] : "Seleccionar",
+                  noCaret: true,
+                  id: 'dropdown-no-caret' },
+                Object.keys(row['options']).map(function (service) {
+                  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+                    { key: service,
+                      eventKey: service, onSelect: function onSelect(e) {
+                        return props.handleServiceLevel(index, e);
+                      } },
+                    service,
+                    ' '
+                  );
+                })
+              )
+            )
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+              null,
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+                {
+                  bsStyle: 'default',
+                  title: row['selectedRate'] ? row['selectedRate'].provider : "Seleccionar",
+                  noCaret: true,
+                  id: 'dropdown-no-caret' },
+                props.selectedServiceLevel[index] && row['options'][props.selectedServiceLevel[index]].map(function (value) {
+                  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+                    { key: value.provider, eventKey: value.provider,
+                      onSelect: function onSelect(e) {
+                        return props.handleProvider({ index: index, amount: value }, e);
+                      } },
+                    value.provider
+                  );
+                })
+              )
+            )
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'td',
+            null,
+            '$ ',
+            row['selectedRate'] ? row['selectedRate'].amount : "0.0"
+          )
+        );
+      })
     )
   );
 };
@@ -79571,7 +79438,7 @@ var Guias = function (_Component) {
         key: 'render',
         value: function render() {
             if (!this.state.purchase) {
-                var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%" };
+                var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%" };
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     null,
@@ -79901,6 +79768,102 @@ var Guias = function (_Component) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */,
+/* 545 */,
+/* 546 */,
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__ = __webpack_require__(46);
+
+
+
+var SelectService = function SelectService(props) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'row' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'h5',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'strong',
+                null,
+                'Servicio'
+            )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+            { style: { margin: 5 } },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+                {
+                    bsStyle: 'default',
+                    title: props.generalServiceLevel ? props.generalServiceLevel : "Seleccionar",
+                    noCaret: true,
+                    id: 'dropdown-no-caret' },
+                Object.keys(props.allServices).map(function (service) {
+                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+                        { key: service, eventKey: service,
+                            onSelect: function onSelect(e) {
+                                return props.handleGeneralServiceLevel(service, e);
+                            } },
+                        ' ',
+                        service,
+                        ' '
+                    );
+                })
+            )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'h5',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'strong',
+                null,
+                'Paqueter\xEDa'
+            )
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["b" /* ButtonToolbar */],
+            { style: { margin: 5 } },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["f" /* DropdownButton */],
+                {
+                    bsStyle: 'default',
+                    title: props.generalProvider ? props.generalProvider : "Seleccionar",
+                    noCaret: true,
+                    id: 'dropdown-no-caret' },
+                props.allServices[props.generalServiceLevel] && props.allServices[props.generalServiceLevel].map(function (provider) {
+                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_1_react_bootstrap__["l" /* MenuItem */],
+                        { key: provider, eventKey: provider,
+                            onSelect: function onSelect(e) {
+                                return props.handleGeneralProvider(provider, e);
+                            } },
+                        ' ',
+                        provider,
+                        ' '
+                    );
+                })
+            )
+        )
+    );
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (SelectService);
 
 /***/ })
 /******/ ]);
