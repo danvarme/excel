@@ -2,28 +2,11 @@
 
 <html lang="{{ app()->getLocale() }}">
 
-    <head>
-
-        <style>
-            th, td{
-                border: 1px solid black;
-                padding: 10px;
-                color: black;
-            }
-            .moveRight{
-                padding-left: 65%;
-                padding-top: 1px;
-                color: black;
-            }
-        </style>
-    </head>
-
     <body>
 
         <div>
             <div class="content">
                 <div class="col-md-12">
-                    <h2>Guías generadas</h2>
                         <table id="tablaEnvios">
                             <thead>
                                 <tr>
@@ -64,27 +47,36 @@
                                     <td>{{ number_format($guia['rate']['amount'], 2) }}</td>
                                 </tr>
                                 @endforeach
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Total </td>
+                                    <td>{{ $amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>No. de guías</td>
+                                    <td>{{ $size }}</td>
+                                </tr>
                             </tbody>
                         </table>
-
-                        <div class="row">
-                            <div class="moveRight" >
-                                <div class="row">
-                                    <div class="col col-md-4 col-md-offset-3 text-right">
-                                        <h3> Total  {{ $amount }} </h3>
-                                    </div>
-                              </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="moveRight">
-                                <div class="row">
-                                    <div class="col col-md-4 col-md-offset-3 text-right">
-                                        <h3> No. de guías  {{ $size }}</h3>
-                                    </div>
-                              </div>
-                            </div>
-                        </div>
                 </div>
             </div>
         </div>

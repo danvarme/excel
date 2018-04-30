@@ -124,7 +124,6 @@ export default class GenerarPedido extends Component {
     handleSubmit(){
         if(this.validateInformation()){
             this.getUserToken();
-            //this.toggleModal();
         }else{
             let errors = {...this.state.errors};
             Object.keys(errors).forEach(function(key) {
@@ -202,11 +201,10 @@ export default class GenerarPedido extends Component {
                 self.toggleModal();
             },
             error: function (xhr, status, error) 
-            {
+            {   
                 self.setState({
-                    tokenError: error
+                    tokenError: xhr.responseJSON.error.message
                 });
-                console.log(error);
             }
         });
     }

@@ -77,16 +77,25 @@ class ExcelController extends Controller
 	public function exportExcel(Request $request)
 	{
 		$data = $request->all();
+		$shipments = $data['shipments'];
+		$amount = $data['amount'];
+		$size = count($data['shipments']);
 
-		$myFile = Excel::create('guia', function ($excel) use ($data) {
-            $excel->sheet('guia', function ($sheet) use ($data) {
-                $sheet->fromArray($data);
+	    $myFile = Excel::create('guias', function($excel) use ($shipments, $amount, $size) {
 
-            });
-        });
-        $myFile   = $myFile->string('xlsx'); 
+	        $excel->sheet('Excel sheet', function($sheet) use ($shipments, $amount, $size) {
+	            $sheet->loadView('excelTemplate')->with('shipments',$shipments)
+	            							 ->with('amount',$amount)
+	                                         ->with('size',$size);
+	        });
+	        
 
-        $response = array(
+	    });
+
+
+	    $myFile = $myFile->string('xlsx');
+
+	    $response = array(
             'name' => 'guia', 
             'file' => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($myFile), 
         );
@@ -97,13 +106,18 @@ class ExcelController extends Controller
 
 	public function sendEmail(Request $request)
 	{	
+		$data = $request->all();
+
+		$passingData = array(
+	        'shipments' => $data['shipments'],
+			'amount' => $data['amount'],
+			'size' => count($data['shipments'])
+        );
+
 		Mail::send(
-			'sendEmail',
-			array(
-				'data' => $request->all()
-			),
+			'sendEmail', $passingData,
 			function( $message ){
-				$message->to('fervargas59@gmail.com')->subject('Mi envío, contacto');
+				$message->to('fervargas59@gmail.com')->subject('Guías generadas');
 			}
 		);
 	}
@@ -114,6 +128,5 @@ class ExcelController extends Controller
     	$errors = $request->get('errors');
     	$request->session()->put('key', 'value');
     	return redirect('/shipments');
-    	//return view('table', ['envios' => $success, 'errors' => $errors])->render();
     }
 }

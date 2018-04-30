@@ -10,6 +10,7 @@ import TableRow from './TableRow'
 import { Route, Router } from 'react-router-dom'
 import { Redirect } from 'react-router'
 import { validAddress, validShipment} from '../validators.js'
+import logo from '../../../../public/media/loader.gif'
 
 function ErrorElement(props){
     return(
@@ -63,10 +64,6 @@ export default class Example extends Component {
         this.handleGeneralProvider = this.handleGeneralProvider.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.createLabel = this.createLabel.bind(this);
-        this.sendDashboard = this.sendDashboard.bind(this);
-        this.exportExcel = this.exportExcel.bind(this);
-        this.sendEmail = this.sendEmail.bind(this);
-        this.toggleEmailModal = this.toggleEmailModal.bind(this);
         
     }
 
@@ -82,7 +79,6 @@ export default class Example extends Component {
         self = this;
 
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-        console.log(totalRecords);
         
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
@@ -94,7 +90,6 @@ export default class Example extends Component {
     getAddressTo(item, index, totalRecords){
 
         self = this;
-
         //Validate address 
         var valid = validAddress(item, index);
 
@@ -125,7 +120,7 @@ export default class Example extends Component {
                 success: function (data){
                     var addressToId = data.address.object_id;
                     //Crear dirección para enviar 
-                    self.callCreateShipment(item, addressToId, index);
+                    self.callCreateShipment(item, addressToId, index, totalRecords);
                 },
                 error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
@@ -170,7 +165,7 @@ export default class Example extends Component {
                 "data": JSON.stringify(shipmentData),
                 success: function (data){
                     var shipmentId = data.shipment.object_id;
-                    self.getRate(item, data.shipment, shipmentId, index);
+                    self.getRate(item, data.shipment, shipmentId, index, totalRecords);
                 },
                 error: function (xhr, status, error) {
                     self.state.errors[0] = [error];
@@ -187,7 +182,6 @@ export default class Example extends Component {
     getRate(item, shipmentObject, shipmentId, index, totalRecords){
 
         self = this;
-
         $.ajax({
             "async": true,
             "crossDomain": true,
@@ -199,7 +193,7 @@ export default class Example extends Component {
             },
             success: function (data){
                 //self.checkRates(item, shipmentId, data.results, index);
-                self.joinRates(item, shipmentObject, shipmentId, data.results, index);
+                self.joinRates(item, shipmentObject, shipmentId, data.results, index,totalRecords);
             },
             error: function (xhr, status, error){
                 self.state.errors[0] = [error];
@@ -237,21 +231,17 @@ export default class Example extends Component {
             allServices
         });
 
-        self.setState({
-            progressBar: ((index+1)/totalRecords)*100
-        });
-        console.log(index);
-        console.log(totalRecords);
-        // if(index == (totalRecords - 1)){
-        //     setTimeout(function(){
-        //         self.setState({
-        //             isCharging: false
-        //         });
-        //     }, 500);
-        // }
-        self.setState({
-            isCharging: false
-        });
+        // self.setState({
+        //     progressBar: ((index+1)/totalRecords)*100
+        // });
+
+        if(index == totalRecords){
+            setTimeout(function(){
+                self.setState({
+                    isCharging: false
+                });
+            }, 200);
+        }
     }
 
     updateShipment(shipmentId, rateId){
@@ -392,10 +382,6 @@ export default class Example extends Component {
         
     }
 
-    sendDashboard(e){
-        e.preventDefault();
-    }
-
     createLabel(e){
         e.preventDefault();
         self = this;
@@ -435,79 +421,18 @@ export default class Example extends Component {
             });}
         , 3000);
     }
-
-    exportExcel(event){
-        //Set errors and success to empty. 
-        self = this;
-
-        $.ajax({
-            url: '/exportExcel',
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: JSON.stringify(this.props.location.state.data),
-            contentType: 'application/json',
-            type: 'POST',
-            success: function(data){
-                if(data.error){
-                    console.log(error);
-                }else{
-                    var a = document.createElement("a");
-                    a.href = data.file;
-                    a.download = data.name;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                }
-            } 
-        });  
-    }
-
-    sendEmail(event){
-
-        self = this;
-
-        $.ajax({
-            url: '/sendEmail',
-            headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: JSON.stringify(this.props.location.state.data),
-            contentType: 'application/json',
-            type: 'POST',
-            success: function(data){
-                if(data.error){
-                    self.setState({
-                        emailSent: data.error
-                    });
-                }else{
-                    self.setState({
-                        emailSent: 'Las guías se han eviado exitosamente al correo del cliente'
-                    });
-                }
-            } 
-        });  
-    }
-
-    toggleEmailModal(){
-        this.setState({
-            emailSent: ''
-        });
-    }
     
     render() {
         if (this.state.redirect) {
             return <Redirect to={{ pathname: '/guias', state: {token: this.props.location.state.token, purchaseId: this.state.purchaseId}}}/>;
         }
         else if (this.state.isCharging) {
-            let helpStyle = { top: '20%', transform: 'translate(-30%, -30%) !important'}
+            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "50%"}
             return (
-                <Modal.Dialog style={helpStyle}>
-                    <Modal.Body>
-                        <h3 style={{marginTop: "3%", textAlign: 'center'}}>Subiendo archivos</h3>
-                        <ProgressBar style={{marginTop: "5%"}} now={this.state.progressBar} />
-                    </Modal.Body>
-                </Modal.Dialog>);
+                <div  >
+                    <img style={helpStyle} src={logo} />
+                    <h1 style={{textAlign: "center", marginTop: "-5%"}}>Loading....</h1>
+                </div>);
         }
         return (
             <div className = "container" style={{marginTop: 20}}>
@@ -586,8 +511,6 @@ export default class Example extends Component {
                   </tbody>
                 </Table>
                 </Row>
-                <Button className="btn-primary pull-right" onClick={this.exportExcel}>UPLOOOOADD</Button>
-                <Button className="btn-primary pull-right" onClick={this.sendEmail}>EMAIL</Button>
                 <OptionModal modalOpen = { this.state.modalOpen } toggleModal = { this.toggleModal }
                              sendDashboard = { this.sendDashboard } createLabel = { this.createLabel } />
                 {this.state.emailSent && 
