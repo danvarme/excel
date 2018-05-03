@@ -71,7 +71,7 @@
                             <div class="moveRight" >
                                 <div class="row">
                                     <div class="col col-md-4 col-md-offset-3 text-right">
-                                        <h3> Total  {{ $amount }} </h3>
+                                        <h3> Total  $ {{ $amount }} </h3>
                                     </div>
                               </div>
                             </div>
