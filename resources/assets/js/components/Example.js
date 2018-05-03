@@ -69,16 +69,11 @@ export default class Example extends Component {
         this.fetchData(this.props.location.state.data);
     }
 
-    componentWillUnmount() {
-        window.location.reload()
-    }
-
-
     fetchData(shipments){
         self = this;
 
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-        
+
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
             self.getAddressTo(item, index + 1, totalRecords);
@@ -413,10 +408,10 @@ export default class Example extends Component {
                     </div>
                 }
                 <div className="row">
-                    <Col xs={12} md={8}>
+                    <Col xs={6} md={6}>
                       <h3>Subir CSV</h3>
                     </Col>
-                    <Col xs={6} md={4}>
+                    <Col xs={6} md={6}>
                         <Button bsStyle="primary" onClick={(e) => this.createLabel(e)} className="pull-right">Generar guías</Button>                            
                     </Col>
                 </div>
