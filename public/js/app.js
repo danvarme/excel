@@ -8306,9 +8306,9 @@ var Example = function (_Component) {
     _createClass(Example, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            // this.setState({
-            //     isCharging: true
-            // });
+            this.setState({
+                isCharging: true
+            });
             this.fetchData(this.props.location.state.data);
         }
     }, {
@@ -8318,46 +8318,10 @@ var Example = function (_Component) {
 
             var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
 
-            var testObject = [{ "object_purpose": "PURCHASE", "object_id": 118, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 5, "height": 5, "length": 3.1, "width": 3.1,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }, { "object_purpose": "PURCHASE", "object_id": 32, "owner_id": 1, "address_from": { "object_type": "PURCHASE",
-                    "object_id": 57, "name": "12312 Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview", "zipcode": "07800",
-                    "email": "daniela@mienvio.mx", "phone": "+0864219858661", "bookmark": false, "alias": "", "owner_id": 1 }, "address_to": {
-                    "object_type": "PURCHASE", "object_id": 58, "name": "Robert Leannon", "street": "64710 Leannon Cliff Apt. 140", "street2": "Port Joshuahview",
-                    "zipcode": "07800", "email": "dev@mienvio.mx", "phone": "+0864219858661", "bookmark": false,
-                    "alias": "", "owner_id": 1 }, "weight": 3, "height": 44, "length": 32, "width": 31,
-                "description": "pruebaaakfsdjflkfasdfadfasdfsf", "rate": { "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true,
-                    "provider": "Fedex", "provider_img": "media/providers/fedex.png" }, "label": null }];
-
-            var testRates = [{ "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "estandar",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 150, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Redpack",
-                    "provider_img": "media/providers/redpack.png" }] }, { "total_count": 3, "total_pages": 2,
-                "current_page": 1, "next_page_url": "https://app.mienvio.mx/api/shipments/112/rates?page=2",
-                "prev_page_url": null, "results": [{ "object_id": 4, "amount": 130, "servicelevel": "express",
-                    "duration_terms": "2 a 5 días", "days": 5, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 99, "amount": 99, "servicelevel": "express",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Fedex",
-                    "provider_img": "media/providers/fedex.png" }, { "object_id": 929, "amount": 120, "servicelevel": "estandar",
-                    "duration_terms": "1 a 2 días", "days": 2, "trackable": true, "collect_home": true, "provider": "Estafeta",
-                    "provider_img": "media/providers/redpack.png" }] }];
-
             //Iterate over each shipment 
             shipments.forEach(function (item, index) {
-                //self.getAddressTo(item, index + 1, totalRecords);
-                self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
+                self.getAddressTo(item, index + 1, totalRecords);
+                //self.joinRates(item, testObject[index], 1, testRates[index].results, index, totalRecords);
             });
         }
     }, {
@@ -8641,6 +8605,10 @@ var Example = function (_Component) {
                 var success = this.state.success;
                 var purchases = [];
 
+                this.setState({
+                    isCharging: true
+                });
+
                 success.forEach(function (item, index) {
                     self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
                     purchases.push(item['object'].object_id);
@@ -8715,7 +8683,7 @@ var Example = function (_Component) {
                     { className: 'row' },
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* Col */],
-                        { xs: 12, md: 8 },
+                        { xs: 6, md: 6 },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'h3',
                             null,
@@ -8724,7 +8692,7 @@ var Example = function (_Component) {
                     ),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["d" /* Col */],
-                        { xs: 6, md: 4 },
+                        { xs: 6, md: 6 },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_4_react_bootstrap__["a" /* Button */],
                             { bsStyle: 'primary', onClick: function onClick(e) {
@@ -21716,19 +21684,18 @@ var GenerarPedido = function (_Component) {
     }, {
         key: 'handleSubmit',
         value: function handleSubmit() {
-            this.toggleModal();
-            // if(this.validateInformation()){
-            //     this.getUserToken();
-            // }else{
-            //     let errors = {...this.state.errors};
-            //     Object.keys(errors).forEach(function(key) {
-            //         if(self.state[key] == '') errors[key] = 'error';
-            //     });
+            if (this.validateInformation()) {
+                this.getUserToken();
+            } else {
+                var errors = _extends({}, this.state.errors);
+                Object.keys(errors).forEach(function (key) {
+                    if (self.state[key] == '') errors[key] = 'error';
+                });
 
-            //     this.setState({
-            //       errors
-            //     });
-            // }
+                this.setState({
+                    errors: errors
+                });
+            }
         }
     }, {
         key: 'getUserToken',
@@ -21749,7 +21716,7 @@ var GenerarPedido = function (_Component) {
                     self.setState({
                         api_token: data.api_token
                     });
-                    self.createTempAddress();
+                    if (self.state.newAddressId) self.toggleModal();else self.createTempAddress();
                 },
                 error: function error(xhr, status, _error) {
                     console.log(_error);

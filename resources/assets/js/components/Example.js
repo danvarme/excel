@@ -352,6 +352,10 @@ export default class Example extends Component {
             let success = this.state.success;
             let purchases = [];
 
+            this.setState({
+                isCharging: true
+            });
+
             success.forEach(function(item, index){
                 self.updateShipment(item['object'].object_id, item['selectedRate'].object_id);
                 purchases.push(item['object'].object_id);

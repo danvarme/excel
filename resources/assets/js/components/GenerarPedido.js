@@ -155,7 +155,8 @@ export default class GenerarPedido extends Component {
                 self.setState({
                     api_token: data.api_token
                 });
-                self.createTempAddress();
+                if(self.state.newAddressId) self.toggleModal();
+                else self.createTempAddress();
             },
             error: function (xhr, status, error) 
             {
