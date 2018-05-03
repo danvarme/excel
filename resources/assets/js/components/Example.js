@@ -73,7 +73,7 @@ export default class Example extends Component {
         self = this;
 
         var totalRecords = Object.getOwnPropertyNames(shipments).length - 1;
-
+        
         //Iterate over each shipment 
         shipments.forEach(function(item, index){
             self.getAddressTo(item, index + 1, totalRecords);
@@ -395,7 +395,7 @@ export default class Example extends Component {
             return <Redirect to={{ pathname: '/guias', state: {token: this.props.location.state.token, purchaseId: this.state.purchaseId}}}/>;
         }
         else if (this.state.isCharging) {
-            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%"}
+            let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%", paddingTop: "10%"}
             return (
                 <div>
                     <img style={helpStyle} src={logo} />

@@ -55,7 +55,6 @@ export default class GenerarPedido extends Component {
         this.setState({
           modal: !this.state.modal
         });
-        console.log(this.state.modal);
     }
 
     handleChange(name,e) {

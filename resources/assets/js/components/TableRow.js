@@ -6,7 +6,7 @@ import { Table,
 const TableRow = (props) => {
 
   return(
-    <Table striped bordered>
+    <Table responsive>
     <thead>
       <tr>
         <th></th>

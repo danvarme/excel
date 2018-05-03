@@ -14,7 +14,6 @@ export default class Guias extends Component{
         	loading: true,
         	emailSent: '',
         	purchase: null
-        	
         };
 
         this.getPurchase = this.getPurchase.bind(this);
@@ -128,7 +127,7 @@ export default class Guias extends Component{
 
 	render(){
 		if(!this.state.purchase){
-			let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%"}
+			let helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%", paddingTop: "10%"}
             return (
                 <div  >
                     <img style={helpStyle} src={logo} />
@@ -155,7 +154,7 @@ export default class Guias extends Component{
 				</div>
 				
 				<div className="row">
-					<Table striped bordered>
+					<Table responsive>
 						<thead>
 							<tr>
 								<th>No. guía</th>
@@ -195,24 +194,24 @@ export default class Guias extends Component{
 				</div>
 				<Grid className="pull-right">
 					<Row className="show-grid">
-					    <Col xs={5} xsOffset={7}>
+					    <Col md={9} xsOffset={3}>
 					    	<Row className="show-grid">
-					    		<Col md={6}  className="text-right">
+					    		<Col md={10}  className="text-right">
 							     	<strong> Total </strong>
 							    </Col>
-							    <Col md={6} className="text-right">
+							    <Col md={2} className="text-right">
 							    	<strong> $ { purchaseObject.amount } </strong>
 							    </Col>
 						  </Row>
 					    </Col>
 				  	</Row>
 				  	<Row className="show-grid">
-					    <Col xs={5} xsOffset={7} >
+					    <Col md={9} xsOffset={3} >
 					    	<Row className="show-grid">
-							    <Col md={6}  className="text-right">
+							    <Col md={10}  className="text-right">
 							    	<strong> No. de guías </strong>
 							    </Col>
-							    <Col md={6} className="text-right">
+							    <Col md={2} className="text-right">
 							    	<strong> { purchaseObject.shipments.length } </strong>
 							    </Col>
 						  </Row>
