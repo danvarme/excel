@@ -8667,7 +8667,7 @@ var Example = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, purchaseId: this.state.purchaseId } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_9_react_router__["a" /* Redirect */], { to: { pathname: '/guias', state: { token: this.props.location.state.token, email: this.props.location.state.email, purchaseId: this.state.purchaseId } } });
             } else if (this.state.isCharging) {
                 var helpStyle = { display: "block", marginLeft: "auto", marginRight: "auto", width: "30%", paddingTop: "10%" };
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -21745,7 +21745,7 @@ var GenerarPedido = function (_Component) {
         _this.state = {
             redirect: false,
             excelData: null,
-            email: '',
+            email: 'fervargas59@gmail.com',
             name: '',
             street: '',
             street2: '',
@@ -21973,7 +21973,7 @@ var GenerarPedido = function (_Component) {
             var _this2 = this;
 
             if (this.state.redirect) {
-                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", newAddressId: this.state.newAddressId } } });
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7_react_router__["a" /* Redirect */], { to: { pathname: '/showTable', state: { data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", email: this.state.email, newAddressId: this.state.newAddressId } } });
             }
             var helpStyle = { top: 0, margin: 0 };
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -78535,6 +78535,7 @@ var Guias = function (_Component) {
         value: function exportExcel(event) {
             //Set errors and success to empty. 
             self = this;
+            event.preventDefault();
 
             $.ajax({
                 url: '/exportExcel',
@@ -78563,13 +78564,19 @@ var Guias = function (_Component) {
         value: function sendEmail(event) {
 
             self = this;
+            event.preventDefault();
+
+            var object = {
+                "purchase": this.state.purchase,
+                "email": this.props.location.state.email
+            };
 
             $.ajax({
                 url: '/sendEmail',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                data: JSON.stringify(this.state.purchase),
+                data: JSON.stringify(object),
                 contentType: 'application/json',
                 type: 'POST',
                 success: function success(data) {

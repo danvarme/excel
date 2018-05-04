@@ -69,6 +69,7 @@ export default class Guias extends Component{
     exportExcel(event){
         //Set errors and success to empty. 
         self = this;
+        event.preventDefault();
 
         $.ajax({
             url: '/exportExcel',
@@ -94,15 +95,21 @@ export default class Guias extends Component{
     }
 
     sendEmail(event){
-
+        
         self = this;
+        event.preventDefault();
+
+        var object = {
+            "purchase": this.state.purchase,
+            "email": this.props.location.state.email
+        }
 
         $.ajax({
             url: '/sendEmail',
             headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            data: JSON.stringify(this.state.purchase),
+            data: JSON.stringify(object),
             contentType: 'application/json',
             type: 'POST',
             success: function(data){

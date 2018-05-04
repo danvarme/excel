@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => 'postmaster@sandbox0340403a02f9489ea58f99711265d547.mailgun.org',
-        'name' => 'Fer Vargas',
+        'address' => 'ventas@mienvio.mx',
+        'name' => 'Ventas',
     ],
 
     /*

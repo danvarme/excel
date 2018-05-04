@@ -26,7 +26,7 @@ export default class GenerarPedido extends Component {
         this.state = {
             redirect: false,
             excelData: null,
-            email: '',
+            email: 'fervargas59@gmail.com',
             name: '',
             street: '',
             street2: '',
@@ -250,7 +250,7 @@ export default class GenerarPedido extends Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", newAddressId: this.state.newAddressId}}}/>;
+            return <Redirect to={{ pathname: '/showTable', state: {data: this.state.excelData, token: "3A49ZnUJbwSBIfBhLRW14YaQDdreIkCDNGUtijXVBVyT3BzGa4so1pR7GnOr", email: this.state.email, newAddressId: this.state.newAddressId}}}/>;
         }
         let helpStyle = {top:0, margin: 0}
         return (

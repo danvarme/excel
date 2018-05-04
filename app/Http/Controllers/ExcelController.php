@@ -107,17 +107,18 @@ class ExcelController extends Controller
 	public function sendEmail(Request $request)
 	{	
 		$data = $request->all();
+		$email = $data['email'];
 
 		$passingData = array(
-	        'shipments' => $data['shipments'],
-			'amount' => $data['amount'],
-			'size' => count($data['shipments'])
+	        'shipments' => $data['purchase']['shipments'],
+			'amount' => $data['purchase']['amount'],
+			'size' => count($data['purchase']['shipments'])
         );
 
 		Mail::send(
 			'sendEmail', $passingData,
-			function( $message ){
-				$message->to('fervargas59@gmail.com')->subject('Guías generadas');
+			function( $message ) use ($email){
+				$message->to($email)->subject('Guías generadas');
 			}
 		);
 	}

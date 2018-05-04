@@ -45,14 +45,21 @@
                                 @foreach ($shipments as $guia)
                                 <tr>
                                     <td>{{ $guia['label']['tracking_number'] }}</td>
-                                    <td>{{ $guia['address_from']['zipcode'] }}</td>
-                                    <td>{{ $guia['address_to']['city'] }}</td>
-                                    <td>{{ $guia['address_to']['zipcode'] }}</td>
+                                    <td>@if(isset($guia['address_from']['zipcode'])) 
+                                            {{ $guia['address_from']['zipcode'] }}
+                                        @endif 
+                                    </td>
+                                    <td>@if(isset($guia['address_to']['city'])) 
+                                            {{ $guia['address_to']['city'] }}
+                                        @endif 
+                                    </td>
+                                    <td>@if(isset($guia['address_to']['zipcode'])) 
+                                            {{ $guia['address_to']['zipcode'] }}
+                                        @endif
+                                    </td>
                                     <td>
                                         @if(isset($guia['description']))
                                             {{ $guia['description'] }}
-                                        @else
-                                            -
                                         @endif
                                     </td>
                                     <td>{{ $guia['weight'] }}</td>
