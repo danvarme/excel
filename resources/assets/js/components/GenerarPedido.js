@@ -26,7 +26,7 @@ export default class GenerarPedido extends Component {
         this.state = {
             redirect: false,
             excelData: null,
-            email: 'fervargas59@gmail.com',
+            email: '',
             name: '',
             street: '',
             street2: '',
