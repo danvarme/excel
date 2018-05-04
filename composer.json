@@ -9,7 +9,11 @@
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
-        "nesbot/carbon": "1.22.*" 
+        "maatwebsite/excel": "~2.1.0",
+        "mailgun/mailgun-php": "^2.5",
+        "nesbot/carbon": "1.22.*",
+        "php-http/guzzle6-adapter": "^1.1",
+        "php-http/message": "^1.6"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

@@ -14,3 +14,13 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/getInfo', 'ExcelController@getInfo');
+Route::post('/exportExcel', 'ExcelController@exportExcel');
+Route::post('/sendEmail', 'ExcelController@sendEmail');
+
+// Route::get('/showTable', function(){
+// 	return '<div></div>';
+// });
+
+Route::get('/shipments', 'TableController@table');
