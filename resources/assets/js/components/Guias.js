@@ -161,7 +161,7 @@ export default class Guias extends Component{
 				</div>
 				
 				<div className="row">
-					<Table responsive>
+					<Table>
 						<thead>
 							<tr>
 								<th>No. guía</th>
