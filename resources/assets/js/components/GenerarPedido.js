@@ -260,7 +260,7 @@ export default class GenerarPedido extends Component {
 
                 <div className="col col-xs-12 col-md-9 col-md-offset-2">
                     <h4 style={{marginTop: "3%"}}> 
-                        Para comenzar, ingrea el correo electrónico del usuario para quien se generarán las guías</h4>
+                        Para comenzar, ingresa el correo electrónico del usuario para quien se generarán las guías</h4>
                     <hr/>
 
                     {this.state.tokenError && <ErrorElement message={this.state.tokenError} />}
