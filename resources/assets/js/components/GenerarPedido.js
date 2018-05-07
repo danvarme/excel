@@ -22,7 +22,7 @@ export default class GenerarPedido extends Component {
     constructor(props) {
         super(props);
 
-        //Variables
+        ///Variables
         this.state = {
             redirect: false,
             excelData: null,
@@ -366,10 +366,8 @@ export default class GenerarPedido extends Component {
                     </div>
                 </div>
                 <UploadModal 
-                    modalIsOpen = {this.state.modal} 
-                    message = {this.state.uploadError}
-                    onRequestClose = {() => this.toggleModal()}
-                    uploadFile = {() => this.uploadFile()} />
+                    modalIsOpen = {this.state.modal}  message = {this.state.uploadError}
+                    onRequestClose = {() => this.toggleModal()}  uploadFile = {() => this.uploadFile()} />
             </div>
         );
     }
@@ -377,5 +375,4 @@ export default class GenerarPedido extends Component {
 
 if (document.getElementById('generarPedido')) {
     ReactDOM.render(<GenerarPedido />, document.getElementById('generarPedido'));
-
 }
