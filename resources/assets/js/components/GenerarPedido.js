@@ -22,7 +22,7 @@ export default class GenerarPedido extends Component {
     constructor(props) {
         super(props);
 
-        //Variables
+        ///Variables
         this.state = {
             redirect: false,
             excelData: null,
