@@ -8635,6 +8635,9 @@ var Example = function (_Component) {
                             });
                         },
                         error: function error(xhr, status, _error5) {
+                            self.setState({
+                                isCharging: false
+                            });
                             self.state.errors[0] = [_error5];
                             self.setState(self.state);
                         }
