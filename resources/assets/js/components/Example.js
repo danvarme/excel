@@ -382,6 +382,9 @@ export default class Example extends Component {
                         });
                     },
                     error: function (xhr, status, error){
+                        self.setState({
+                            isCharging: false
+                        });
                         self.state.errors[0] = [error];
                         self.setState(self.state);
                     }
